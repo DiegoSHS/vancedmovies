@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { Card, CardBody, CardFooter } from "@heroui/card";
+import { Card, CardBody } from "@heroui/card";
 import { Button } from "@heroui/button";
 import { Image } from "@heroui/image";
-import { Chip } from "@heroui/chip";
 import { Spinner } from "@heroui/spinner";
 
 import { Movie } from "../../domain/entities/Movie";
@@ -11,19 +10,19 @@ import { useMovies } from "../hooks/useMovies";
 import { TorrentVideoPlayer } from "../components/TorrentVideoPlayer";
 import {
     generateMagnetLinks,
-    copyMagnetToClipboard,
 } from "../../../../utils/magnetGenerator";
 import { MovieGenres } from "../components/MovieGenres";
 import { MovieRating } from "../components/MovieRating";
 import { MovieLanguage } from "../components/MovieLanguage";
 import { MovieRuntime } from "../components/MovieRuntime";
+import { MovieDownloads } from "../components/MovieDownloads";
+import { MovieYear } from "../components/MovieYear";
 
 export const MovieDetailScreen: React.FC = () => {
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
     const { getMovieById, loading, error } = useMovies();
     const [movie, setMovie] = useState<Movie | null>(null);
-    const [copiedTorrent, setCopiedTorrent] = useState<string | null>(null);
     const [showPlayer, setShowPlayer] = useState(false);
 
     useEffect(() => {
@@ -41,21 +40,6 @@ export const MovieDetailScreen: React.FC = () => {
 
         fetchMovie();
     }, [id]);
-
-    const handleMagnetCopy = async (magnetLink: string, quality: string) => {
-        try {
-            await copyMagnetToClipboard(magnetLink);
-            setCopiedTorrent(quality);
-            setTimeout(() => setCopiedTorrent(null), 2000);
-        } catch {
-            setCopiedTorrent(`error-${quality}`);
-            setTimeout(() => setCopiedTorrent(null), 2000);
-        }
-    };
-
-    const handleOpenTorrentApp = (magnetLink: string) => {
-        window.open(magnetLink, "_blank");
-    };
 
     const getBestQualityTorrent = () => {
         if (!movie?.torrents || !Array.isArray(movie.torrents) || movie.torrents.length === 0) {
@@ -115,18 +99,15 @@ export const MovieDetailScreen: React.FC = () => {
         movie.small_cover_image ||
         "/placeholder-movie.jpg";
 
-    let hasTorrents = false;
     const { data: magnetLinks, error: magnetError } = generateMagnetLinks(movie.torrents, movie.title);
-    if (!magnetError && magnetLinks.length > 0) {
-        hasTorrents = true;
-    }
+
     return (
-        <div className="container mx-auto px-4 py-8">
+        <div className="container mx-auto px-4 py-8 flex flex-col gap-2 items-center">
             <Button color="primary" variant="ghost" onPress={() => navigate(-1)}>
                 ← Volver
             </Button>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div className="flex flex-col sm:flex-row gap-8 justify-evenly items-start gap-2">
                 <Card className="w-full max-w-sm">
                     <Image
                         alt={movie.title}
@@ -135,25 +116,22 @@ export const MovieDetailScreen: React.FC = () => {
                     />
                 </Card>
 
-                <div>
-                    <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-2">
+                <div className="flex flex-col gap-2">
+                    <h1 className="text-4xl font-bold mb-2">
                         {movie.title}
                     </h1>
-                    <p className="text-xl text-gray-600 dark:text-gray-300">
-                        {movie.year}
-                    </p>
-                </div>
-
-                <div className="space-y-4">
-                    <MovieRating rating={movie.rating} size="lg" />
-                    <MovieRuntime runtime={movie.runtime} size="lg" showLabel={true} />
-                    <MovieLanguage language={movie.language} size="lg" showLabel={true} />
-
+                    <div className="flex flex-wrap gap-2">
+                        <MovieYear year={movie.year} size="lg" showLabel={true} />
+                        <MovieRating rating={movie.rating} size="lg" showLabel={true} />
+                        <MovieRuntime runtime={movie.runtime} size="lg" showLabel={true} />
+                        <MovieLanguage language={movie.language} size="lg" showLabel={true} />
+                    </div>
                     <div>
                         <h3 className="text-lg font-semibold mb-2">Géneros</h3>
                         <MovieGenres genres={movie.genres} />
                     </div>
                 </div>
+
             </div>
 
             {showPlayer && movie && getBestQualityTorrent() && (
@@ -164,96 +142,23 @@ export const MovieDetailScreen: React.FC = () => {
                 />
             )}
 
-            {!showPlayer && hasTorrents && getBestQualityTorrent() && (
+            {!showPlayer && !magnetError && getBestQualityTorrent() && (
                 <Button
                     color="primary"
                     size="lg"
+                    radius="full"
                     variant="solid"
                     onPress={() => setShowPlayer(true)}
-                    startContent={<>▶</>}
+                    startContent={
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M5.25 5.653c0-.856.917-1.398 1.667-.986l11.54 6.347a1.125 1.125 0 0 1 0 1.972l-11.54 6.347a1.125 1.125 0 0 1-1.667-.986V5.653Z" />
+                        </svg>
+                    }
                 >
                     Ver película en streaming
                 </Button>
             )}
-            {!hasTorrents && (
-                <Card className="w-full max-w-md mx-auto">
-                    <CardBody className="text-center p-8">
-                        <div className="text-gray-500 mb-4">
-                            <h3 className="text-lg font-semibold">Sin torrents disponibles</h3>
-                            <p className="text-sm mt-2">
-                                No hay enlaces de descarga disponibles para esta película.
-                            </p>
-                        </div>
-                        <Button color="primary" variant="ghost" onClick={() => navigate("/")}>
-                            Explorar otras películas
-                        </Button>
-                    </CardBody>
-                </Card>
-            )}
-
-            {hasTorrents && magnetLinks.length > 0 && (
-                <div className="mt-8">
-                    <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
-                        Descargas disponibles
-                    </h2>
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                        {magnetLinks.map(({ torrent, magnetLink }) => (
-                            <Card
-                                key={torrent.hash}
-                                className="hover:shadow-lg transition-shadow"
-                            >
-                                <CardBody className="flex gap-1">
-                                    <div className="flex justify-between items-center">
-                                        <Chip color="primary" size="lg" variant="flat">
-                                            {torrent.quality}
-                                        </Chip>
-                                        <Chip color="secondary" size="sm" variant="flat">
-                                            {torrent.type}
-                                        </Chip>
-                                    </div>
-                                    <div className="flex justify-between text-sm">
-                                        <span className="text-gray-600 dark:text-gray-400">
-                                            Tamaño:
-                                        </span>
-                                        <span className="font-medium">{torrent.size}</span>
-                                    </div>
-                                </CardBody>
-                                <CardFooter className="flex gap-2">
-                                    <Button
-                                        color={
-                                            copiedTorrent === torrent.quality
-                                                ? "success"
-                                                : copiedTorrent === `error-${torrent.quality}`
-                                                    ? "danger"
-                                                    : "primary"
-                                        }
-                                        disabled={copiedTorrent === torrent.quality}
-                                        size="sm"
-                                        variant="solid"
-                                        onPress={() =>
-                                            handleMagnetCopy(magnetLink, torrent.quality)
-                                        }
-                                    >
-                                        {copiedTorrent === torrent.quality
-                                            ? "✓ Copiado"
-                                            : copiedTorrent === `error-${torrent.quality}`
-                                                ? "Error"
-                                                : "Copiar enlace"}
-                                    </Button>
-                                    <Button
-                                        color="secondary"
-                                        size="sm"
-                                        variant="bordered"
-                                        onPress={() => handleOpenTorrentApp(magnetLink)}
-                                    >
-                                        Abrir torrent
-                                    </Button>
-                                </CardFooter>
-                            </Card>
-                        ))}
-                    </div>
-                </div>
-            )}
+            <MovieDownloads items={magnetLinks} />
         </div>
     );
 };

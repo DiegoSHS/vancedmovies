@@ -16,9 +16,9 @@ export const MovieLanguage: React.FC<MovieLanguageProps> = ({
     const iconSize = size === 'lg' ? 20 : size === 'sm' ? 14 : 16;
 
     return (
-        <div className="flex flex-col gap-1">
+        <div className="flex flex-col gap-1 items-center justify-center">
             {showLabel && (
-                <h3 className="text-lg font-semibold mb-2">Idioma</h3>
+                <h3 className="text-lg font-semibold">Idioma</h3>
             )}
             <Chip
                 color="primary"

@@ -120,7 +120,7 @@ export const generateMagnetLink = (
   };
 };
 
-interface MagnetLinkResult {
+export interface MagnetLinkResult {
   torrent: Torrent;
   magnetLink: string;
 }

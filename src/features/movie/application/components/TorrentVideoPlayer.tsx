@@ -1,11 +1,12 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Card, CardBody } from "@heroui/card";
+import { Card, CardBody, CardFooter, CardHeader } from "@heroui/card";
 import { Button } from "@heroui/button";
 import { Progress } from "@heroui/progress";
 import { Chip } from "@heroui/chip";
 import { Spinner } from "@heroui/spinner";
 import { Torrent } from "../../domain/entities/Torrent";
 import { generateMagnetLink } from "../../../../utils/magnetGenerator";
+import { CrossIcon } from "@/components/icons";
 
 interface TorrentVideoPlayerProps {
     torrent: Torrent;
@@ -186,6 +187,10 @@ export const TorrentVideoPlayer: React.FC<TorrentVideoPlayerProps> = ({
                     connectionStatus: "Cargando WebTorrent...",
                 });
 
+                const WebRTCSupported = await import("webtorrent").then(
+                    (module) => module.WEBRTC_SUPPORT
+                );
+                console.log("WebRTC Supported:", WebRTCSupported);
                 // Cargar WebTorrent dinámicamente
                 const WebTorrentConstructor = await import("webtorrent").then(
                     (module) => module.default || module
@@ -277,26 +282,31 @@ export const TorrentVideoPlayer: React.FC<TorrentVideoPlayerProps> = ({
     if (torrentState.error) {
         return (
             <Card className="w-full">
-                <CardBody className="text-center p-8">
-                    <div className="text-red-500 mb-4">
-                        <h3 className="text-xl font-bold">Error en el reproductor</h3>
-                        <p className="text-sm mt-2">{torrentState.error}</p>
-                        <p className="text-xs mt-2 text-gray-500">
-                            WebRTC y WebTorrent requieren navegadores modernos y buena
-                            conectividad
-                        </p>
-                    </div>
-                    <div className="flex gap-2 justify-center">
-                        <Button color="primary" onPress={retryConnection}>
-                            🔄 Reintentar
-                        </Button>
-                        {onClose && (
-                            <Button color="secondary" onPress={onClose}>
-                                ✖️ Cerrar
-                            </Button>
-                        )}
-                    </div>
+                <CardHeader>
+                    <h3 className="text-xl font-bold">Error en el reproductor</h3>
+                </CardHeader>
+                <CardBody>
+                    <p className="text-sm mt-2 text-danger">{torrentState.error}</p>
+                    <p className="text-xs mt-2 text-gray-500">
+                        WebRTC y WebTorrent requieren navegadores modernos y buena
+                        conectividad
+                    </p>
                 </CardBody>
+                <CardFooter className="flex gap-2 justify-center">
+                    <Button color="primary" onPress={retryConnection}>
+                        Reintentar
+                    </Button>
+                    {onClose && (
+                        <Button
+                            variant="light"
+                            endContent={<CrossIcon size={20} />}
+                            color="secondary"
+                            onPress={onClose}
+                        >
+                            Cerrar
+                        </Button>
+                    )}
+                </CardFooter>
             </Card>
         );
     }
@@ -309,7 +319,6 @@ export const TorrentVideoPlayer: React.FC<TorrentVideoPlayerProps> = ({
                         <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-90 z-10">
                             <div className="text-center text-white max-w-md">
                                 <Spinner size="lg" color="primary" />
-                                <p className="text-sm mt-2">{torrentState.connectionStatus}</p>
                                 {stats.downloadProgress > 0 && (
                                     <>
                                         <div className="mt-4">
@@ -325,9 +334,6 @@ export const TorrentVideoPlayer: React.FC<TorrentVideoPlayerProps> = ({
                                         </p>
                                     </>
                                 )}
-                                <p className="text-xs mt-3 text-yellow-300">
-                                    ⚠️ La primera conexión puede tardar varios minutos
-                                </p>
                             </div>
                         </div>
                     )}
@@ -344,27 +350,28 @@ export const TorrentVideoPlayer: React.FC<TorrentVideoPlayerProps> = ({
 
                 <div className="p-4 space-y-4">
                     <div className="flex justify-between items-center">
-                        <div className="flex gap-2 flex-wrap">
+                        <div className="flex gap-2 flex-wrap items-center">
                             <Chip color="primary" variant="flat">
                                 {torrent.quality}
                             </Chip>
-                            <Chip color="secondary" variant="flat" size="sm">
+                            <Chip color="secondary" variant="flat">
                                 {torrent.size}
                             </Chip>
                             {torrentState.isPlaying && (
-                                <Chip color="success" variant="flat" size="sm">
+                                <Chip color="success" variant="flat">
                                     ▶ Reproduciendo
                                 </Chip>
                             )}
                         </div>
                         {onClose && (
                             <Button
+                                endContent={<CrossIcon size={20} />}
                                 color="danger"
                                 variant="light"
                                 size="sm"
                                 onPress={onClose}
                             >
-                                ✖️ Cerrar
+                                Cerrar
                             </Button>
                         )}
                     </div>
@@ -381,13 +388,14 @@ export const TorrentVideoPlayer: React.FC<TorrentVideoPlayerProps> = ({
                             <span>{stats.downloadProgress.toFixed(1)}%</span>
                         </div>
                         <Progress
+                            size="sm"
                             value={stats.downloadProgress}
                             color="primary"
                             className="w-full"
                         />
                     </div>
 
-                    <div className="grid grid-cols-3 gap-4 text-sm">
+                    <div className="flex gap-2">
                         <div className="text-center">
                             <p className="text-gray-500 dark:text-gray-400">⬇️ Descarga</p>
                             <p className="font-medium">

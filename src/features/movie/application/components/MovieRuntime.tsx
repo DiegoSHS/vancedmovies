@@ -25,9 +25,9 @@ export const MovieRuntime: React.FC<MovieRuntimeProps> = ({
     const iconSize = size === 'lg' ? 20 : size === 'sm' ? 14 : 16;
 
     return (
-        <div className="flex flex-col gap-1">
+        <div className="flex flex-col gap-1 items-center justify-center">
             {showLabel && (
-                <h3 className="text-lg font-semibold mb-2">Duración</h3>
+                <h3 className="text-lg font-semibold">Duración</h3>
             )}
             <Chip
                 color="primary"
