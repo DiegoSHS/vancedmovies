@@ -23,15 +23,9 @@ export default defineConfig({
       process: "process",
       assert: "assert",
       vm: "vm-browserify",
-      // WebTorrent specific aliases
-      "bittorrent-dht/client": "__vite-browser-external",
-      "dgram": "__vite-browser-external",
-      "net": "__vite-browser-external",
-      "tls": "__vite-browser-external",
     },
   },
   optimizeDeps: {
-    exclude: ["webtorrent"],
     include: [
       "events",
       "path-browserify",
@@ -44,29 +38,10 @@ export default defineConfig({
       "os-browserify",
       "process",
       "assert",
-      "hls.js", // Agregar HLS.js específicamente
+      "hls.js"
     ],
   },
   build: {
-    rollupOptions: {
-      external: (id) => {
-        // External Node.js modules that don't have browser equivalents
-        if (id.includes("bittorrent-dht")) return true;
-        if (id.includes("dgram")) return true;
-        if (id.includes("net")) return true;
-        if (id.includes("tls")) return true;
-        if (id.includes("torrent-discovery")) return true;
-        return false;
-      },
-      output: {
-        globals: {
-          "bittorrent-dht": "{}",
-          "dgram": "{}",
-          "net": "{}",
-          "tls": "{}",
-          "torrent-discovery": "{}",
-        },
-      },
-    },
+    sourcemap: false,
   },
 });

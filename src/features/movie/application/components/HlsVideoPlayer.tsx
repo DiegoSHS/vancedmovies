@@ -156,10 +156,10 @@ export const HlsVideoPlayer: React.FC<HlsVideoPlayerProps> = ({
 
     // Función de simulación para demostración (en producción sería un servicio real)
     const simulateLocalConversion = async (hash: string): Promise<string> => {
-        return new Promise((resolve, reject) => {
+        return new Promise(async (resolve, reject) => {
             // Simular proceso de conversión
             let progress = 0;
-            const progressInterval = setInterval(() => {
+            const progressInterval = setInterval(async () => {
                 progress += 10;
                 setPlayerState(prev => ({
                     ...prev,
@@ -169,24 +169,55 @@ export const HlsVideoPlayer: React.FC<HlsVideoPlayerProps> = ({
                 if (progress >= 100) {
                     clearInterval(progressInterval);
 
-                    // En una implementación real, esto devolvería la URL del stream generado
-                    // Por ahora, usamos un stream de demostración para mostrar funcionalidad
-                    const demoStreams = [
-                        'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8',
-                        'https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.m3u8',
-                        'https://demo.unified-streaming.com/k8s/features/stable/video/tears-of-steel/tears-of-steel.ism/.m3u8'
-                    ];
+                    try {
+                        // Intentar usar servicios reales de conversión torrent-to-streaming
+                        setPlayerState(prev => ({
+                            ...prev,
+                            connectionStatus: 'Buscando servicio de streaming para este contenido...'
+                        }));
 
-                    // Seleccionar stream de demo basado en hash para consistencia
-                    const streamIndex = parseInt(hash.slice(-1), 16) % demoStreams.length;
-                    const selectedStream = demoStreams[streamIndex];
+                        // Servicios que convierten magnet links a streams HLS
+                        const streamingServices = [
+                            `https://instant.io/api/v1/torrent/${hash}/stream.m3u8`,
+                            `https://webtor.io/api/v1/torrent/magnet/stream/${hash}.m3u8`,
+                            `https://torrent2stream.herokuapp.com/stream/${hash}`
+                        ];
 
-                    setPlayerState(prev => ({
-                        ...prev,
-                        connectionStatus: 'Stream HLS generado (demo)'
-                    }));
+                        // Intentar cada servicio hasta encontrar uno que funcione
+                        let streamFound = false;
+                        for (const serviceUrl of streamingServices) {
+                            try {
+                                const response = await fetch(serviceUrl, {
+                                    method: 'GET',
+                                    mode: 'cors',
+                                    headers: { 'Accept': 'application/vnd.apple.mpegurl' }
+                                });
 
-                    resolve(selectedStream);
+                                if (response.ok) {
+                                    setPlayerState(prev => ({
+                                        ...prev,
+                                        connectionStatus: 'Stream HLS encontrado para este contenido'
+                                    }));
+                                    resolve(serviceUrl);
+                                    streamFound = true;
+                                    break;
+                                }
+                            } catch (error) {
+                                console.warn(`Servicio ${serviceUrl} no disponible:`, error);
+                                continue;
+                            }
+                        }
+
+                        if (!streamFound) {
+                            reject(new Error(
+                                `No se pudo encontrar un servicio de streaming disponible para este contenido específico (Hash: ${hash.substring(0, 8)}...). ` +
+                                `Los servicios de conversión torrent-to-HLS no están respondiendo. ` +
+                                `Intente con el "Reproductor Avanzado" que usa tecnología P2P directa.`
+                            ));
+                        }
+                    } catch (error) {
+                        reject(error);
+                    }
                 }
             }, 300);
 

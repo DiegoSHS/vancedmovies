@@ -4,7 +4,7 @@ import { Button } from "@heroui/button";
 import { Chip } from "@heroui/chip";
 import { Torrent } from "../../domain/entities/Torrent";
 import { TorrentVideoPlayer } from "./TorrentVideoPlayer";
-import { WebRTCVideoPlayer } from "./WebRTCVideoPlayer";
+import WebRTCVideoPlayer from "./WebRTCVideoPlayer";
 import { HlsVideoPlayer } from "./HlsVideoPlayer";
 import { MseVideoPlayer } from "./MseVideoPlayer";
 
