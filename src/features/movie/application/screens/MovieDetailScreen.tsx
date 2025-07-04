@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { Card, CardBody } from "@heroui/card";
+import { Card } from "@heroui/card";
 import { Button } from "@heroui/button";
 import { Image } from "@heroui/image";
 import { Spinner } from "@heroui/spinner";
@@ -8,6 +8,7 @@ import { Spinner } from "@heroui/spinner";
 import { Movie } from "../../domain/entities/Movie";
 import { useMovies } from "../hooks/useMovies";
 import { TorrentVideoPlayer } from "../components/TorrentVideoPlayer";
+import { HybridVideoPlayer } from "../components/HybridVideoPlayer";
 import {
     generateMagnetLinks,
 } from "../../../../utils/magnetGenerator";
@@ -24,6 +25,7 @@ export const MovieDetailScreen: React.FC = () => {
     const { getMovieById, loading, error } = useMovies();
     const [movie, setMovie] = useState<Movie | null>(null);
     const [showPlayer, setShowPlayer] = useState(false);
+    const [showAdvancedPlayer, setShowAdvancedPlayer] = useState(false);
 
     useEffect(() => {
         const fetchMovie = async () => {
@@ -142,21 +144,91 @@ export const MovieDetailScreen: React.FC = () => {
                 />
             )}
 
-            {!showPlayer && !magnetError && getBestQualityTorrent() && (
-                <Button
-                    color="primary"
-                    size="lg"
-                    radius="full"
-                    variant="solid"
-                    onPress={() => setShowPlayer(true)}
-                    startContent={
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M5.25 5.653c0-.856.917-1.398 1.667-.986l11.54 6.347a1.125 1.125 0 0 1 0 1.972l-11.54 6.347a1.125 1.125 0 0 1-1.667-.986V5.653Z" />
-                        </svg>
-                    }
-                >
-                    Ver película en streaming
-                </Button>
+            {/* Nuevo Reproductor Híbrido Avanzado */}
+            {showAdvancedPlayer && movie && getBestQualityTorrent() && (
+                <div className="w-full max-w-5xl">
+                    <div className="mb-4 text-center">
+                        <h2 className="text-2xl font-bold mb-2">🚀 Reproductor Avanzado</h2>
+                        <p className="text-gray-600">
+                            Múltiples opciones de streaming: WebTorrent, WebRTC, HLS y MSE
+                        </p>
+                    </div>
+                    <HybridVideoPlayer
+                        torrent={getBestQualityTorrent()!}
+                        movieTitle={movie.title}
+                        onClose={() => setShowAdvancedPlayer(false)}
+                    />
+                </div>
+            )}
+
+            {!showPlayer && !showAdvancedPlayer && !magnetError && getBestQualityTorrent() && (
+                <div className="flex flex-col sm:flex-row gap-4 items-center">
+                    <Button
+                        color="primary"
+                        size="lg"
+                        radius="full"
+                        variant="solid"
+                        onPress={() => setShowPlayer(true)}
+                        startContent={
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M5.25 5.653c0-.856.917-1.398 1.667-.986l11.54 6.347a1.125 1.125 0 0 1 0 1.972l-11.54 6.347a1.125 1.125 0 0 1-1.667-.986V5.653Z" />
+                            </svg>
+                        }
+                    >
+                        Reproductor WebTorrent
+                    </Button>
+
+                    <div className="text-gray-400 text-sm">o</div>
+
+                    <Button
+                        color="secondary"
+                        size="lg"
+                        radius="full"
+                        variant="solid"
+                        onPress={() => setShowAdvancedPlayer(true)}
+                        startContent={
+                            <span className="text-lg">🚀</span>
+                        }
+                    >
+                        Reproductor Avanzado
+                    </Button>
+                </div>
+            )}
+
+            {/* Información sobre los reproductores */}
+            {!showPlayer && !showAdvancedPlayer && !magnetError && getBestQualityTorrent() && (
+                <div className="w-full max-w-4xl mt-4 p-6 bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl border border-blue-100">
+                    <h3 className="text-lg font-semibold mb-4 text-center">🎬 Opciones de Reproducción</h3>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div className="text-center">
+                            <h4 className="font-medium text-blue-800 mb-2">🌊 WebTorrent Clásico</h4>
+                            <ul className="text-sm text-blue-600 space-y-1">
+                                <li>✅ Streaming P2P directo</li>
+                                <li>✅ Fácil de usar</li>
+                                <li>✅ Compatible con todos los navegadores</li>
+                                <li>✅ Sin configuración adicional</li>
+                            </ul>
+                        </div>
+
+                        <div className="text-center">
+                            <h4 className="font-medium text-purple-800 mb-2">🚀 Reproductor Avanzado</h4>
+                            <ul className="text-sm text-purple-600 space-y-1">
+                                <li>⚡ Múltiples tecnologías de streaming</li>
+                                <li>📺 HLS para calidad adaptativa</li>
+                                <li>🔗 WebRTC P2P directo</li>
+                                <li>🎯 MSE para control granular</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div className="mt-4 text-center">
+                        <p className="text-xs text-gray-600">
+                            💡 <strong>Recomendación:</strong> Usa el reproductor clásico para una experiencia simple y rápida,
+                            o el avanzado para más opciones y tecnologías modernas.
+                        </p>
+                    </div>
+                </div>
             )}
             <MovieDownloads items={magnetLinks} />
         </div>

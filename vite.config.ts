@@ -20,7 +20,7 @@ export default defineConfig({
       querystring: "querystring-es3",
       fs: "memfs",
       os: "os-browserify",
-      process: "process/browser",
+      process: "process",
       assert: "assert",
       vm: "vm-browserify",
       // WebTorrent specific aliases
@@ -42,8 +42,9 @@ export default defineConfig({
       "url",
       "querystring-es3",
       "os-browserify",
-      "process/browser",
+      "process",
       "assert",
+      "hls.js", // Agregar HLS.js específicamente
     ],
   },
   build: {
