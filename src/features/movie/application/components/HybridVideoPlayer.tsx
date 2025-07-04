@@ -87,9 +87,6 @@ export const HybridVideoPlayer: React.FC<HybridVideoPlayerProps> = ({
         );
     }
 
-    // Selector simplificado
-    const { data: magnetLink, error: magnetError } = generateMagnetLink(torrent, movieTitle);
-
     return (
         <Card className="w-full">
             <CardHeader className="flex flex-row items-center justify-between">
