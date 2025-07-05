@@ -28,6 +28,17 @@ interface MovieDownloadOptionProps {
 }
 
 export const MovieDownloadOptions = ({ items, isDisabled }: MovieDownloadOptionProps) => {
+    // Verifica si items es un arreglo y tiene al menos un elemento
+    const itemsValid = Array.isArray(items) && items.length > 0;
+
+    if (!itemsValid) {
+        return (
+            <Button color="primary" radius="full" size="sm" disabled>
+                No hay descargas disponibles
+            </Button>
+        );
+    }
+
     return (
         <Dropdown
             closeOnSelect={false}
