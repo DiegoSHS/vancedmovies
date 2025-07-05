@@ -1,18 +1,34 @@
 export type SiteConfig = typeof siteConfig;
 
 export const siteConfig = {
-  name: "Boli",
-  description: "Peliculas aquí broda.",
+  name: "BOLIPeliculas",
+  description: "Tu plataforma de streaming favorita.",
   navItems: [
     {
       label: "Inicio",
       href: "/",
+    },
+    {
+      label: "Películas",
+      href: "/movies",
+    },
+    {
+      label: "Acerca de",
+      href: "/about",
     },
   ],
   navMenuItems: [
     {
       label: "Inicio",
       href: "/",
+    },
+    {
+      label: "Películas",
+      href: "/movies",
+    },
+    {
+      label: "Acerca de",
+      href: "/about",
     },
   ],
   links: {
