@@ -18,6 +18,7 @@ export const MovieList: React.FC<MovieListProps> = ({
   error,
   onMovieClick,
 }) => {
+  console.log(loading)
   if (loading) {
     return (
       <div className="flex flex-wrap gap-6 justify-center">

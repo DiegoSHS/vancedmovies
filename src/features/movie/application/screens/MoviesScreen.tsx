@@ -3,13 +3,13 @@ import { useNavigate } from "react-router-dom";
 import { Input } from "@heroui/input";
 import { Button } from "@heroui/button";
 import { Chip } from "@heroui/chip";
-import { CircularProgress } from "@heroui/progress";
 
 import { Movie } from "../../domain/entities/Movie";
 import { MovieList } from "../components/MovieList";
 import { MoviePagination } from "../components/MoviePagination";
 import { CrossIcon, SearchIcon } from "@/components/icons";
 import { useMovieContext } from "../providers/MovieProvider";
+import { LoadMoviesInfo } from "./PaginatedMoviesScreen";
 
 export const MoviesScreen: React.FC = () => {
   const { state: { items: movies }, totalResults, query, loading, error, getMovies, searchMovies, resetQuery, updateQuery } =
@@ -92,10 +92,7 @@ export const MoviesScreen: React.FC = () => {
 
         <div className="flex gap-2 mb-4">
           {loading ? (
-            <>
-              <Chip isDisabled>Cargando</Chip>
-              <CircularProgress size="sm" />
-            </>
+            <LoadMoviesInfo />
           ) : (
             <>
               <Chip>

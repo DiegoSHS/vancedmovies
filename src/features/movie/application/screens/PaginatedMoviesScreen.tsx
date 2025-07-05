@@ -8,7 +8,14 @@ import { MoviePagination } from "../components/MoviePagination";
 import { CrossIcon, SearchIcon } from "@/components/icons";
 import { useMovieContext } from "../providers/MovieProvider";
 import { Chip } from "@heroui/chip";
-import { CircularProgress } from "@heroui/progress";
+import { Progress } from "@heroui/progress";
+
+export const LoadMoviesInfo = () => (
+    <>
+        <Chip variant="shadow" color="primary" >Cargando</Chip>
+        <Progress size="md" isIndeterminate />
+    </>
+)
 
 export const PaginatedMoviesScreen: React.FC = () => {
     const { state: { items: movies }, totalResults, loading, error, query, getMovies, searchMovies, updateQuery, resetQuery } =
@@ -23,6 +30,7 @@ export const PaginatedMoviesScreen: React.FC = () => {
     const totalPages = Math.ceil(totalResults / 20);
 
     useEffect(() => {
+        setCurrentPage(validPage ? pageFromUrl : 1)
         const loadInitialMovies = async () => {
             if (query) {
                 searchMovies(currentPage)
@@ -30,9 +38,8 @@ export const PaginatedMoviesScreen: React.FC = () => {
                 getMovies(currentPage);
             }
         };
-
         loadInitialMovies();
-    }, [currentPage]);
+    }, [id]);
 
     const handleSearch = async () => {
         if (!query.trim()) {
@@ -100,12 +107,9 @@ export const PaginatedMoviesScreen: React.FC = () => {
                     </Button>
                 </div>
 
-                <div className="flex gap-2 mb-4">
+                <div className="flex gap-2 items-center justify-center">
                     {loading ? (
-                        <>
-                            <Chip isDisabled>Cargando</Chip>
-                            <CircularProgress size="sm" />
-                        </>
+                        <LoadMoviesInfo />
                     ) : (
                         <>
                             <Chip>

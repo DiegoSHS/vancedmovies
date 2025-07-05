@@ -1,11 +1,10 @@
-import { CheckIcon, CopyIcon } from "@/components/icons";
+import { CheckIcon, CopyIcon, DownloadIcon } from "@/components/icons";
 import { copyMagnetToClipboard, MagnetLinkResult } from "@/types";
 import { Button } from "@heroui/button";
 import { Card, CardBody, CardFooter } from "@heroui/card";
 import { Chip } from "@heroui/chip";
-import { DropdownItem } from "@heroui/dropdown";
+import { Dropdown, DropdownItem, DropdownMenu, DropdownTrigger } from "@heroui/dropdown";
 import { useState } from "react";
-import { Torrent } from "../../domain/entities/Torrent";
 
 export const handleOpenTorrentApp = (magnetLink: string) => {
     window.open(magnetLink, "_blank");
@@ -24,34 +23,57 @@ export async function handleMagnetCopy(magnetLink: string, setCopied: (value: bo
 
 
 interface MovieDownloadOptionProps {
-    magnetLink: string;
-    torrent: Torrent
+    items: MagnetLinkResult[];
+    isDisabled: boolean
 }
 
-export const MovieDownloadOption = ({ magnetLink, torrent }: MovieDownloadOptionProps) => {
-    const [copied, setCopied] = useState<boolean>(false);
+export const MovieDownloadOptions = ({ items, isDisabled }: MovieDownloadOptionProps) => {
     return (
-        <DropdownItem
-            onPress={() => {
-                handleMagnetCopy(magnetLink, setCopied);
-            }}
-            startContent={
-                copied
-                    ? <CheckIcon size={20} />
-                    : <CopyIcon size={20} />
-            }
-            classNames={{
-                title: 'flex items-center gap-2'
-            }}
-            key={torrent.hash}
+        <Dropdown
+            closeOnSelect={false}
+            isDisabled={isDisabled}
         >
-            <span className="font-medium text-sm">
-                {torrent.quality}
-            </span>
-            <span className="text-xs text-gray-600 dark:text-gray-400">
-                {torrent.size}
-            </span>
-        </DropdownItem>
+            <DropdownTrigger>
+                <Button
+                    color="primary"
+                    radius="full"
+                    size="sm"
+                    startContent={
+                        <DownloadIcon size={20} />
+                    }
+                >
+                    Descargar
+                </Button>
+            </DropdownTrigger>
+            <DropdownMenu items={items}>
+                {({ magnetLink, torrent }) => {
+                    const [copied, setCopied] = useState<boolean>(false);
+                    return (
+                        <DropdownItem
+                            onPress={() => {
+                                handleMagnetCopy(magnetLink, setCopied);
+                            }}
+                            startContent={
+                                copied
+                                    ? <CheckIcon size={20} />
+                                    : <CopyIcon size={20} />
+                            }
+                            classNames={{
+                                title: 'flex items-center gap-2'
+                            }}
+                            key={torrent.hash}
+                        >
+                            <span className="font-medium text-sm">
+                                {torrent.quality}
+                            </span>
+                            <span className="text-xs text-gray-600 dark:text-gray-400">
+                                {torrent.size}
+                            </span>
+                        </DropdownItem>
+                    )
+                }}
+            </DropdownMenu>
+        </Dropdown>
     )
 }
 

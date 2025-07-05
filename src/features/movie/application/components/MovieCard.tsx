@@ -1,12 +1,6 @@
 import { Card, CardHeader, CardFooter } from "@heroui/card";
-import { Button } from "@heroui/button";
 import { Image } from "@heroui/image";
 import { Accordion, AccordionItem } from "@heroui/accordion";
-import {
-    Dropdown,
-    DropdownMenu,
-    DropdownTrigger,
-} from "@heroui/dropdown";
 import { Divider } from "@heroui/divider";
 
 import {
@@ -19,8 +13,7 @@ import { MovieInfo } from "./MovieInfo";
 import { MovieRating } from "./MovieRating";
 import { MovieRuntime } from "./MovieRuntime";
 import { MovieLanguage } from "./MovieLanguage";
-import { DownloadIcon } from "@/components/icons";
-import { MovieDownloadOption } from "./MovieDownloads";
+import { MovieDownloadOptions } from "./MovieDownloads";
 
 interface MovieCardProps {
     movie: Movie;
@@ -99,32 +92,10 @@ export const MovieCard: React.FC<MovieCardProps> = ({ movie, onClick }) => {
                             </div>
                         )}
                         <Divider />
-                        <Dropdown
-                            closeOnSelect={false}
+                        <MovieDownloadOptions
+                            items={magnetLinks}
                             isDisabled={!Array.isArray(movie.torrents) || magnetError !== null || magnetLinks.length === 0}
-                        >
-                            <DropdownTrigger>
-                                <Button
-                                    color="primary"
-                                    radius="full"
-                                    size="sm"
-                                    startContent={
-                                        <DownloadIcon size={20} />
-                                    }
-                                >
-                                    Descargar
-                                </Button>
-                            </DropdownTrigger>
-                            <DropdownMenu items={magnetLinks}>
-                                {({ magnetLink, torrent }) => (
-                                    <MovieDownloadOption
-                                        key={torrent.hash}
-                                        magnetLink={magnetLink}
-                                        torrent={torrent}
-                                    />
-                                )}
-                            </DropdownMenu>
-                        </Dropdown>
+                        />
                     </AccordionItem>
                 </Accordion>
             </CardFooter>

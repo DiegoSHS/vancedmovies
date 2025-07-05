@@ -49,14 +49,20 @@ export const MovieProvider: React.FC<MovieProviderProps> = ({ children }) => {
   const { state, dispatch } = useBaseReducer<Movie>()
   const getMovies = async (page: number) => {
     try {
+      modifyProviderState({ loading: true, error: null });
       const { data } = await movieRepository.getMovies(page);
       if (!data?.movies) return
       modifyProviderState({
-        totalResults: data.movie_count
+        totalResults: data.movie_count,
+        loading: false,
+        error: null,
       })
       dispatch({ type: "SET", payload: data.movies });
     } catch (error) {
       dispatch({ type: "RESET" });
+      modifyProviderState({ error: "Error al obtener las películas" });
+    } finally {
+      modifyProviderState({ loading: false });
     }
   };
   const getMovieById = async (id: number) => {
