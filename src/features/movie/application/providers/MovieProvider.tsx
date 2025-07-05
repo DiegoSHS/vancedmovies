@@ -13,6 +13,9 @@ interface MovieContextType {
   updateQuery: (newQuery: string) => void;
   resetQuery: () => void;
   query: string;
+  loading: boolean;
+  totalResults: number;
+  error: string | null;
 }
 
 const MovieContext = createContext<MovieContextType | undefined>(undefined);
@@ -21,16 +24,36 @@ interface MovieProviderProps {
   children: ReactNode;
 }
 
+interface ProviderState {
+  query: string;
+  totalResults: number;
+  loading: boolean;
+  error: string | null;
+}
+
 export const MovieProvider: React.FC<MovieProviderProps> = ({ children }) => {
-  const [query, setQuery] = useState<string>('');
+  const [{ error, loading, query, totalResults }, setProviderState] = useState<ProviderState>({
+    query: '',
+    totalResults: 0,
+    loading: false,
+    error: null,
+  });
+  const modifyProviderState = (newState: Partial<ProviderState>) => {
+    setProviderState((prev) => ({
+      ...prev,
+      ...newState,
+    }));
+  }
   const movieDatasource = new MovieDatasourceImp();
   const movieRepository = new MovieRepositoryImp(movieDatasource);
   const { state, dispatch } = useBaseReducer<Movie>()
-
   const getMovies = async (page: number) => {
     try {
       const { data } = await movieRepository.getMovies(page);
       if (!data?.movies) return
+      modifyProviderState({
+        totalResults: data.movie_count
+      })
       dispatch({ type: "SET", payload: data.movies });
     } catch (error) {
       dispatch({ type: "RESET" });
@@ -38,27 +61,39 @@ export const MovieProvider: React.FC<MovieProviderProps> = ({ children }) => {
   };
   const getMovieById = async (id: number) => {
     try {
+      modifyProviderState({ loading: true, error: null });
       const { data } = await movieRepository.getMovieById(id);
       if (!data) return
       dispatch({ type: "SELECT", payload: data });
     } catch (error) {
       dispatch({ type: "RESET" });
+      modifyProviderState({ error: "Error al obtener la película" });
+    } finally {
+      modifyProviderState({ loading: false });
     }
   };
   const searchMovies = async (page: number) => {
     try {
+      if (query.trim() === '') return;
+      modifyProviderState({ loading: true, error: null });
       const { data } = await movieRepository.searchMovies(query, page);
       if (!data?.movies) return
+      modifyProviderState({
+        totalResults: data.movie_count
+      });
       dispatch({ type: "SET", payload: data.movies });
     } catch (error) {
+      modifyProviderState({ error: "Error al buscar películas" });
       dispatch({ type: "RESET" });
+    } finally {
+      modifyProviderState({ loading: false });
     }
   };
   const updateQuery = (newQuery: string) => {
-    setQuery((_) => newQuery);
+    modifyProviderState({ query: newQuery });
   };
   const resetQuery = () => {
-    setQuery('');
+    modifyProviderState({ query: '' });
   };
   const value: MovieContextType = {
     state,
@@ -68,6 +103,9 @@ export const MovieProvider: React.FC<MovieProviderProps> = ({ children }) => {
     updateQuery,
     resetQuery,
     query,
+    loading,
+    totalResults,
+    error
   };
 
   return (

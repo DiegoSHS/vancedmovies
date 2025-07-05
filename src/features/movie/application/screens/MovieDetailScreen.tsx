@@ -6,7 +6,6 @@ import { Image } from "@heroui/image";
 import { Spinner } from "@heroui/spinner";
 
 import { Movie } from "../../domain/entities/Movie";
-import { useMovies } from "../hooks/useMovies";
 import { VideoPlayer } from "../components/VideoPlayer";
 import {
     generateMagnetLinks,
@@ -18,6 +17,7 @@ import { MovieRuntime } from "../components/MovieRuntime";
 import { MovieDownloads } from "../components/MovieDownloads";
 import { MovieYear } from "../components/MovieYear";
 import { Torrent } from "../../domain/entities/Torrent";
+import { useMovieContext } from "../providers/MovieProvider";
 
 const getBestQualityTorrent = (movie: Movie): {
     data: Torrent | null;
@@ -54,23 +54,11 @@ const getBestQualityTorrent = (movie: Movie): {
 export const MovieDetailScreen: React.FC = () => {
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
-    const { getMovieById, loading, error } = useMovies();
-    const [movie, setMovie] = useState<Movie | null>(null);
+    const { getMovieById, loading, error, state: { selectedItem: movie } } = useMovieContext()
     const [showPlayer, setShowPlayer] = useState(false);
 
     useEffect(() => {
-        const fetchMovie = async () => {
-            if (id) {
-                try {
-                    const movieData = await getMovieById(parseInt(id));
-                    setMovie(movieData);
-                } catch {
-                    // Error handled by state
-                }
-            }
-        };
-
-        fetchMovie();
+        getMovieById(parseInt(id!));
     }, [id]);
 
 

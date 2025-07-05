@@ -3,25 +3,60 @@ import { copyMagnetToClipboard, MagnetLinkResult } from "@/types";
 import { Button } from "@heroui/button";
 import { Card, CardBody, CardFooter } from "@heroui/card";
 import { Chip } from "@heroui/chip";
+import { DropdownItem } from "@heroui/dropdown";
 import { useState } from "react";
+import { Torrent } from "../../domain/entities/Torrent";
 
 export const handleOpenTorrentApp = (magnetLink: string) => {
     window.open(magnetLink, "_blank");
 };
 
+export async function handleMagnetCopy(magnetLink: string, setCopied: (value: boolean) => void) {
+    try {
+        await copyMagnetToClipboard(magnetLink);
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+    } catch {
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+    }
+};
+
+
+interface MovieDownloadOptionProps {
+    magnetLink: string;
+    torrent: Torrent
+}
+
+export const MovieDownloadOption = ({ magnetLink, torrent }: MovieDownloadOptionProps) => {
+    const [copied, setCopied] = useState<boolean>(false);
+    return (
+        <DropdownItem
+            onPress={() => {
+                handleMagnetCopy(magnetLink, setCopied);
+            }}
+            startContent={
+                copied
+                    ? <CheckIcon size={20} />
+                    : <CopyIcon size={20} />
+            }
+            classNames={{
+                title: 'flex items-center gap-2'
+            }}
+            key={torrent.hash}
+        >
+            <span className="font-medium text-sm">
+                {torrent.quality}
+            </span>
+            <span className="text-xs text-gray-600 dark:text-gray-400">
+                {torrent.size}
+            </span>
+        </DropdownItem>
+    )
+}
+
 export const MovieDownloadCard = ({ torrent, magnetLink }: MagnetLinkResult) => {
     const [copied, setCopied] = useState<boolean>(false);
-    const handleMagnetCopy = async (magnetLink: string) => {
-        try {
-            await copyMagnetToClipboard(magnetLink);
-            setCopied(true);
-            setTimeout(() => setCopied(false), 2000);
-        } catch {
-            setCopied(true);
-
-            setTimeout(() => setCopied(false), 2000);
-        }
-    };
     return (
         <Card
             key={torrent.hash}
@@ -58,7 +93,7 @@ export const MovieDownloadCard = ({ torrent, magnetLink }: MagnetLinkResult) => 
                     size="sm"
                     variant="solid"
                     onPress={() =>
-                        handleMagnetCopy(magnetLink)
+                        handleMagnetCopy(magnetLink, setCopied)
                     }
                 >
 

@@ -8,7 +8,7 @@ import { MovieCardSkeleton } from "./MovieCardSkeleton";
 interface MovieListProps {
   movies: Movie[];
   loading?: boolean;
-  error?: string;
+  error: string | null;
   onMovieClick?: (movie: Movie) => void;
 }
 

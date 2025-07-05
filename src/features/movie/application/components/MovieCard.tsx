@@ -1,4 +1,3 @@
-import React, { useState } from "react";
 import { Card, CardHeader, CardFooter } from "@heroui/card";
 import { Button } from "@heroui/button";
 import { Image } from "@heroui/image";
@@ -7,13 +6,11 @@ import {
     Dropdown,
     DropdownMenu,
     DropdownTrigger,
-    DropdownItem,
 } from "@heroui/dropdown";
 import { Divider } from "@heroui/divider";
 
 import {
     generateMagnetLinks,
-    copyMagnetToClipboard,
 } from "../../../../utils/magnetGenerator";
 import { Movie } from "../../domain/entities/Movie";
 import { MovieGenres } from "./MovieGenres";
@@ -22,7 +19,8 @@ import { MovieInfo } from "./MovieInfo";
 import { MovieRating } from "./MovieRating";
 import { MovieRuntime } from "./MovieRuntime";
 import { MovieLanguage } from "./MovieLanguage";
-import { CheckIcon, CopyIcon, CrossIcon, DownloadIcon } from "@/components/icons";
+import { DownloadIcon } from "@/components/icons";
+import { MovieDownloadOption } from "./MovieDownloads";
 
 interface MovieCardProps {
     movie: Movie;
@@ -30,7 +28,6 @@ interface MovieCardProps {
 }
 
 export const MovieCard: React.FC<MovieCardProps> = ({ movie, onClick }) => {
-    const [copiedTorrent, setCopiedTorrent] = useState<string | null>(null);
     const { data: magnetLinks, error: magnetError } = generateMagnetLinks(movie.torrents, movie.title);
 
     const overlayStyle = {
@@ -46,21 +43,7 @@ export const MovieCard: React.FC<MovieCardProps> = ({ movie, onClick }) => {
     };
 
     const handleClick = () => {
-        if (onClick) {
-            onClick(movie);
-        }
-    };
-
-    const handleMagnetCopy = async (magnetLink: string, quality: string) => {
-        try {
-            await copyMagnetToClipboard(magnetLink);
-            setCopiedTorrent(quality);
-            setTimeout(() => setCopiedTorrent(null), 2000);
-        } catch {
-            // Error silencioso - en una aplicación real podrías mostrar una notificación
-            setCopiedTorrent(`error-${quality}`);
-            setTimeout(() => setCopiedTorrent(null), 2000);
-        }
+        if (onClick) onClick(movie);
     };
 
     const posterUrl =
@@ -134,30 +117,11 @@ export const MovieCard: React.FC<MovieCardProps> = ({ movie, onClick }) => {
                             </DropdownTrigger>
                             <DropdownMenu items={magnetLinks}>
                                 {({ magnetLink, torrent }) => (
-                                    <DropdownItem
-                                        onPress={() => {
-                                            handleMagnetCopy(magnetLink, torrent.quality);
-                                        }}
-                                        startContent={
-                                            copiedTorrent === torrent.quality
-                                                ? <CheckIcon size={20} />
-                                                : copiedTorrent === `error-${torrent.quality}`
-                                                    ? <CrossIcon size={20} />
-                                                    : <CopyIcon size={20} />
-
-                                        }
-                                        classNames={{
-                                            title: 'flex items-center gap-2'
-                                        }}
+                                    <MovieDownloadOption
                                         key={torrent.hash}
-                                    >
-                                        <span className="font-medium text-sm">
-                                            {torrent.quality}
-                                        </span>
-                                        <span className="text-xs text-gray-600 dark:text-gray-400">
-                                            {torrent.size}
-                                        </span>
-                                    </DropdownItem>
+                                        magnetLink={magnetLink}
+                                        torrent={torrent}
+                                    />
                                 )}
                             </DropdownMenu>
                         </Dropdown>

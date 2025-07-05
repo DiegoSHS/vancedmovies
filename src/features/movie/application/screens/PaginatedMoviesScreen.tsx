@@ -2,60 +2,56 @@ import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Input } from "@heroui/input";
 import { Button } from "@heroui/button";
-import { Chip } from "@heroui/chip";
-import { CircularProgress } from "@heroui/progress";
-
 import { Movie } from "../../domain/entities/Movie";
-import { useMovies } from "../hooks/useMovies";
 import { MovieList } from "../components/MovieList";
 import { MoviePagination } from "../components/MoviePagination";
 import { CrossIcon, SearchIcon } from "@/components/icons";
+import { useMovieContext } from "../providers/MovieProvider";
+import { Chip } from "@heroui/chip";
+import { CircularProgress } from "@heroui/progress";
 
 export const PaginatedMoviesScreen: React.FC = () => {
-    const { movies, movieListData, loading, error, getMovies, searchMovies } =
-        useMovies();
+    const { state: { items: movies }, totalResults, loading, error, query, getMovies, searchMovies, updateQuery, resetQuery } =
+        useMovieContext();
     const navigate = useNavigate();
     const { id } = useParams<{ id: string }>();
 
-    const [searchQuery, setSearchQuery] = useState<string>("");
-    const [currentPage, setCurrentPage] = useState<number>(1);
-    const [initialLoading, setInitialLoading] = useState<boolean>(true);
+    const pageFromUrl = id ? parseInt(id, 10) : 1;
+    const validPage = !isNaN(pageFromUrl) && pageFromUrl > 0;
+    const [currentPage, setCurrentPage] = useState<number>(validPage ? pageFromUrl : 1);
 
-    useEffect(() => {
-        const pageFromUrl = id ? parseInt(id, 10) : 1;
-        if (!isNaN(pageFromUrl) && pageFromUrl > 0) {
-            setCurrentPage(pageFromUrl);
-        }
-    }, [id]);
+    const totalPages = Math.ceil(totalResults / 20);
 
     useEffect(() => {
         const loadInitialMovies = async () => {
-            setInitialLoading(true);
-            await getMovies(currentPage);
-            setInitialLoading(false);
+            if (query) {
+                searchMovies(currentPage)
+            } else {
+                getMovies(currentPage);
+            }
         };
 
         loadInitialMovies();
     }, [currentPage]);
 
     const handleSearch = async () => {
-        if (!searchQuery.trim()) {
-            await getMovies(1);
+        if (!query.trim()) {
+            getMovies(1);
             setCurrentPage(1);
             navigate("/page/1");
             return;
         }
 
-        await searchMovies(searchQuery, 1);
+        searchMovies(1);
         setCurrentPage(1);
         navigate("/page/1");
     };
 
     const handleClearSearch = () => {
-        setSearchQuery("");
+        getMovies(1);
+        resetQuery();
         setCurrentPage(1);
         navigate("/page/1");
-        getMovies(1);
     };
 
     const handleMovieClick = (movie: Movie) => {
@@ -67,12 +63,6 @@ export const PaginatedMoviesScreen: React.FC = () => {
         navigate(`/page/${page}`);
     };
 
-    const totalPages = movieListData
-        ? Math.ceil(movieListData.movie_count / 20)
-        : 1;
-
-    const isLoading = loading || initialLoading;
-
     return (
         <div className="container mx-auto px-4 py-8">
             <div className="flex flex-col gap-2">
@@ -83,18 +73,18 @@ export const PaginatedMoviesScreen: React.FC = () => {
                 <div className="flex gap-2">
                     <Input
                         isClearable
-                        isDisabled={isLoading}
+                        isDisabled={loading}
                         placeholder="Buscar películas"
                         type="search"
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                        onClear={() => setSearchQuery("")}
+                        value={query}
+                        onChange={(e) => updateQuery(e.target.value)}
+                        onClear={resetQuery}
                         onKeyDown={(e) => e.key === "Enter" && handleSearch()}
                     />
                     <Button
                         isIconOnly
                         color="primary"
-                        isDisabled={!searchQuery.trim()}
+                        isDisabled={!query.trim()}
                         onPress={handleSearch}
                     >
                         <SearchIcon />
@@ -102,7 +92,7 @@ export const PaginatedMoviesScreen: React.FC = () => {
                     <Button
                         isIconOnly
                         color="secondary"
-                        isDisabled={!searchQuery.trim()}
+                        isDisabled={!query.trim()}
                         variant="bordered"
                         onPress={handleClearSearch}
                     >
@@ -110,44 +100,43 @@ export const PaginatedMoviesScreen: React.FC = () => {
                     </Button>
                 </div>
 
-                <div className="flex gap-2">
-                    {isLoading ? (
+                <div className="flex gap-2 mb-4">
+                    {loading ? (
                         <>
                             <Chip isDisabled>Cargando</Chip>
                             <CircularProgress size="sm" />
                         </>
                     ) : (
-                        movieListData && (
-                            <>
-                                <Chip>
-                                    Mostrando {movies.length} de {movieListData.movie_count}{" "}
-                                    películas
-                                </Chip>
-                                <Chip>
-                                    Página {currentPage} de {totalPages}
-                                </Chip>
-                            </>
-                        )
+                        <>
+                            <Chip>
+                                Mostrando {movies.length} de {totalResults}{" "}
+                                películas
+                            </Chip>
+                            <Chip>
+                                Página {currentPage} de {totalPages}
+                            </Chip>
+                        </>
+
                     )}
                 </div>
 
                 <MoviePagination
                     currentPage={currentPage}
-                    isLoading={isLoading}
+                    isLoading={loading}
                     totalPages={totalPages}
                     onPageChange={handlePageChange}
                 />
 
                 <MovieList
                     error={error}
-                    loading={isLoading}
+                    loading={loading}
                     movies={movies}
                     onMovieClick={handleMovieClick}
                 />
-                {!isLoading && (
+                {!loading && (
                     <MoviePagination
                         currentPage={currentPage}
-                        isLoading={isLoading}
+                        isLoading={loading}
                         totalPages={totalPages}
                         onPageChange={handlePageChange}
                     />
