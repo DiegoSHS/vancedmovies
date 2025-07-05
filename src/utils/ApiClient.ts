@@ -8,7 +8,6 @@ export const ApiClient = axios.create({
   },
 });
 
-// Interceptor para manejo de respuestas
 ApiClient.interceptors.response.use(
   (response) => {
     return response;

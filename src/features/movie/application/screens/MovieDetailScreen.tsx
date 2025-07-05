@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { Card, CardBody, CardFooter, CardHeader } from "@heroui/card";
+import { Card } from "@heroui/card";
 import { Button } from "@heroui/button";
 import { Image } from "@heroui/image";
 import { Spinner } from "@heroui/spinner";
 
 import { Movie } from "../../domain/entities/Movie";
 import { useMovies } from "../hooks/useMovies";
-import { HybridVideoPlayer } from "../components/HybridVideoPlayer";
+import { VideoPlayer } from "../components/VideoPlayer";
 import {
     generateMagnetLinks,
 } from "../../../../utils/magnetGenerator";
@@ -17,25 +17,38 @@ import { MovieLanguage } from "../components/MovieLanguage";
 import { MovieRuntime } from "../components/MovieRuntime";
 import { MovieDownloads } from "../components/MovieDownloads";
 import { MovieYear } from "../components/MovieYear";
+import { Torrent } from "../../domain/entities/Torrent";
 
-export const InstructionsCard: React.FC = () => {
-    return (
-        <Card>
-            <CardHeader className="font-bold">
-                ¿Cómo funciona?
-            </CardHeader>
-            <CardBody>
-                <li>Un solo clic para reproducir</li>
-                <li>Calidad automática</li>
-                <li>Sin descargas necesarias</li>
-                <li>Funciona en cualquier dispositivo</li>
-                <li>Múltiples opciones</li>
-            </CardBody>
-            <CardFooter className="text-xs font-bold">
-                Selecciona automáticamente la mejor opción de streaming para tu conexión y dispositivo
-            </CardFooter>
-        </Card>
-    )
+const getBestQualityTorrent = (movie: Movie): {
+    data: Torrent | null;
+    error: string | null;
+} => {
+    if (!movie?.torrents || !Array.isArray(movie.torrents) || movie.torrents.length === 0) return {
+        data: null,
+        error: "No se encontraron torrents disponibles"
+    }
+    try {
+        const qualityOrder = ["2160p", "1080p", "720p", "480p", "360p"];
+        const sortedTorrents = movie.torrents.sort((a, b) => {
+            const aIndex = qualityOrder.findIndex((q) => a.quality.includes(q));
+            const bIndex = qualityOrder.findIndex((q) => b.quality.includes(q));
+
+            const aQuality = aIndex === -1 ? qualityOrder.length : aIndex;
+            const bQuality = bIndex === -1 ? qualityOrder.length : bIndex;
+
+            return aQuality - bQuality;
+        });
+
+        return {
+            data: sortedTorrents[0],
+            error: null
+        }
+    } catch (error) {
+        return {
+            data: null,
+            error: "Error al obtener el torrent de mejor calidad"
+        }
+    }
 }
 
 export const MovieDetailScreen: React.FC = () => {
@@ -50,7 +63,6 @@ export const MovieDetailScreen: React.FC = () => {
             if (id) {
                 try {
                     const movieData = await getMovieById(parseInt(id));
-
                     setMovie(movieData);
                 } catch {
                     // Error handled by state
@@ -61,31 +73,6 @@ export const MovieDetailScreen: React.FC = () => {
         fetchMovie();
     }, [id]);
 
-    const getBestQualityTorrent = () => {
-        if (!movie?.torrents || !Array.isArray(movie.torrents) || movie.torrents.length === 0) {
-            return null;
-        }
-
-        try {
-            // Ordenar torrents por calidad (asumiendo que mayor número = mejor calidad)
-            const qualityOrder = ["2160p", "1080p", "720p", "480p", "360p"];
-            const sortedTorrents = [...movie.torrents].sort((a, b) => {
-                const aIndex = qualityOrder.findIndex((q) => a.quality.includes(q));
-                const bIndex = qualityOrder.findIndex((q) => b.quality.includes(q));
-
-                // Si no encuentra la calidad, usar el índice más alto
-                const aQuality = aIndex === -1 ? qualityOrder.length : aIndex;
-                const bQuality = bIndex === -1 ? qualityOrder.length : bIndex;
-
-                return aQuality - bQuality;
-            });
-
-            return sortedTorrents[0];
-        } catch (error) {
-            console.warn("Error al obtener el mejor torrent:", error);
-            return null;
-        }
-    };
 
     if (loading || !movie) {
         return (
@@ -120,7 +107,7 @@ export const MovieDetailScreen: React.FC = () => {
         "/placeholder-movie.jpg";
 
     const { data: magnetLinks, error: magnetError } = generateMagnetLinks(movie.torrents, movie.title);
-
+    const { data: bestQuality, error: _ } = getBestQualityTorrent(movie)
     return (
         <div className="container mx-auto px-4 py-8 flex flex-col gap-2 items-center">
             <Button color="primary" variant="ghost" onPress={() => navigate(-1)}>
@@ -154,20 +141,20 @@ export const MovieDetailScreen: React.FC = () => {
 
             </div>
 
-            {showPlayer && movie && getBestQualityTorrent() && (
+            {showPlayer && bestQuality !== null && (
                 <div className="w-full max-w-5xl">
                     <div className="mb-4 text-center">
                         <h2 className="text-2xl font-bold mb-2">🎬 Reproductor de Video</h2>
                     </div>
-                    <HybridVideoPlayer
-                        torrent={getBestQualityTorrent()!}
+                    <VideoPlayer
+                        torrent={bestQuality}
                         movieTitle={movie.title}
                         onClose={() => setShowPlayer(false)}
                     />
                 </div>
             )}
 
-            {!showPlayer && !magnetError && getBestQualityTorrent() && (
+            {!showPlayer && !magnetError && bestQuality && (
                 <Button
                     color="primary"
                     size="lg"
@@ -182,10 +169,6 @@ export const MovieDetailScreen: React.FC = () => {
                 >
                     Ver Película
                 </Button>
-            )}
-
-            {!showPlayer && !magnetError && getBestQualityTorrent() && (
-                <InstructionsCard />
             )}
             <MovieDownloads items={magnetLinks} />
         </div >

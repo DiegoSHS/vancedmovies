@@ -11,16 +11,10 @@ export class MovieDatasourceImp extends MovieDatasource {
     limit: number = 20,
   ): Promise<ApiResult<MovieListResponse>> {
     try {
-      const response = await ApiClient.get(
-        `/list_movies.json?page=${page}&limit=${limit}`,
+      const { data } = await ApiClient.get<ApiResult<MovieListResponse>>(
+        `/list_movies.json?page=${page}&limit=${limit}&sort_by=year&order_by=desc`,
       );
-
-      return {
-        status: response.data.status,
-        status_message: response.data.status_message,
-        data: response.data.data,
-        "@meta": response.data["@meta"],
-      };
+      return data
     } catch (error: any) {
       return {
         status: "error",
@@ -31,16 +25,15 @@ export class MovieDatasourceImp extends MovieDatasource {
 
   async getMovieById(id: number): Promise<ApiResult<Movie>> {
     try {
-      const response = await ApiClient.get(
+      const { data } = await ApiClient.get(
         `/movie_details.json?movie_id=${id}`,
       );
-
       return {
-        status: response.data.status,
-        status_message: response.data.status_message,
-        data: response.data.data.movie,
-        "@meta": response.data["@meta"],
-      };
+        status_message: data.status_message,
+        status: data.status,
+        data: data.data.movie,
+        "@meta": data["@meta"],
+      }
     } catch (error: any) {
       return {
         status: "error",
@@ -94,16 +87,10 @@ export class MovieDatasourceImp extends MovieDatasource {
     limit: number = 20,
   ): Promise<ApiResult<MovieListResponse>> {
     try {
-      const response = await ApiClient.get(
+      const { data } = await ApiClient.get<ApiResult<MovieListResponse>>(
         `/list_movies.json?query_term=${encodeURIComponent(query)}&page=${page}&limit=${limit}`,
       );
-
-      return {
-        status: response.data.status,
-        status_message: response.data.status_message,
-        data: response.data.data,
-        "@meta": response.data["@meta"],
-      };
+      return data;
     } catch (error: any) {
       return {
         status: "error",
@@ -118,16 +105,10 @@ export class MovieDatasourceImp extends MovieDatasource {
     limit: number = 20,
   ): Promise<ApiResult<MovieListResponse>> {
     try {
-      const response = await ApiClient.get(
+      const { data } = await ApiClient.get<ApiResult<MovieListResponse>>(
         `/list_movies.json?genre=${encodeURIComponent(genre)}&page=${page}&limit=${limit}`,
       );
-
-      return {
-        status: response.data.status,
-        status_message: response.data.status_message,
-        data: response.data.data,
-        "@meta": response.data["@meta"],
-      };
+      return data;
     } catch (error: any) {
       return {
         status: "error",
@@ -142,16 +123,10 @@ export class MovieDatasourceImp extends MovieDatasource {
     limit: number = 20,
   ): Promise<ApiResult<MovieListResponse>> {
     try {
-      const response = await ApiClient.get(
+      const { data } = await ApiClient.get<ApiResult<MovieListResponse>>(
         `/list_movies.json?year=${year}&page=${page}&limit=${limit}`,
       );
-
-      return {
-        status: response.data.status,
-        status_message: response.data.status_message,
-        data: response.data.data,
-        "@meta": response.data["@meta"],
-      };
+      return data;
     } catch (error: any) {
       return {
         status: "error",
@@ -166,16 +141,10 @@ export class MovieDatasourceImp extends MovieDatasource {
     limit: number = 20,
   ): Promise<ApiResult<MovieListResponse>> {
     try {
-      const response = await ApiClient.get(
+      const { data } = await ApiClient.get<ApiResult<MovieListResponse>>(
         `/list_movies.json?minimum_rating=${minimum_rating}&page=${page}&limit=${limit}`,
       );
-
-      return {
-        status: response.data.status,
-        status_message: response.data.status_message,
-        data: response.data.data,
-        "@meta": response.data["@meta"],
-      };
+      return data;
     } catch (error: any) {
       return {
         status: "error",

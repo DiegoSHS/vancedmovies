@@ -15,7 +15,6 @@ interface MovieProviderProps {
 }
 
 export const MovieProvider: React.FC<MovieProviderProps> = ({ children }) => {
-  // Inyección de dependencias
   const movieDatasource = new MovieDatasourceImp();
   const movieRepository = new MovieRepositoryImp(movieDatasource);
 

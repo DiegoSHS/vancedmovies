@@ -9,6 +9,7 @@ import { Movie } from "../../domain/entities/Movie";
 import { useMovies } from "../hooks/useMovies";
 import { MovieList } from "../components/MovieList";
 import { MoviePagination } from "../components/MoviePagination";
+import { CrossIcon, SearchIcon } from "@/components/icons";
 
 export const MoviesScreen: React.FC = () => {
   const { movies, movieListData, loading, error, getMovies, searchMovies } =
@@ -65,35 +66,36 @@ export const MoviesScreen: React.FC = () => {
     <div className="container mx-auto px-4 py-8">
       <div className="flex flex-col gap-2">
         <h1 className="text-4xl text-center font-bold text-gray-900 dark:text-white mb-6">
-          BoliPeliculas
+          BOLIPeliculas
         </h1>
 
         <div className="flex gap-2">
           <Input
             isClearable
-            className="flex-1"
             isDisabled={isLoading}
-            placeholder="Buscar películas..."
-            type="text"
+            placeholder="Buscar películas"
+            type="search"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             onClear={() => setSearchQuery("")}
             onKeyDown={(e) => e.key === "Enter" && handleSearch()}
           />
           <Button
+            isIconOnly
             color="primary"
             isDisabled={!searchQuery.trim()}
             onPress={handleSearch}
           >
-            Buscar
+            <SearchIcon />
           </Button>
           <Button
+            isIconOnly
             color="secondary"
             isDisabled={!searchQuery.trim()}
             variant="bordered"
             onPress={handleClearSearch}
           >
-            Quitar búsqueda
+            <CrossIcon />
           </Button>
         </div>
 
