@@ -1,4 +1,3 @@
-import { Button } from "@heroui/button";
 import { Link } from "@heroui/link";
 import {
   Navbar as HeroUINavbar,
@@ -17,7 +16,6 @@ import { ThemeSwitch } from "@/components/theme-switch";
 import {
   TwitterIcon,
   GithubIcon,
-  HeartFilledIcon,
 } from "@/components/icons";
 import { Logo } from "@/components/icons";
 
@@ -65,18 +63,6 @@ export const Navbar = () => {
             <GithubIcon className="text-default-500" />
           </Link>
           <ThemeSwitch />
-        </NavbarItem>
-        <NavbarItem className="hidden md:flex">
-          <Button
-            isExternal
-            as={Link}
-            className="text-sm font-normal text-default-600 bg-default-100"
-            href={siteConfig.links.sponsor}
-            startContent={<HeartFilledIcon className="text-danger" />}
-            variant="flat"
-          >
-            Sponsor
-          </Button>
         </NavbarItem>
       </NavbarContent>
 
