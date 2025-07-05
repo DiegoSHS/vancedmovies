@@ -14,4 +14,3 @@ export * from "./application/components/MovieCard";
 export * from "./application/components/MovieList";
 export * from "./application/providers/MovieProvider";
 export * from "./application/screens/MoviesScreen";
-export * from "./application/hooks/useMovies";
