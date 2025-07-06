@@ -9,9 +9,10 @@ import {
 } from "@heroui/dropdown";
 import { useState } from "react";
 
+import { Torrent } from "../../domain/entities/Torrent";
+
 import { copyMagnetToClipboard, MagnetLinkResult } from "@/types";
 import { CheckIcon, CopyIcon, DownloadIcon } from "@/components/icons";
-import { Torrent } from "../../domain/entities/Torrent";
 
 export const handleOpenTorrentApp = (magnetLink: string) => {
   window.open(magnetLink, "_blank");
@@ -41,7 +42,10 @@ interface MovieDropdownItemProps {
   torrent: Torrent;
 }
 
-export function MovieDropdownItem({ magnetLink, torrent }: MovieDropdownItemProps) {
+export function MovieDropdownItem({
+  magnetLink,
+  torrent,
+}: MovieDropdownItemProps) {
   const [copied, setCopied] = useState(false);
 
   return (
@@ -60,7 +64,10 @@ export function MovieDropdownItem({ magnetLink, torrent }: MovieDropdownItemProp
   );
 }
 
-export const MovieDownloadOptions = ({ items, isDisabled }: MovieDownloadOptionsProps) => {
+export const MovieDownloadOptions = ({
+  items,
+  isDisabled,
+}: MovieDownloadOptionsProps) => {
   if (!Array.isArray(items) || items.length === 0) {
     return (
       <Button disabled color="primary" radius="full" size="sm">
@@ -85,9 +92,9 @@ export const MovieDownloadOptions = ({ items, isDisabled }: MovieDownloadOptions
         {({ magnetLink, torrent }) => (
           <DropdownItem
             key={torrent.hash}
-            classNames={{ 
+            classNames={{
               wrapper: "p-0 m-0",
-              title: "p-0 m-0"
+              title: "p-0 m-0",
             }}
           >
             <MovieDropdownItem magnetLink={magnetLink} torrent={torrent} />
