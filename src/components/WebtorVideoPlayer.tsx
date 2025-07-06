@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 
 interface WebtorVideoPlayerProps {
     magnetLink: string;
@@ -83,6 +83,6 @@ export const WTVideoPlayer: React.FC<WebtorVideoPlayerProps> = ({
     }
 
     return (
-        <div id="player" className="w-full rounded-md bg-red-500" />
+        <div id="player" className="w-full rounded-md" />
     );
 };

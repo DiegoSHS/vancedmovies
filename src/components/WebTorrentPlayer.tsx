@@ -1,8 +1,8 @@
-import React, { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Spinner } from "@heroui/spinner";
-
+import WebTorrent from 'webtorrent/dist/webtorrent.min.js'
 interface WebTorrentPlayerProps {
-  magnetURI: string;
+  magnetLink: string;
 }
 
 interface WebTorrentClient {
@@ -24,14 +24,6 @@ interface WebTorrentTorrent {
   name: string;
 }
 
-declare global {
-  interface Window {
-    WebTorrent?: {
-      new (): WebTorrentClient;
-    };
-  }
-}
-
 const VIDEO_EXTENSIONS = [
   ".mp4",
   ".webm",
@@ -42,33 +34,6 @@ const VIDEO_EXTENSIONS = [
   ".m4v",
 ];
 
-const loadWebTorrentSDK = (): Promise<void> => {
-  return new Promise<void>((resolve, reject) => {
-    if (window.WebTorrent) {
-      return resolve();
-    }
-
-    const script = document.createElement("script");
-
-    script.src = "https://cdn.jsdelivr.net/npm/webtorrent@2.6.10/index.min.js";
-    script.async = true;
-
-    script.onload = () => {
-      if (window.WebTorrent) {
-        resolve();
-      } else {
-        reject(new Error("WebTorrent SDK no disponible después de cargar"));
-      }
-    };
-
-    script.onerror = () => {
-      reject(new Error("Error al cargar WebTorrent SDK"));
-    };
-
-    document.head.appendChild(script);
-  });
-};
-
 const isVideoFile = (filename: string): boolean => {
   const lowerName = filename.toLowerCase();
 
@@ -76,7 +41,7 @@ const isVideoFile = (filename: string): boolean => {
 };
 
 export const WebTorrentPlayer: React.FC<WebTorrentPlayerProps> = ({
-  magnetURI,
+  magnetLink,
 }) => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
@@ -85,7 +50,7 @@ export const WebTorrentPlayer: React.FC<WebTorrentPlayerProps> = ({
   const clientRef = useRef<WebTorrentClient | null>(null);
 
   useEffect(() => {
-    if (!magnetURI) {
+    if (!magnetLink) {
       setError("No se proporcionó ningún magnet URI");
       setIsLoading(false);
 
@@ -97,38 +62,23 @@ export const WebTorrentPlayer: React.FC<WebTorrentPlayerProps> = ({
         setIsLoading(true);
         setError(null);
 
-        // Load WebTorrent SDK
-        await loadWebTorrentSDK();
-
-        if (!window.WebTorrent) {
-          throw new Error("WebTorrent no está disponible");
-        }
-
-        // Create WebTorrent client
-        const client = new window.WebTorrent();
+        const client: WebTorrentClient = new WebTorrent();
+        console.log("✅ WebTorrent SDK cargado correctamente");
 
         clientRef.current = client;
-
-        // Add torrent
-        client.add(magnetURI, (torrent: WebTorrentTorrent) => {
-          // Find the first video file
+        console.log("✅ Cliente WebTorrent inicializado", client);
+        client.add(magnetLink, (torrent: WebTorrentTorrent) => {
           const videoFile = torrent.files.find((file) =>
-            isVideoFile(file.name),
+            file.name.endsWith(".mp4")
           );
-
           if (!videoFile) {
             setError(
               "No se encontró ningún archivo de video compatible en el torrent",
             );
-            setIsLoading(false);
-
             return;
           }
-
-          // Try to get blob URL first (preferred method)
           videoFile.getBlobURL((err: Error | null, url?: string) => {
             if (err || !url) {
-              // Fallback to renderTo method
               if (videoRef.current) {
                 videoFile.renderTo(
                   videoRef.current,
@@ -138,36 +88,33 @@ export const WebTorrentPlayer: React.FC<WebTorrentPlayerProps> = ({
                         `Error al reproducir el archivo: ${renderErr.message}`,
                       );
                     }
-                    setIsLoading(false);
                   },
                 );
               } else {
                 setError("Elemento de video no disponible");
-                setIsLoading(false);
               }
             } else {
               setVideoUrl(url);
-              setIsLoading(false);
             }
           });
         });
       } catch (err) {
+        console.error("❌ Error al cargar WebTorrent SDK:", err);
         setError(
           err instanceof Error
             ? err.message
             : "Error desconocido al cargar WebTorrent",
         );
+      } finally {
         setIsLoading(false);
       }
-    };
+    }
 
     setupWebTorrent();
 
-    // Cleanup function
     return () => {
       if (clientRef.current) {
         clientRef.current.destroy(() => {
-          // WebTorrent client destroyed
         });
         clientRef.current = null;
       }
@@ -175,7 +122,7 @@ export const WebTorrentPlayer: React.FC<WebTorrentPlayerProps> = ({
         URL.revokeObjectURL(videoUrl);
       }
     };
-  }, [magnetURI, videoUrl]);
+  }, [magnetLink, videoUrl]);
 
   if (isLoading) {
     return (

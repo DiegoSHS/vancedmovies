@@ -7,10 +7,8 @@ import { Spinner } from "@heroui/spinner";
 
 import { Movie } from "../../domain/entities/Movie";
 import { VideoPlayer } from "../components/VideoPlayer";
-import { WebTorrentPlayer } from "../../../../components/WebTorrentPlayer";
 import {
   generateMagnetLinks,
-  generateMagnetLink,
 } from "../../../../utils/magnetGenerator";
 import { MovieGenres } from "../components/MovieGenres";
 import { MovieRating } from "../components/MovieRating";
@@ -70,9 +68,7 @@ export const MovieDetailScreen: React.FC = () => {
     state: { selectedItem: movie },
   } = useMovieContext();
   const [showPlayer, setShowPlayer] = useState(false);
-  const [playerType, setPlayerType] = useState<"default" | "webtorrent">(
-    "default",
-  );
+
 
   useEffect(() => {
     getMovieById(parseInt(id!));
@@ -154,50 +150,12 @@ export const MovieDetailScreen: React.FC = () => {
         <div className="w-full max-w-5xl">
           <div className="mb-4 text-center">
             <h2 className="text-2xl font-bold mb-2">🎬 Reproductor de Video</h2>
-            <div className="flex justify-center gap-2 mb-4">
-              <Button
-                color="primary"
-                size="sm"
-                variant={playerType === "default" ? "solid" : "bordered"}
-                onPress={() => setPlayerType("default")}
-              >
-                Reproductor por Defecto
-              </Button>
-              <Button
-                color="secondary"
-                size="sm"
-                variant={playerType === "webtorrent" ? "solid" : "bordered"}
-                onPress={() => setPlayerType("webtorrent")}
-              >
-                WebTorrent Player
-              </Button>
-            </div>
           </div>
-          {playerType === "default" ? (
-            <VideoPlayer
-              movieTitle={movie.title}
-              torrent={bestQuality}
-              onClose={() => setShowPlayer(false)}
-            />
-          ) : (
-            <div>
-              <div className="mb-4">
-                <Button
-                  size="sm"
-                  startContent="←"
-                  variant="light"
-                  onPress={() => setShowPlayer(false)}
-                >
-                  Cerrar Reproductor
-                </Button>
-              </div>
-              <WebTorrentPlayer
-                magnetURI={
-                  generateMagnetLink(bestQuality, movie.title).data || ""
-                }
-              />
-            </div>
-          )}
+          <VideoPlayer
+            movieTitle={movie.title}
+            torrent={bestQuality}
+            onClose={() => setShowPlayer(false)}
+          />
         </div>
       )}
 

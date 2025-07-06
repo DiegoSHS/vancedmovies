@@ -1,10 +1,11 @@
-import { useEffect } from "react";
-import { Card, CardBody, CardHeader } from "@heroui/card";
+import { useEffect, useState } from "react";
+import { Card, CardBody, CardFooter, CardHeader } from "@heroui/card";
 import { Button } from "@heroui/button";
 import { Torrent } from "../../domain/entities/Torrent";
 import { generateMagnetLink } from "../../../../utils/magnetGenerator";
-import { WTVideoPlayer } from "./WebtorVideoPlayer";
+import { WTVideoPlayer } from "../../../../components/WebtorVideoPlayer";
 import { CrossIcon } from "@/components/icons";
+import { WebTorrentPlayer } from "@/components/WebTorrentPlayer";
 
 interface HybridVideoPlayerProps {
     torrent: Torrent;
@@ -20,6 +21,9 @@ export const VideoPlayer: React.FC<HybridVideoPlayerProps> = ({
 }) => {
 
     const { data: magnetLink, error } = generateMagnetLink(torrent, movieTitle);
+    const [playerType, setPlayerType] = useState<"default" | "webtorrent">(
+        "default",
+    );
     useEffect(() => {
         console.log('🎬 HybridVideoPlayer - Información de la película:', {
             título: movieTitle,
@@ -57,11 +61,37 @@ export const VideoPlayer: React.FC<HybridVideoPlayerProps> = ({
                 )}
             </CardHeader>
             <CardBody className="flex flex-col gap-3">
-                <WTVideoPlayer
-                    magnetLink={magnetLink}
-                    movieTitle={movieTitle}
-                />
+                {
+                    playerType === "default" ? (
+                        <WTVideoPlayer
+                            magnetLink={magnetLink}
+                            movieTitle={movieTitle}
+                        />
+                    ) : (
+                        <WebTorrentPlayer
+                            magnetLink={magnetLink}
+                        />
+                    )
+                }
             </CardBody>
+            <CardFooter>
+                <Button
+                    color="primary"
+                    size="sm"
+                    variant={playerType === "default" ? "solid" : "bordered"}
+                    onPress={() => setPlayerType("default")}
+                >
+                    Reproductor por Defecto
+                </Button>
+                <Button
+                    color="secondary"
+                    size="sm"
+                    variant={playerType === "webtorrent" ? "solid" : "bordered"}
+                    onPress={() => setPlayerType("webtorrent")}
+                >
+                    WebTorrent Player
+                </Button>
+            </CardFooter>
         </Card >
     );
 };
