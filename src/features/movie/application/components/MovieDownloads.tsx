@@ -27,6 +27,26 @@ interface MovieDownloadOptionProps {
     isDisabled: boolean
 }
 
+export function MovieDropdownItem({ magnetLink, torrent }) {
+  const [copied, setCopied] = useState(false);
+
+  return (
+    <DropdownItem
+      onPress={() => {
+        handleMagnetCopy(magnetLink, setCopied);
+      }}
+      startContent={
+        copied ? <CheckIcon size={20} /> : <CopyIcon size={20} />
+      }
+      classNames={{ title: 'flex items-center gap-2' }}
+      key={torrent.hash}
+    >
+      <span className="font-medium text-sm">{torrent.quality}</span>
+      <span className="text-xs text-gray-600 dark:text-gray-400">{torrent.size}</span>
+    </DropdownItem>
+  );
+}
+
 export const MovieDownloadOptions = ({ items, isDisabled }: MovieDownloadOptionProps) => {
     // Verifica si items es un arreglo y tiene al menos un elemento
     const itemsValid = Array.isArray(items) && items.length > 0;
