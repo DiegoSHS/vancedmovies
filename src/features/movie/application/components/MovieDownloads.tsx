@@ -49,18 +49,21 @@ export function MovieDropdownItem({
   const [copied, setCopied] = useState(false);
 
   return (
-    <button
-      className="w-full flex items-center gap-2 text-left p-2 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
-      onClick={() => {
+    <Button
+      className="w-full justify-start"
+      color={copied ? "success" : "primary"}
+      size="sm"
+      startContent={copied ? <CheckIcon size={20} /> : <CopyIcon size={20} />}
+      variant="light"
+      onPress={() => {
         handleMagnetCopy(magnetLink, setCopied);
       }}
     >
-      {copied ? <CheckIcon size={20} /> : <CopyIcon size={20} />}
-      <span className="font-medium text-sm">{torrent.quality}</span>
-      <span className="text-xs text-gray-600 dark:text-gray-400">
-        {torrent.size}
-      </span>
-    </button>
+      <div className="flex flex-col items-start">
+        <span className="font-medium text-sm">{torrent.quality}</span>
+        <span className="text-xs opacity-60">{torrent.size}</span>
+      </div>
+    </Button>
   );
 }
 
