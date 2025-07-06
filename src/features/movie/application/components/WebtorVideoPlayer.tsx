@@ -1,39 +1,65 @@
 import React, { useState, useEffect } from 'react';
+import { CircularProgress } from '@heroui/progress';
 
 interface WebtorVideoPlayerProps {
     magnetLink: string;
     movieTitle: string;
 }
 
+interface WebtorSDK {
+    push: (config: WebtorConfig) => void;
+    length?: number;
+}
+
+interface WebtorConfig {
+    id: string;
+    magnet: string;
+    lang: string;
+    width: string;
+}
+
 declare global {
     interface Window {
-        webtor?: any;
+        webtor?: WebtorSDK;
     }
 }
 
-const loadWebtorSDK = () => {
+const loadWebtorSDK = (): Promise<void> => {
     return new Promise<void>((resolve, reject) => {
-        if (window.webtor) return resolve();
+        if (window.webtor) {
+            console.log('✅ Webtor SDK ya está disponible');
+            return resolve();
+        }
 
         const script = document.createElement('script');
         script.src = 'https://cdn.jsdelivr.net/npm/@webtor/embed-sdk-js/dist/index.min.js';
         script.async = true;
 
         script.onload = () => {
-            if (window.webtor) return resolve();
-            reject('Webtor SDK no disponible');
+            // Dar tiempo al SDK para inicializarse
+            setTimeout(() => {
+                if (window.webtor) {
+                    console.log('✅ Webtor SDK cargado desde CDN');
+                    return resolve();
+                }
+                reject(new Error('Webtor SDK no disponible después de la carga'));
+            }, 100);
         };
 
-        script.onerror = () => reject('Error al cargar Webtor SDK');
+        script.onerror = () => {
+            console.error('❌ Error al cargar Webtor SDK desde CDN');
+            reject(new Error('Error al cargar Webtor SDK'));
+        };
 
         document.head.appendChild(script);
     });
-}
+};
 
 export const WTVideoPlayer: React.FC<WebtorVideoPlayerProps> = ({
     magnetLink,
     movieTitle,
 }) => {
+    const [isLoading, setIsLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
 
     if (magnetLink === '' || !magnetLink) {
@@ -43,21 +69,38 @@ export const WTVideoPlayer: React.FC<WebtorVideoPlayerProps> = ({
             </>
         )
     }
+    
     useEffect(() => {
         const setupWebtor = async () => {
             try {
-                await loadWebtorSDK()
+                setIsLoading(true);
+                setError(null);
+                
+                console.log('🔄 Iniciando carga del SDK de Webtor...');
+                await loadWebtorSDK();
+                
                 console.log('✅ Webtor SDK cargado correctamente');
-                if (window.webtor.lenght === 0) return
+                
+                if (!window.webtor) {
+                    throw new Error('Webtor SDK no está disponible');
+                }
+                
+                // Inicializar el reproductor Webtor
                 window.webtor.push({
                     id: 'player',
                     magnet: magnetLink,
                     lang: 'es',
                     width: '100%',
                 });
+                
+                console.log('🎬 Reproductor Webtor inicializado exitosamente');
+                setIsLoading(false);
+                
             } catch (err) {
                 console.error('❌ Error cargando Webtor SDK:', err);
-                setError(err instanceof Error ? err.message : 'Error cargando Webtor');
+                const errorMessage = err instanceof Error ? err.message : 'Error cargando Webtor';
+                setError(errorMessage);
+                setIsLoading(false);
             }
         };
 
@@ -82,7 +125,23 @@ export const WTVideoPlayer: React.FC<WebtorVideoPlayerProps> = ({
         );
     }
 
+    if (isLoading) {
+        return (
+            <div className="flex flex-col items-center justify-center p-8 min-h-64">
+                <CircularProgress
+                    size="lg"
+                    color="primary"
+                    label="Cargando reproductor Webtor..."
+                    className="mb-4"
+                />
+                <p className="text-sm text-gray-600 dark:text-gray-400 text-center">
+                    Conectando con el servicio de streaming...
+                </p>
+            </div>
+        );
+    }
+
     return (
-        <div id="player" className="w-full rounded-md bg-red-500" />
+        <div id="player" className="w-full rounded-md" />
     );
 };
