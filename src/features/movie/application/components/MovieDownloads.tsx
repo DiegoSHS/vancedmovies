@@ -16,7 +16,7 @@ export async function handleMagnetCopy(magnetLink: string, setCopied: (value: bo
         setCopied(true);
         setTimeout(() => setCopied(false), 2000);
     } catch {
-        setCopied(true);
+        setCopied(false);
         setTimeout(() => setCopied(false), 2000);
     }
 };
