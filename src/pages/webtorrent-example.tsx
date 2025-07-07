@@ -38,14 +38,14 @@ export const WebTorrentPlayerExample: React.FC = () => {
             Magnet URI de ejemplo: Big Buck Bunny (película de código abierto)
           </p>
 
-          <WebTorrentPlayer magnetURI={exampleMagnetURI} />
+          <WebTorrentPlayer magnetLink={exampleMagnetURI} />
 
           <div className="mt-6 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
             <h3 className="font-semibold text-blue-800 dark:text-blue-200 mb-2">
               Código de ejemplo:
             </h3>
             <pre className="text-sm bg-gray-100 dark:bg-gray-800 p-3 rounded overflow-x-auto">
-              {`<WebTorrentPlayer magnetURI="${exampleMagnetURI}" />`}
+              {`<WebTorrentPlayer magnetLink="${exampleMagnetURI}" />`}
             </pre>
           </div>
         </div>
