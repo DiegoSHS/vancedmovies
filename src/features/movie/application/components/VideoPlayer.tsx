@@ -47,7 +47,12 @@ export const VideoPlayer: React.FC<HybridVideoPlayerProps> = ({
             <CardHeader className="flex flex-row items-center justify-between">
                 <div className="flex-1">
                     <h3 className="text-lg font-semibold">{movieTitle}</h3>
-                    <p className="text-sm text-gray-500">Ver película con webtor</p>
+                    <div className="flex gap-1">
+                        <p className="text-sm text-gray-500">
+                            Ver película con
+                        </p>
+                        <p className="text-sm text-secondary">{playerType === "default" ? "Webtor.io" : "WebTorrent"}</p>
+                    </div>
                 </div>
                 {onClose && (
                     <Button
@@ -76,7 +81,6 @@ export const VideoPlayer: React.FC<HybridVideoPlayerProps> = ({
             </CardBody>
             <CardFooter className="flex gap-2 items-center justify-center">
                 <Button
-                    color="primary"
                     size="sm"
                     variant={playerType === "default" ? "solid" : "bordered"}
                     onPress={() => setPlayerType("default")}
@@ -84,7 +88,6 @@ export const VideoPlayer: React.FC<HybridVideoPlayerProps> = ({
                     Reproductor por Defecto
                 </Button>
                 <Button
-                    color="secondary"
                     size="sm"
                     variant={playerType === "webtorrent" ? "solid" : "bordered"}
                     onPress={() => setPlayerType("webtorrent")}
