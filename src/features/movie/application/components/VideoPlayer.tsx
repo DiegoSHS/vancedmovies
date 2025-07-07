@@ -6,6 +6,7 @@ import { generateMagnetLink } from "../../../../utils/magnetGenerator";
 import { WTVideoPlayer } from "../../../../components/WebtorVideoPlayer";
 import { CrossIcon } from "@/components/icons";
 import { WebTorrentPlayer } from "@/components/WebTorrentPlayer";
+import { BackendStreamPlayer } from "@/components/BackendStreamPlayer";
 
 interface HybridVideoPlayerProps {
     torrent: Torrent;
@@ -21,7 +22,7 @@ export const VideoPlayer: React.FC<HybridVideoPlayerProps> = ({
 }) => {
 
     const { data: magnetLink, error } = generateMagnetLink(torrent, movieTitle);
-    const [playerType, setPlayerType] = useState<"default" | "webtorrent">(
+    const [playerType, setPlayerType] = useState<"default" | "webtorrent" | "backend">(
         "default",
     );
     useEffect(() => {
@@ -51,7 +52,7 @@ export const VideoPlayer: React.FC<HybridVideoPlayerProps> = ({
                         <p className="text-sm text-gray-500">
                             Ver película con
                         </p>
-                        <p className="text-sm text-secondary">{playerType === "default" ? "Webtor.io" : "WebTorrent"}</p>
+                        <p className="text-sm text-secondary">{playerType === "default" ? "Webtor.io" : playerType === "webtorrent" ? "WebTorrent" : "Backend"}</p>
                     </div>
                 </div>
                 {onClose && (
@@ -72,8 +73,12 @@ export const VideoPlayer: React.FC<HybridVideoPlayerProps> = ({
                             magnetLink={magnetLink}
                             movieTitle={movieTitle}
                         />
-                    ) : (
+                    ) : playerType === "webtorrent" ? (
                         <WebTorrentPlayer
+                            magnetLink={magnetLink}
+                        />
+                    ) : (
+                        <BackendStreamPlayer
                             magnetLink={magnetLink}
                         />
                     )
@@ -93,6 +98,13 @@ export const VideoPlayer: React.FC<HybridVideoPlayerProps> = ({
                     onPress={() => setPlayerType("webtorrent")}
                 >
                     WebTorrent Player
+                </Button>
+                <Button
+                    size="sm"
+                    variant={playerType === "backend" ? "solid" : "bordered"}
+                    onPress={() => setPlayerType("backend")}
+                >
+                    Backend Player
                 </Button>
             </CardFooter>
         </Card >

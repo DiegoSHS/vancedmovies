@@ -35,7 +35,13 @@ const getBestQualityTorrent = (
       error: "No se encontraron torrents disponibles",
     };
   try {
-    const qualityOrder = ["2160p", "1080p", "720p", "480p", "360p"];
+    // Buscar 1080p primero
+    const torrent1080 = movie.torrents.find(t => t.quality.includes("1080p"));
+    if (torrent1080) {
+      return { data: torrent1080, error: null };
+    }
+    // Si no hay 1080p, buscar el de mayor calidad
+    const qualityOrder = ["2160p", "720p", "480p", "360p"];
     const sortedTorrents = movie.torrents.sort((a, b) => {
       const aIndex = qualityOrder.findIndex((q) => a.quality.includes(q));
       const bIndex = qualityOrder.findIndex((q) => b.quality.includes(q));

@@ -56,7 +56,7 @@
     "url": "^0.11.4",
     "util": "^0.12.5",
     "vm-browserify": "^1.1.2",
-    "webtorrent": "^2.6.10"
+    "webtorrent": "1.9.7"
   },
   "devDependencies": {
     "@eslint/compat": "1.2.8",

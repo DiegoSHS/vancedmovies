@@ -34,11 +34,12 @@ const loadWebTorrentSDK = (): Promise<void> => {
       return resolve();
     }
     const script = document.createElement("script");
-    script.src = "https://cdn.jsdelivr.net/npm/webtorrent@1.9.7/webtorrent.min.js";
+    // UMD oficial recomendada por los autores para navegador
+    script.src = "https://cdn.jsdelivr.net/npm/webtorrent/webtorrent.min.js";
     script.async = true;
     script.onload = () => {
       if (window.WebTorrent) {
-        console.log("[WebTorrent] SDK cargado y window.WebTorrent disponible");
+        console.log("[WebTorrent] SDK cargado y window.WebTorrent disponible (UMD oficial)");
         return resolve();
       }
       console.error("[WebTorrent] Script cargado pero window.WebTorrent no está disponible");
@@ -50,9 +51,11 @@ const loadWebTorrentSDK = (): Promise<void> => {
       reject("Error al cargar WebTorrent SDK");
     };
     document.head.appendChild(script);
-    console.log("[WebTorrent] Script insertado en el DOM");
+    console.log("[WebTorrent] Script insertado en el DOM (UMD oficial)");
   });
 };
+
+
 
 export const WebTorrentPlayer: React.FC<WebTorrentPlayerProps> = ({
   magnetLink,
@@ -63,6 +66,54 @@ export const WebTorrentPlayer: React.FC<WebTorrentPlayerProps> = ({
   const videoRef = useRef<HTMLVideoElement>(null);
   const clientRef = useRef<any>(null);
 
+  const onTorrentReady = (torrent: any) => {
+    console.log("Evento 'ready' del torrent disparado", torrent);
+    const videoFile = torrent.files.find((file: any) => isVideoFile(file.name));
+    if (!videoFile) {
+      setError("No se encontró ningún archivo de video compatible en el torrent");
+      setIsLoading(false);
+      return;
+    }
+    videoFile.getBlobURL((err: Error | null, url?: string) => {
+      if (err || !url) {
+        if (videoRef.current) {
+          videoFile.renderTo(
+            videoRef.current,
+            (renderErr: Error | null) => {
+              if (renderErr) {
+                setError(`Error al reproducir el archivo: ${renderErr.message}`);
+              }
+              setIsLoading(false);
+            },
+          );
+        } else {
+          setError("Elemento de video no disponible");
+          setIsLoading(false);
+        }
+      } else {
+        setVideoUrl(url);
+        setIsLoading(false);
+      }
+    });
+  }
+  const onTorrentError = () => {
+    console.error("[WebTorrent] Error en el torrent");
+    setError(`Error al procesar el torrent`);
+    setIsLoading(false);
+  }
+  const onClientError = (error: string | Error) => {
+    const message = error instanceof Error ? error.message : String(error);
+    console.error("[WebTorrent] Error global del cliente:", error);
+    setError(`Error global de WebTorrent: ${message}`);
+    setIsLoading(false);
+  }
+  const onNoPeers = (announceType: "tracker" | "dht") => {
+    console.warn("[WebTorrent] No se encontraron peers para el torrent. Tipo:", announceType
+    );
+  }
+  const onWarning = (err: any) => {
+    console.warn("WebTorrent warning:", err);
+  }
   useEffect(() => {
     if (!magnetLink) {
       setError("No se proporcionó ningún magnet URI");
@@ -76,41 +127,24 @@ export const WebTorrentPlayer: React.FC<WebTorrentPlayerProps> = ({
         setError(null);
         await loadWebTorrentSDK();
         if (!window.WebTorrent) throw new Error("WebTorrent no está disponible tras cargar el script");
+        // Log versión y prototype
+        try {
+          const version = window.WebTorrent.VERSION || window.WebTorrent.prototype?.VERSION;
+          console.log("[WebTorrent] Versión detectada:", version);
+        } catch (e) {
+          console.warn("No se pudo obtener la versión de WebTorrent");
+        }
         const client = new window.WebTorrent();
         clientRef.current = client;
+        client.on('error', onClientError);
         client.add(magnetLink, (torrent: any) => {
-          if (torrent.on) {
-            torrent.on('ready', () => {
-              const videoFile = torrent.files.find((file: any) => isVideoFile(file.name));
-              if (!videoFile) {
-                setError("No se encontró ningún archivo de video compatible en el torrent");
-                setIsLoading(false);
-                return;
-              }
-              videoFile.getBlobURL((err: Error | null, url?: string) => {
-                if (err || !url) {
-                  if (videoRef.current) {
-                    videoFile.renderTo(
-                      videoRef.current,
-                      (renderErr: Error | null) => {
-                        if (renderErr) {
-                          setError(`Error al reproducir el archivo: ${renderErr.message}`);
-                        }
-                        setIsLoading(false);
-                      },
-                    );
-                  } else {
-                    setError("Elemento de video no disponible");
-                    setIsLoading(false);
-                  }
-                } else {
-                  setVideoUrl(url);
-                  setIsLoading(false);
-                }
-              });
-            });
-          }
+          console.log("Callback de client.add llamado", torrent);
+          torrent.on('noPeers', onNoPeers);
+          torrent.on('warning', onWarning);
+          torrent.on('ready', () => onTorrentReady(torrent));
+          torrent.on('error', onTorrentError);
         });
+        console.log(client)
       } catch (err) {
         console.error("[WebTorrent] Error real:", err);
         setError(
