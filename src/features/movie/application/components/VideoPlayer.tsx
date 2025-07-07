@@ -74,7 +74,7 @@ export const VideoPlayer: React.FC<HybridVideoPlayerProps> = ({
                     )
                 }
             </CardBody>
-            <CardFooter>
+            <CardFooter className="flex gap-2 items-center justify-center">
                 <Button
                     color="primary"
                     size="sm"
