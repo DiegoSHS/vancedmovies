@@ -68,6 +68,7 @@ export const WebTorrentPlayer: React.FC<WebTorrentPlayerProps> = ({
         clientRef.current = client;
         console.log("✅ Cliente WebTorrent inicializado", client);
         client.add(magnetLink, (torrent: WebTorrentTorrent) => {
+          console.log("✅ Torrent añadido:", torrent.name);
           const videoFile = torrent.files.find((file) =>
             file.name.endsWith(".mp4")
           );
