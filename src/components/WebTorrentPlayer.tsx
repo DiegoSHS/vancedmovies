@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { Spinner } from "@heroui/spinner";
-import WebTorrent from 'webtorrent/dist/webtorrent.min.js'
+import WebTorrent from 'https://esm.sh/webtorrent'
 interface WebTorrentPlayerProps {
   magnetLink: string;
 }
@@ -68,9 +68,8 @@ export const WebTorrentPlayer: React.FC<WebTorrentPlayerProps> = ({
         clientRef.current = client;
         console.log("✅ Cliente WebTorrent inicializado", client);
         client.add(magnetLink, (torrent: WebTorrentTorrent) => {
-          console.log("✅ Torrent añadido:", torrent.name);
           const videoFile = torrent.files.find((file) =>
-            file.name.endsWith(".mp4")
+            isVideoFile(file.name),
           );
           if (!videoFile) {
             setError(
