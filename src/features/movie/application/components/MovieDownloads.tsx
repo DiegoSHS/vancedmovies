@@ -91,13 +91,14 @@ export const MovieDownloadOptions = ({
           Descargar
         </Button>
       </DropdownTrigger>
-      <DropdownMenu items={items}>
+      <DropdownMenu items={items} classNames={{
+        list: 'flex gap-2'
+      }}>
         {({ magnetLink, torrent }) => (
           <DropdownItem
             key={torrent.hash}
             classNames={{
-              wrapper: "p-0 m-0",
-              title: "p-0 m-0",
+              base: "p-0 m-0",
             }}
           >
             <MovieDropdownItem magnetLink={magnetLink} torrent={torrent} />
