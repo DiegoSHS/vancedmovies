@@ -25,6 +25,10 @@ export const VideoPlayer: React.FC<HybridVideoPlayerProps> = ({
     const [playerType, setPlayerType] = useState<"default" | "webtorrent" | "backend">(
         "default",
     );
+    // Magnet link para cada tipo de reproductor
+    const magnetLinkDefault = generateMagnetLink(torrent, movieTitle).data;
+    const magnetLinkWebTorrent = generateMagnetLink(torrent, movieTitle, { browser: true }).data;
+
     useEffect(() => {
         console.log('🎬 HybridVideoPlayer - Información de la película:', {
             título: movieTitle,
@@ -52,7 +56,7 @@ export const VideoPlayer: React.FC<HybridVideoPlayerProps> = ({
                         <p className="text-sm text-gray-500">
                             Ver película con
                         </p>
-                        <p className="text-sm text-secondary">{playerType === "default" ? "Webtor.io" : playerType === "webtorrent" ? "WebTorrent" : "Backend"}</p>
+                        <p className="text-sm text-secondary">{playerType === "default" ? "Webtor.io" : playerType === "webtorrent" ? "WebTorrent" : "WebTorrent"}</p>
                     </div>
                 </div>
                 {onClose && (
@@ -70,16 +74,16 @@ export const VideoPlayer: React.FC<HybridVideoPlayerProps> = ({
                 {
                     playerType === "default" ? (
                         <WTVideoPlayer
-                            magnetLink={magnetLink}
+                            magnetLink={magnetLinkDefault}
                             movieTitle={movieTitle}
                         />
                     ) : playerType === "webtorrent" ? (
                         <WebTorrentPlayer
-                            magnetLink={magnetLink}
+                            magnetLink={magnetLinkWebTorrent}
                         />
                     ) : (
                         <BackendStreamPlayer
-                            magnetLink={magnetLink}
+                            magnetLink={magnetLinkDefault}
                         />
                     )
                 }
@@ -90,21 +94,21 @@ export const VideoPlayer: React.FC<HybridVideoPlayerProps> = ({
                     variant={playerType === "default" ? "solid" : "bordered"}
                     onPress={() => setPlayerType("default")}
                 >
-                    Reproductor por Defecto
+                    WebTor
                 </Button>
                 <Button
                     size="sm"
                     variant={playerType === "webtorrent" ? "solid" : "bordered"}
                     onPress={() => setPlayerType("webtorrent")}
                 >
-                    WebTorrent Player
+                    WebTorrent
                 </Button>
                 <Button
                     size="sm"
                     variant={playerType === "backend" ? "solid" : "bordered"}
                     onPress={() => setPlayerType("backend")}
                 >
-                    Backend Player
+                    Custom
                 </Button>
             </CardFooter>
         </Card >

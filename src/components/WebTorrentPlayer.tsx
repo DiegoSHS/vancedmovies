@@ -62,6 +62,7 @@ export const WebTorrentPlayer: React.FC<WebTorrentPlayerProps> = ({
 }) => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [warning, setWarning] = useState<string | null>(null);
   const [videoUrl, setVideoUrl] = useState<string | null>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const clientRef = useRef<any>(null);
@@ -96,9 +97,9 @@ export const WebTorrentPlayer: React.FC<WebTorrentPlayerProps> = ({
       }
     });
   }
-  const onTorrentError = () => {
-    console.error("[WebTorrent] Error en el torrent");
-    setError(`Error al procesar el torrent`);
+  const onTorrentError = (err?: any) => {
+    console.error("[WebTorrent] Error en el torrent", err);
+    setError(`Error al procesar el torrent${err && err.message ? ': ' + err.message : ''}`);
     setIsLoading(false);
   }
   const onClientError = (error: string | Error) => {
@@ -108,11 +109,14 @@ export const WebTorrentPlayer: React.FC<WebTorrentPlayerProps> = ({
     setIsLoading(false);
   }
   const onNoPeers = (announceType: "tracker" | "dht") => {
-    console.warn("[WebTorrent] No se encontraron peers para el torrent. Tipo:", announceType
-    );
+    const msg = `[WebTorrent] No se encontraron peers para el torrent. Tipo: ${announceType}`;
+    console.warn(msg);
+    setWarning("No se encontraron peers para el torrent. Intenta con otro magnet o espera más seeds.");
   }
   const onWarning = (err: any) => {
-    console.warn("WebTorrent warning:", err);
+    const msg = `WebTorrent warning: ${err?.message || err}`;
+    console.warn(msg);
+    setWarning(msg);
   }
   useEffect(() => {
     if (!magnetLink) {
@@ -127,7 +131,6 @@ export const WebTorrentPlayer: React.FC<WebTorrentPlayerProps> = ({
         setError(null);
         await loadWebTorrentSDK();
         if (!window.WebTorrent) throw new Error("WebTorrent no está disponible tras cargar el script");
-        // Log versión y prototype
         try {
           const version = window.WebTorrent.VERSION || window.WebTorrent.prototype?.VERSION;
           console.log("[WebTorrent] Versión detectada:", version);
@@ -137,13 +140,16 @@ export const WebTorrentPlayer: React.FC<WebTorrentPlayerProps> = ({
         const client = new window.WebTorrent();
         clientRef.current = client;
         client.on('error', onClientError);
-        client.add(magnetLink, (torrent: any) => {
-          console.log("Callback de client.add llamado", torrent);
-          torrent.on('noPeers', onNoPeers);
-          torrent.on('warning', onWarning);
-          torrent.on('ready', () => onTorrentReady(torrent));
-          torrent.on('error', onTorrentError);
-        });
+        const torrent = client.add(magnetLink);
+        torrent.on('noPeers', onNoPeers);
+        torrent.on('warning', onWarning);
+        torrent.on('ready', () => onTorrentReady(torrent));
+        torrent.on('error', onTorrentError);
+        console.log("[WebTorrent] Torrent añadido:", torrent);
+        client.on('torrent', (torr: any) => {
+          console.log("[WebTorrent] Evento 'torrent' disparado");
+          console.log(torr)
+        })
         console.log(client)
       } catch (err) {
         console.error("[WebTorrent] Error real:", err);
@@ -178,10 +184,10 @@ export const WebTorrentPlayer: React.FC<WebTorrentPlayerProps> = ({
     );
   }
 
-  if (error) {
+  if (error || warning) {
     return (
       <div className="flex flex-col items-center justify-center p-8 min-h-[200px] text-center">
-        <div className="text-red-600 mb-4">
+        <div className={error ? "text-red-600 mb-4" : "text-yellow-500 mb-4"}>
           <svg
             className="w-12 h-12 mx-auto mb-4"
             fill="none"
@@ -196,13 +202,15 @@ export const WebTorrentPlayer: React.FC<WebTorrentPlayerProps> = ({
             />
           </svg>
         </div>
-        <h4 className="text-lg font-semibold text-red-800 mb-2">
-          Error en el Reproductor WebTorrent
+        <h4 className="text-lg font-semibold mb-2" style={{ color: error ? '#991b1b' : '#b45309' }}>
+          {error ? 'Error en el Reproductor WebTorrent' : 'Advertencia en el Reproductor WebTorrent'}
         </h4>
-        <p className="text-red-600 mb-4">{error}</p>
-        <p className="text-sm text-red-500">
-          Verifica que el magnet URI sea válido y que contenga archivos de video
-          compatibles.
+        <p className={error ? "text-red-600 mb-4" : "text-yellow-600 mb-4"}>{error || warning}</p>
+        <p className="text-sm text-gray-500 mb-2">
+          Verifica que el magnet URI sea válido, que contenga archivos de video compatibles y que haya seeds disponibles.
+        </p>
+        <p className="text-sm text-gray-700 dark:text-gray-300 font-medium mt-2">
+          Puedes intentar reproducir con otro reproductor (Backend o Webtor) usando las opciones de selección.
         </p>
       </div>
     );
