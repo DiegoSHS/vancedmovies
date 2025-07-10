@@ -4,11 +4,14 @@ import { MovieRepositoryImp } from "../../infrastructure/repository/MovieReposit
 import { MovieDatasourceImp } from "../../infrastructure/datasources/MovieDatasource";
 import { BaseState, useBaseReducer } from "@/utils";
 import { Movie } from "../../domain/entities/Movie";
+import { generateMagnetLinksFromBackend, MagnetLinkResult } from "@/types";
 
 interface MovieContextType {
   state: BaseState<Movie>;
   getMovies: (page: number) => Promise<void>;
   getMovieById: (id: number) => Promise<void>;
+  getMoreTorrents: (movie: Movie) => Promise<MagnetLinkResult[]>;
+  cleanSelectedMovie: () => void;
   searchMovies: (page: number) => Promise<void>;
   updateQuery: (newQuery: string) => void;
   resetQuery: () => void;
@@ -78,11 +81,26 @@ export const MovieProvider: React.FC<MovieProviderProps> = ({ children }) => {
       modifyProviderState({ loading: false });
     }
   };
+  const getMoreTorrents = async (movie: Movie) => {
+    try {
+      modifyProviderState({ loading: true, error: null });
+      const data = await movieRepository.getMoreTorrents(movie);
+      if (!data?.movies) return []
+      const magnetLinks = generateMagnetLinksFromBackend(data.movies);
+      return magnetLinks
+    } catch (error) {
+      modifyProviderState({ error: "Error al obtener más torrents" });
+      return []
+    } finally {
+      modifyProviderState({ loading: false });
+    }
+  }
   const searchMovies = async (page: number) => {
     try {
       if (query.trim() === '') return;
       modifyProviderState({ loading: true, error: null });
       const { data } = await movieRepository.searchMovies(query, page);
+      modifyProviderState
       if (!data?.movies) return
       modifyProviderState({
         totalResults: data.movie_count
@@ -95,6 +113,10 @@ export const MovieProvider: React.FC<MovieProviderProps> = ({ children }) => {
       modifyProviderState({ loading: false });
     }
   };
+  const cleanSelectedMovie = () => {
+    dispatch({ type: "SELECT", payload: undefined });
+  }
+
   const updateQuery = (newQuery: string) => {
     modifyProviderState({ query: newQuery });
   };
@@ -105,6 +127,8 @@ export const MovieProvider: React.FC<MovieProviderProps> = ({ children }) => {
     state,
     getMovies,
     getMovieById,
+    getMoreTorrents,
+    cleanSelectedMovie,
     searchMovies,
     updateQuery,
     resetQuery,

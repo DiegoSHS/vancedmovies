@@ -2,10 +2,6 @@ import { Card, CardHeader, CardFooter } from "@heroui/card";
 import { Image } from "@heroui/image";
 import { Accordion, AccordionItem } from "@heroui/accordion";
 import { Divider } from "@heroui/divider";
-
-import {
-    generateMagnetLinks,
-} from "../../../../utils/magnetGenerator";
 import { Movie } from "../../domain/entities/Movie";
 import { MovieGenres } from "./MovieGenres";
 import { MovieDescription } from "./MovieDescription";
@@ -14,6 +10,7 @@ import { MovieRating } from "./MovieRating";
 import { MovieRuntime } from "./MovieRuntime";
 import { MovieLanguage } from "./MovieLanguage";
 import { MovieDownloadOptions } from "./MovieDownloads";
+import { generateMagnetLinks } from "@/types";
 
 interface MovieCardProps {
     movie: Movie;

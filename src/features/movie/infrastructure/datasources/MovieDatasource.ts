@@ -1,9 +1,11 @@
 import { Movie } from "../../domain/entities/Movie";
-import { MovieListResponse } from "../../domain/entities/MovieListResponse";
+import { MovieListResponse } from "../../domain/entities/YTSMovieListResponse";
 import { MovieDatasource } from "../../domain/datasources/MovieDatasource";
 
 import { ApiResult } from "@/utils/ApiResult";
 import { ApiClient } from "@/utils/ApiClient";
+import { MovieListResult } from "../../domain/entities/1337XMovieListResult";
+import axios from "axios";
 
 export class MovieDatasourceImp extends MovieDatasource {
   async getMovies(
@@ -150,6 +152,19 @@ export class MovieDatasourceImp extends MovieDatasource {
         status: "error",
         status_message: error.message || "Error fetching movies by rating",
       };
+    }
+  }
+  async getMoreTorrents(movie: Movie): Promise<MovieListResult> {
+    try {
+      const query = encodeURIComponent(movie.title.replace(/\s+/g, "+"));
+      const url = `${import.meta.env.VITE_FLASK_BACKEND_URL}/search?q=${query}`;
+      const { data } = await axios.get<MovieListResult>(url);
+      return data
+    }
+    catch (error: any) {
+      return {
+        movies: [],
+      }
     }
   }
 }

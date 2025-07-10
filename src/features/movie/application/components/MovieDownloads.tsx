@@ -1,5 +1,5 @@
 import { Button } from "@heroui/button";
-import { Card, CardBody, CardFooter } from "@heroui/card";
+import { Card, CardBody, CardFooter, CardHeader } from "@heroui/card";
 import { Chip } from "@heroui/chip";
 import {
   Dropdown,
@@ -13,6 +13,7 @@ import { Torrent } from "../../domain/entities/Torrent";
 
 import { copyMagnetToClipboard, MagnetLinkResult } from "@/types";
 import { CheckIcon, CopyIcon, DownloadIcon } from "@/components/icons";
+import { Link } from "@heroui/link";
 
 export const handleOpenTorrentApp = (magnetLink: string) => {
   window.open(magnetLink, "_blank");
@@ -51,7 +52,7 @@ export function MovieDropdownItem({
   return (
     <Button
       className="w-full justify-start"
-      color={copied ? "success" : "primary"}
+      color={copied ? "success" : "default"}
       size="sm"
       startContent={copied ? <CheckIcon size={20} /> : <CopyIcon size={20} />}
       variant="light"
@@ -59,9 +60,19 @@ export function MovieDropdownItem({
         handleMagnetCopy(magnetLink, setCopied);
       }}
     >
-      <div className="flex flex-col items-start">
-        <span className="font-medium text-sm">{torrent.quality}</span>
-        <span className="text-xs opacity-60">{torrent.size}</span>
+      <div className="flex items-center justify-between w-full">
+        <div className="flex gap-1 items-center">
+          <span className="font-medium text-sm">{torrent.quality}</span>
+          <span className="text-xs opacity-60">{torrent.size}</span>
+        </div>
+        <div className="flex items-center gap-1">
+          <Chip size="sm" variant="dot" color="success">
+            {torrent.seeds}
+          </Chip>
+          <Chip size="sm" variant="dot" color="primary">
+            {torrent.peers}
+          </Chip>
+        </div>
       </div>
     </Button>
   );
@@ -91,7 +102,7 @@ export const MovieDownloadOptions = ({
           Descargar
         </Button>
       </DropdownTrigger>
-      <DropdownMenu items={items} classNames={{
+      <DropdownMenu items={items.sort((prev, next) => next.torrent.seeds - prev.torrent.seeds)} classNames={{
         list: 'flex gap-2'
       }}>
         {({ magnetLink, torrent }) => (
@@ -118,23 +129,36 @@ export const MovieDownloadCard = ({
   return (
     <Card
       key={torrent.hash}
-      className="overflow-hidden hover:shadow-lg transition-shadow"
+      classNames={{
+        base: 'overflow-hidden hover:shadow-lg transition-shadow',
+        body: 'flex flex-row justify-between text-sm py-0 my-0',
+        header: 'flex justify-between items-center',
+        footer: 'flex gap-2'
+      }}
     >
-      <CardBody className="flex gap-1">
-        <div className="flex justify-between items-center">
-          <Chip color="primary" size="lg" variant="flat">
-            {torrent.quality}
-          </Chip>
-          <Chip color="secondary" size="sm" variant="flat">
-            {torrent.type}
-          </Chip>
-        </div>
-        <div className="flex justify-between text-sm">
+      <CardHeader>
+        <Chip color="primary" variant="flat">
+          {torrent.quality}
+        </Chip>
+        <Chip color="secondary" size="sm" variant="flat">
+          {torrent.type}
+        </Chip>
+      </CardHeader>
+      <CardBody>
+        <div className="flex items-center gap-1">
           <span className="text-gray-600 dark:text-gray-400">Tamaño:</span>
           <span className="font-medium">{torrent.size}</span>
         </div>
+        <div className="flex items-center gap-1">
+          <Chip size="sm" variant="dot" color="success">
+            {torrent.seeds}
+          </Chip>
+          <Chip size="sm" variant="dot" color="primary">
+            {torrent.peers}
+          </Chip>
+        </div>
       </CardBody>
-      <CardFooter className="flex gap-2">
+      <CardFooter>
         <Button
           color={copied ? "success" : "primary"}
           disabled={copied}
@@ -142,7 +166,7 @@ export const MovieDownloadCard = ({
           startContent={
             copied ? <CheckIcon size={20} /> : <CopyIcon size={20} />
           }
-          variant="solid"
+          variant="light"
           onPress={() => handleMagnetCopy(magnetLink, setCopied)}
         >
           Copiar enlace
@@ -150,8 +174,10 @@ export const MovieDownloadCard = ({
         <Button
           color="secondary"
           size="sm"
-          variant="bordered"
-          onPress={() => handleOpenTorrentApp(magnetLink)}
+          as={Link}
+          href={magnetLink}
+          variant="light"
+          isExternal={true}
         >
           Abrir torrent
         </Button>
@@ -179,9 +205,9 @@ export const MovieDownloads = ({ items }: MovieDownloadsProps) => {
         Descargas disponibles
       </h2>
       <div className="flex flex-wrap gap-2 justify-center items-center">
-        {items.map(({ torrent, magnetLink }) => (
+        {items.sort((prev, next) => next.torrent.seeds - prev.torrent.seeds).map(({ torrent, magnetLink }, index) => (
           <MovieDownloadCard
-            key={torrent.hash}
+            key={index}
             magnetLink={magnetLink}
             torrent={torrent}
           />

@@ -1,7 +1,7 @@
 // Domain exports
 export * from "./domain/entities/Movie";
 export * from "./domain/entities/Torrent";
-export * from "./domain/entities/MovieListResponse";
+export * from "./domain/entities/YTSMovieListResponse";
 export * from "./domain/repository/MovieRepository";
 export * from "./domain/datasources/MovieDatasource";
 

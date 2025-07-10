@@ -1,7 +1,7 @@
 import { useReducer } from "react";
 
 export interface Action<T> {
-    type: 'SET' | 'SELECT' | 'RESET';
+    type: 'SET' | 'SELECT' | 'RESET' | 'UPDATE_SELECTED';
     payload?: T | T[];
 }
 

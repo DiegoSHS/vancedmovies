@@ -20,7 +20,7 @@ export const BackendStreamPlayer: React.FC<BackendStreamPlayerProps> = ({ magnet
         );
     }
     // Construye la URL al backend
-    const backendUrl = `${import.meta.env.VITE_BACKEND_URL}?magnet=${encodeURIComponent(magnetLink)}`;
+    const backendUrl = `${import.meta.env.VITE_NEST_BACKEND_URL}?magnet=${encodeURIComponent(magnetLink)}`;
     console.log(`🎬 BackendStreamPlayer - URL del backend: ${backendUrl}`);
     if (videoError) {
         return (

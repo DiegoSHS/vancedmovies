@@ -1,9 +1,10 @@
 import { Movie } from "../../domain/entities/Movie";
-import { MovieListResponse } from "../../domain/entities/MovieListResponse";
+import { MovieListResponse } from "../../domain/entities/YTSMovieListResponse";
 import { MovieRepository } from "../../domain/repository/MovieRepository";
 import { MovieDatasource } from "../../domain/datasources/MovieDatasource";
 
 import { ApiResult } from "@/utils/ApiResult";
+import { MovieListResult } from "../../domain/entities/1337XMovieListResult";
 
 export class MovieRepositoryImp extends MovieRepository {
   constructor(private readonly datasource: MovieDatasource) {
@@ -66,5 +67,8 @@ export class MovieRepositoryImp extends MovieRepository {
     limit?: number,
   ): Promise<ApiResult<MovieListResponse>> {
     return await this.datasource.getMoviesByRating(minimum_rating, page, limit);
+  }
+  async getMoreTorrents(movie: Movie): Promise<MovieListResult> {
+    return await this.datasource.getMoreTorrents(movie);
   }
 }

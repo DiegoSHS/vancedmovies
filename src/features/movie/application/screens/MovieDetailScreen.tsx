@@ -1,14 +1,14 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Card } from "@heroui/card";
 import { Button } from "@heroui/button";
 import { Image } from "@heroui/image";
 import { Spinner } from "@heroui/spinner";
 
-import { Movie } from "../../domain/entities/Movie";
 import { VideoPlayer } from "../components/VideoPlayer";
 import {
   generateMagnetLinks,
+  MagnetLinkResult,
 } from "../../../../utils/magnetGenerator";
 import { MovieGenres } from "../components/MovieGenres";
 import { MovieRating } from "../components/MovieRating";
@@ -16,68 +16,69 @@ import { MovieLanguage } from "../components/MovieLanguage";
 import { MovieRuntime } from "../components/MovieRuntime";
 import { MovieDownloads } from "../components/MovieDownloads";
 import { MovieYear } from "../components/MovieYear";
-import { Torrent } from "../../domain/entities/Torrent";
 import { useMovieContext } from "../providers/MovieProvider";
 
-const getBestQualityTorrent = (
-  movie: Movie,
-): {
-  data: Torrent | null;
-  error: string | null;
-} => {
-  if (
-    !movie?.torrents ||
-    !Array.isArray(movie.torrents) ||
-    movie.torrents.length === 0
-  )
-    return {
-      data: null,
-      error: "No se encontraron torrents disponibles",
-    };
-  try {
-    // Buscar 1080p primero
-    const torrent1080 = movie.torrents.find(t => t.quality.includes("1080p"));
-    if (torrent1080) {
-      return { data: torrent1080, error: null };
-    }
-    // Si no hay 1080p, buscar el de mayor calidad
-    const qualityOrder = ["2160p", "720p", "480p", "360p"];
-    const sortedTorrents = movie.torrents.sort((a, b) => {
-      const aIndex = qualityOrder.findIndex((q) => a.quality.includes(q));
-      const bIndex = qualityOrder.findIndex((q) => b.quality.includes(q));
+// Devuelve una lista de MagnetLinkResult con el mejor torrent 1080p (más seeds) o el de mayor calidad disponible (más seeds)
+function getBestQualityMagnets(torrents: MagnetLinkResult[]): MagnetLinkResult[] {
+  if (!Array.isArray(torrents) || torrents.length === 0) return [];
 
-      const aQuality = aIndex === -1 ? qualityOrder.length : aIndex;
-      const bQuality = bIndex === -1 ? qualityOrder.length : bIndex;
-
-      return aQuality - bQuality;
-    });
-
-    return {
-      data: sortedTorrents[0],
-      error: null,
-    };
-  } catch (error) {
-    return {
-      data: null,
-      error: "Error al obtener el torrent de mejor calidad",
-    };
+  // Filtrar solo 1080p
+  const torrents1080 = torrents.filter(t => t.torrent.quality.includes("1080p"));
+  if (torrents1080.length > 0) {
+    // Ordenar por seeds descendente y devolver el primero
+    const sorted = [...torrents1080].sort((a, b) => b.torrent.seeds - a.torrent.seeds);
+    return [sorted[0]];
   }
-};
+
+  // Si no hay 1080p, buscar el de mayor calidad (según orden) y más seeds
+  const qualityOrder = ["2160p", "1080p", "720p", "480p", "360p"];
+  // Ordenar por calidad y seeds
+  const sorted = [...torrents].sort((a, b) => {
+    const aIndex = qualityOrder.findIndex(q => a.torrent.quality.includes(q));
+    const bIndex = qualityOrder.findIndex(q => b.torrent.quality.includes(q));
+    const aQuality = aIndex === -1 ? qualityOrder.length : aIndex;
+    const bQuality = bIndex === -1 ? qualityOrder.length : bIndex;
+    if (aQuality !== bQuality) return aQuality - bQuality;
+    return b.torrent.seeds - a.torrent.seeds;
+  });
+  return sorted.length > 0 ? [sorted[0]] : [];
+}
 
 export const MovieDetailScreen: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const {
     getMovieById,
+    getMoreTorrents,
+    cleanSelectedMovie,
     loading,
     error,
     state: { selectedItem: movie },
   } = useMovieContext();
   const [showPlayer, setShowPlayer] = useState(false);
-
+  const [extraMagnets, setExtraMagnets] = useState<MagnetLinkResult[]>([]);
+  const [bestQualityMagnet, setBestQualityMagnet] = useState<string>('');
 
   useEffect(() => {
-    getMovieById(parseInt(id!));
+    const fetchTorrents = async () => {
+      if (!movie) return
+      const torrents = await getMoreTorrents(movie);
+      setExtraMagnets(torrents);
+      const magnets = getBestQualityMagnets([...torrents, ...extraMagnets]);
+      setBestQualityMagnet(magnets[0].magnetLink);
+    }
+    fetchTorrents();
+  }, [movie]);
+
+  useEffect(() => {
+    if (!id) return;
+    getMovieById(parseInt(id));
+    return () => {
+      setExtraMagnets([]);
+      setBestQualityMagnet('');
+      setShowPlayer(false);
+      cleanSelectedMovie();
+    }
   }, [id]);
 
   if (loading || !movie) {
@@ -116,7 +117,8 @@ export const MovieDetailScreen: React.FC = () => {
     movie.torrents,
     movie.title,
   );
-  const { data: bestQuality, error: _ } = getBestQualityTorrent(movie);
+
+  const bestMagnets = getBestQualityMagnets([...magnetLinks, ...extraMagnets])
 
   return (
     <div className="container mx-auto px-4 py-8 flex flex-col gap-2 items-center">
@@ -152,20 +154,20 @@ export const MovieDetailScreen: React.FC = () => {
         </div>
       </div>
 
-      {showPlayer && bestQuality !== null && (
+      {showPlayer && bestMagnets.length > 0 && (
         <div className="w-full max-w-5xl">
           <div className="mb-4 text-center">
             <h2 className="text-2xl font-bold mb-2">🎬 Reproductor de Video</h2>
           </div>
           <VideoPlayer
             movieTitle={movie.title}
-            torrent={bestQuality}
+            magnetLink={bestQualityMagnet}
             onClose={() => setShowPlayer(false)}
           />
         </div>
       )}
 
-      {!showPlayer && !magnetError && bestQuality && (
+      {!showPlayer && !magnetError && bestMagnets.length > 0 && (
         <Button
           color="primary"
           radius="full"
@@ -192,7 +194,8 @@ export const MovieDetailScreen: React.FC = () => {
           Ver Película
         </Button>
       )}
-      <MovieDownloads items={magnetLinks} />
+      <MovieDownloads items={[...magnetLinks, ...extraMagnets]} />
+      {loading && <span className="text-xs text-gray-500">Buscando torrents adicionales...</span>}
     </div>
   );
 };

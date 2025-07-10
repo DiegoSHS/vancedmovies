@@ -2,7 +2,7 @@ import { Chip } from "@heroui/chip"
 
 export const MovieDescription = ({
     description,
-    maxWords = 20,
+    maxWords = 10,
     size = 'md'
 }: {
     description?: string,

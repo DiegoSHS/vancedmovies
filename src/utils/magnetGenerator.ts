@@ -1,3 +1,4 @@
+import { Movie } from "@/features/movie/domain/entities/1337XMovie";
 import { Torrent } from "../features/movie/domain/entities/Torrent";
 
 const TRACKERS = [
@@ -414,3 +415,28 @@ export const extractMagnetInfo = (magnetLink: string): {
     trackers
   };
 };
+
+
+export function generateMagnetLinksFromBackend(scrapperTorrents: Movie[]): MagnetLinkResult[] {
+  return scrapperTorrents.map(generateMagnetLinkFromBackend);
+}
+
+export const generateMagnetLinkFromBackend = (item: Movie): MagnetLinkResult => ({
+  torrent: {
+    url: '',
+    hash: item.info_hash,
+    quality: item.name.match(/(\d{3,4}p)/)?.[1] || item.type || 'HD',
+    type: item.type || '',
+    is_repack: '',
+    video_codec: '',
+    bit_depth: '',
+    audio_channels: '',
+    seeds: parseInt(item.seeders) || 0,
+    peers: parseInt(item.leechers) || 0,
+    size: item.size,
+    size_bytes: 0, // No disponible
+    date_uploaded: item.date_uploaded,
+    date_uploaded_unix: 0, // No disponible
+  },
+  magnetLink: item.magnet_link,
+})

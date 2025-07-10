@@ -1,5 +1,6 @@
+import { MovieListResult } from "../entities/1337XMovieListResult";
 import { Movie } from "../entities/Movie";
-import { MovieListResponse } from "../entities/MovieListResponse";
+import { MovieListResponse } from "../entities/YTSMovieListResponse";
 
 import { ApiResult } from "@/utils/ApiResult";
 
@@ -35,4 +36,7 @@ export abstract class MovieRepository {
     page?: number,
     limit?: number,
   ): Promise<ApiResult<MovieListResponse>>;
+  abstract getMoreTorrents(
+    movie: Movie,
+  ): Promise<MovieListResult>;
 }
