@@ -56,7 +56,6 @@ const loadWebTorrentSDK = (): Promise<void> => {
 };
 
 
-
 export const WebTorrentPlayer: React.FC<WebTorrentPlayerProps> = ({
   magnetLink,
 }) => {
@@ -236,3 +235,72 @@ export const WebTorrentPlayer: React.FC<WebTorrentPlayerProps> = ({
     </div>
   );
 };
+
+
+export const WebTorrentSWPlayer: React.FC<WebTorrentPlayerProps> = ({
+  magnetLink,
+}) => {
+  const videoRef = useRef<HTMLVideoElement>(null)
+  useEffect(() => {
+    const setupVideo = async () => {
+      await loadWebTorrentSDK();
+      const client = new window.WebTorrent();
+      // Verificar si ya hay un SW activo para el scope
+      let reg: ServiceWorkerRegistration | undefined
+      try {
+        reg = await navigator.serviceWorker.getRegistration('./');
+        if (!reg) {
+          reg = await navigator.serviceWorker.register('/sw.min.js', { scope: './' });
+        }
+      } catch (err) {
+        console.error("[WebTorrentSWPlayer] Error al registrar/obtener el Service Worker", err);
+        return;
+      }
+      const worker = reg.active || reg.waiting || reg.installing as ServiceWorker;
+      const downloadTorrent = () => {
+        client.add(magnetLink, {}, (torrent: any) => {
+          const file = torrent.files.find((f: any) => isVideoFile(f.name));
+          file.on('stream', ({ stream: _, file, req }: {
+            stream: ReadableStream,
+            file: File,
+            req: any
+          }) => {
+            if (req.destination === 'video') {
+              console.log(`Video player requested data from ${file.name}! Ranges: ${req.headers.range}`)
+            }
+          });
+          file.streamTo(videoRef);
+        });
+      };
+      function checkState(worker: ServiceWorker) {
+        return worker.state === 'activated' && client.createServer({ controller: reg }) && downloadTorrent();
+      }
+      if (worker.state === 'activated') {
+        client.createServer({ controller: reg });
+        downloadTorrent();
+      } else {
+        worker.addEventListener('statechange', ({ target }) => {
+          if ((target as ServiceWorker).state === 'activated') {
+            client.createServer({ controller: reg });
+            downloadTorrent();
+          }
+        });
+      }
+    };
+    setupVideo();
+    return () => {
+      // Aquí podrías limpiar el cliente o desregistrar el SW si lo deseas
+    };
+  }, [magnetLink]);
+  return (
+    <video ref={videoRef} controls className="w-full rounded-md">
+      <track
+        default
+        kind="captions"
+        label="Sin subtítulos disponibles"
+        srcLang="es"
+      />
+      Tu navegador no soporta el elemento de video.
+    </video>
+  );
+}

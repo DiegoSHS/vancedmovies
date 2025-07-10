@@ -3,7 +3,7 @@ import { Card, CardBody, CardFooter, CardHeader } from "@heroui/card";
 import { Button } from "@heroui/button";
 import { WTVideoPlayer } from "../../../../components/WebtorVideoPlayer";
 import { CrossIcon } from "@/components/icons";
-import { WebTorrentPlayer } from "@/components/WebTorrentPlayer";
+import { WebTorrentPlayer, WebTorrentSWPlayer } from "@/components/WebTorrentPlayer";
 import { BackendStreamPlayer } from "@/components/BackendStreamPlayer";
 
 interface HybridVideoPlayerProps {
@@ -54,7 +54,7 @@ export const VideoPlayer: React.FC<HybridVideoPlayerProps> = ({
                             movieTitle={movieTitle}
                         />
                     ) : playerType === "webtorrent" ? (
-                        <WebTorrentPlayer
+                        <WebTorrentSWPlayer
                             magnetLink={magnetLink}
                         />
                     ) : (
