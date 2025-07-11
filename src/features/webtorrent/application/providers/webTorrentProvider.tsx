@@ -64,25 +64,14 @@ export const WebTorrentProvider: React.FC<WebTorrentProviderProps> = ({ children
         }));
     }
 
-    const loadWebTorrent = async () => {
-        try {
-            updateWebTorrentState({ loading: true });
-            const WebTorrent = await webTorrentRepository.loadSDK()
-            dispatch({ type: 'SELECT', payload: new WebTorrent() });
-        } catch (error) {
-            dispatch({ type: 'RESET' })
-        } finally {
-            updateWebTorrentState({ loading: false });
-        }
-    }
     const loadServiceWorker = async () => {
         try {
             updateWebTorrentState({ loading: true });
             const registration = await registerServiceWorker();
-            if (registration && state.selectedItem) {
+            if (registration) {
                 updateWebTorrentState({ serviceWorker: registration.installing });
                 console.log("[WebTorrent] Service Worker registrado correctamente");
-                state.selectedItem.createServer({ controller: registration });
+                webTorrentRepository.createServer(registration);
                 console.log("[WebTorrent] Servidor WebTorrent creado con el Service Worker");
             } else {
                 console.warn("[WebTorrent] No se pudo registrar el Service Worker");
@@ -95,21 +84,12 @@ export const WebTorrentProvider: React.FC<WebTorrentProviderProps> = ({ children
     }
 
     const addOrGetTorrent = (magnetLink: string) => {
-        if (!state.selectedItem) return
-        const torrent = state.selectedItem.get(magnetLink)
-        if (torrent) return torrent;
-        return state.selectedItem.add(magnetLink, {}, (torrent) => {
-            console.log("[WebTorrent] Torrent añadido:", torrent);
-        })
-    }
-
-    const findVideoFile = (torrent: Torrent) => {
-        if (!torrent || !torrent.files) return
-        return torrent.files.find((file: TorrentFile) => isVideoFile(file.name))
+        const torrent = webTorrentRepository.getTorrent(magnetLink)
+        if (torrent) return torrent
+        return webTorrentRepository.addTorrent(magnetLink)
     }
 
     useEffect(() => {
-        loadWebTorrent();
         loadServiceWorker();
         return () => {
             dispatch({ type: 'RESET' });
@@ -122,7 +102,7 @@ export const WebTorrentProvider: React.FC<WebTorrentProviderProps> = ({ children
             loading: webTorrentState.loading,
             state,
             addOrGetTorrent,
-            findVideoFile
+            findVideoFile: webTorrentRepository.findFile
         }}>
             {children}
         </WebTorrentContext.Provider>

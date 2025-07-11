@@ -12,7 +12,7 @@ export const WebTorrentPlayer: React.FC<WebTorrentPlayerProps> = ({
   magnetLink,
 }) => {
   if (magnetLink === '' || !magnetLink) return <InvalidMagnetPlayer />
-  const { state: { selectedItem: client }, addOrGetTorrent, findVideoFile } = useWebTorrentContext()
+  const { addOrGetTorrent, findVideoFile } = useWebTorrentContext()
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [warning, setWarning] = useState<string | null>(null);
@@ -58,12 +58,6 @@ export const WebTorrentPlayer: React.FC<WebTorrentPlayerProps> = ({
     setError(`Error al procesar el torrent${err && err.message ? ': ' + err.message : ''}`);
     setIsLoading(false);
   }
-  const onClientError = (error: string | Error) => {
-    const message = error instanceof Error ? error.message : String(error);
-    console.error("[WebTorrent] Error global del cliente:", error);
-    setError(`Error global de WebTorrent: ${message}`);
-    setIsLoading(false);
-  }
   const onNoPeers = (announceType: "tracker" | "dht") => {
     const msg = `[WebTorrent] No se encontraron peers para el torrent. Tipo: ${announceType}`;
     console.warn(msg);
@@ -82,18 +76,13 @@ export const WebTorrentPlayer: React.FC<WebTorrentPlayerProps> = ({
     }
 
     const setupWebTorrent = async (): Promise<void> => {
-      if (!client) return
       try {
-        client.on('error', onClientError)
         const torrent = addOrGetTorrent(magnetLink);
         if (!torrent) return
         torrent.on('noPeers', onNoPeers);
         torrent.on('warning', onWarning);
         torrent.on('ready', () => onTorrentReady(torrent));
         torrent.on('error', onTorrentError);
-        client.on('torrent', () => {
-          console.log("[WebTorrent] Evento 'torrent' disparado");
-        })
       } catch (err) {
         console.error("[WebTorrent] Error real:", err);
         setError(
