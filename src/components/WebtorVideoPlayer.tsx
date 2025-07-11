@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
+import { InvalidMagnetPlayer } from './InvalidMagnetPlayer';
 
 interface WebtorVideoPlayerProps {
     magnetLink: string;
-    movieTitle: string;
 }
 
 declare global {
@@ -32,17 +32,9 @@ const loadWebtorSDK = () => {
 
 export const WTVideoPlayer: React.FC<WebtorVideoPlayerProps> = ({
     magnetLink,
-    movieTitle,
 }) => {
+    if (magnetLink === '' || !magnetLink) return <InvalidMagnetPlayer />
     const [error, setError] = useState<string | null>(null);
-
-    if (magnetLink === '' || !magnetLink) {
-        return (
-            <>
-                <h1 className="text-lg font-semibold text-red-800 mb-2">No se dió ningún magnet</h1>
-            </>
-        )
-    }
     useEffect(() => {
         const setupWebtor = async () => {
             try {
@@ -63,7 +55,7 @@ export const WTVideoPlayer: React.FC<WebtorVideoPlayerProps> = ({
 
         setupWebtor();
 
-    }, [magnetLink, movieTitle]);
+    }, [magnetLink]);
 
     if (error) {
         return (

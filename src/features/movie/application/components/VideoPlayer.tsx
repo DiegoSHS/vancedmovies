@@ -1,10 +1,10 @@
 import { useState } from "react";
 import { Card, CardBody, CardFooter, CardHeader } from "@heroui/card";
 import { Button } from "@heroui/button";
-import { WTVideoPlayer } from "../../../../components/WebtorVideoPlayer";
 import { CrossIcon } from "@/components/icons";
 import { WebTorrentPlayer, WebTorrentSWPlayer } from "@/components/WebTorrentPlayer";
 import { BackendStreamPlayer } from "@/components/BackendStreamPlayer";
+import { WTVideoPlayer } from "@/components/WebtorVideoPlayer";
 
 interface HybridVideoPlayerProps {
     magnetLink: string;
@@ -19,7 +19,7 @@ export const VideoPlayer: React.FC<HybridVideoPlayerProps> = ({
     onClose,
 }) => {
 
-    const [playerType, setPlayerType] = useState<"default" | "webtorrent" | "backend">(
+    const [playerType, setPlayerType] = useState<"default" | "webtorrent" | "worker" | "backend">(
         "default",
     );
 
@@ -51,40 +51,59 @@ export const VideoPlayer: React.FC<HybridVideoPlayerProps> = ({
                     playerType === "default" ? (
                         <WTVideoPlayer
                             magnetLink={magnetLink}
-                            movieTitle={movieTitle}
+                        />
+                    ) : playerType === "worker" ? (
+                        <WebTorrentSWPlayer
+                            magnetLink={magnetLink}
                         />
                     ) : playerType === "webtorrent" ? (
-                        <WebTorrentSWPlayer
+                        <WebTorrentPlayer
                             magnetLink={magnetLink}
                         />
                     ) : (
                         <BackendStreamPlayer
                             magnetLink={magnetLink}
                         />
+
                     )
                 }
             </CardBody>
             <CardFooter className="flex gap-2 items-center justify-center">
                 <Button
                     size="sm"
+                    isIconOnly
+                    radius="full"
                     variant={playerType === "default" ? "solid" : "bordered"}
                     onPress={() => setPlayerType("default")}
                 >
-                    WebTor
+                    1
                 </Button>
                 <Button
                     size="sm"
+                    isIconOnly
+                    radius="full"
+                    variant={playerType === "worker" ? "solid" : "bordered"}
+                    onPress={() => setPlayerType("worker")}
+                >
+                    2
+                </Button>
+                <Button
+                    size="sm"
+                    isIconOnly
+                    radius="full"
                     variant={playerType === "webtorrent" ? "solid" : "bordered"}
                     onPress={() => setPlayerType("webtorrent")}
                 >
-                    WebTorrent
+                    3
                 </Button>
                 <Button
+                    isIconOnly
                     size="sm"
+                    radius="full"
                     variant={playerType === "backend" ? "solid" : "bordered"}
                     onPress={() => setPlayerType("backend")}
                 >
-                    Custom
+                    4
                 </Button>
             </CardFooter>
         </Card >

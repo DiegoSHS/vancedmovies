@@ -1,14 +1,10 @@
 import { useState, useEffect, useRef } from "react";
 import { Spinner } from "@heroui/spinner";
+import { useWebTorrentContext } from "@/features/webtorrent/application/providers/webTorrentProvider";
+import { InvalidMagnetPlayer } from "./InvalidMagnetPlayer";
 
 interface WebTorrentPlayerProps {
   magnetLink: string;
-}
-
-declare global {
-  interface Window {
-    WebTorrent?: any;
-  }
 }
 
 const VIDEO_EXTENSIONS = [
@@ -23,42 +19,14 @@ const VIDEO_EXTENSIONS = [
 
 const isVideoFile = (filename: string): boolean => {
   const lowerName = filename.toLowerCase();
-
   return VIDEO_EXTENSIONS.some((ext) => lowerName.endsWith(ext));
 };
-
-const loadWebTorrentSDK = (): Promise<void> => {
-  return new Promise<void>((resolve, reject) => {
-    if (window.WebTorrent) {
-      console.log("[WebTorrent] SDK ya presente en window.WebTorrent");
-      return resolve();
-    }
-    const script = document.createElement("script");
-    // UMD oficial recomendada por los autores para navegador
-    script.src = "https://cdn.jsdelivr.net/npm/webtorrent/webtorrent.min.js";
-    script.async = true;
-    script.onload = () => {
-      if (window.WebTorrent) {
-        console.log("[WebTorrent] SDK cargado y window.WebTorrent disponible (UMD oficial)");
-        return resolve();
-      }
-      console.error("[WebTorrent] Script cargado pero window.WebTorrent no está disponible");
-      reject("WebTorrent SDK no disponible tras cargar el script");
-    };
-    script.onerror = (e) => {
-      console.error("[WebTorrent] Error al cargar el script", e);
-      alert("No se pudo cargar el reproductor WebTorrent. Intenta recargar la página o verifica tu conexión. Si el problema persiste, prueba con otro CDN o contacta soporte.");
-      reject("Error al cargar WebTorrent SDK");
-    };
-    document.head.appendChild(script);
-    console.log("[WebTorrent] Script insertado en el DOM (UMD oficial)");
-  });
-};
-
 
 export const WebTorrentPlayer: React.FC<WebTorrentPlayerProps> = ({
   magnetLink,
 }) => {
+  if (magnetLink === '' || !magnetLink) return <InvalidMagnetPlayer />
+  const { state: { selectedItem: client } } = useWebTorrentContext()
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [warning, setWarning] = useState<string | null>(null);
@@ -71,7 +39,7 @@ export const WebTorrentPlayer: React.FC<WebTorrentPlayerProps> = ({
     const videoFile = torrent.files.find((file: any) => isVideoFile(file.name));
     if (!videoFile) {
       setError("No se encontró ningún archivo de video compatible en el torrent");
-      setIsLoading(false);
+      setIsLoading(false)
       return;
     }
     videoFile.getBlobURL((err: Error | null, url?: string) => {
@@ -125,31 +93,18 @@ export const WebTorrentPlayer: React.FC<WebTorrentPlayerProps> = ({
     }
 
     const setupWebTorrent = async (): Promise<void> => {
+      if (!client) return
       try {
-        setIsLoading(true);
-        setError(null);
-        await loadWebTorrentSDK();
-        if (!window.WebTorrent) throw new Error("WebTorrent no está disponible tras cargar el script");
-        try {
-          const version = window.WebTorrent.VERSION || window.WebTorrent.prototype?.VERSION;
-          console.log("[WebTorrent] Versión detectada:", version);
-        } catch (e) {
-          console.warn("No se pudo obtener la versión de WebTorrent");
-        }
-        const client = new window.WebTorrent();
-        clientRef.current = client;
         client.on('error', onClientError);
         const torrent = client.add(magnetLink);
+        console.log("[WebTorrent] Torrent añadido:", torrent.infoHash);
         torrent.on('noPeers', onNoPeers);
         torrent.on('warning', onWarning);
         torrent.on('ready', () => onTorrentReady(torrent));
         torrent.on('error', onTorrentError);
-        console.log("[WebTorrent] Torrent añadido:", torrent);
-        client.on('torrent', (torr: any) => {
+        client.on('torrent', () => {
           console.log("[WebTorrent] Evento 'torrent' disparado");
-          console.log(torr)
         })
-        console.log(client)
       } catch (err) {
         console.error("[WebTorrent] Error real:", err);
         setError(
@@ -240,52 +195,25 @@ export const WebTorrentPlayer: React.FC<WebTorrentPlayerProps> = ({
 export const WebTorrentSWPlayer: React.FC<WebTorrentPlayerProps> = ({
   magnetLink,
 }) => {
+  if (magnetLink === '' || !magnetLink) return <InvalidMagnetPlayer />
+  const { state: { selectedItem: client } } = useWebTorrentContext()
   const videoRef = useRef<HTMLVideoElement>(null)
   useEffect(() => {
+    if (!client) return
     const setupVideo = async () => {
-      await loadWebTorrentSDK();
-      const client = new window.WebTorrent();
-      // Verificar si ya hay un SW activo para el scope
-      let reg: ServiceWorkerRegistration | undefined
-      try {
-        reg = await navigator.serviceWorker.getRegistration('./');
-        if (!reg) {
-          reg = await navigator.serviceWorker.register('/sw.min.js', { scope: './' });
+      client.add(magnetLink, {}, (torrent) => {
+        const file = torrent.files.find((f) => isVideoFile(f.name))
+        if (!file) {
+          console.error("No se encontró ningún archivo de video compatible en el torrent");
+          return;
         }
-      } catch (err) {
-        console.error("[WebTorrentSWPlayer] Error al registrar/obtener el Service Worker", err);
-        return;
-      }
-      const worker = reg.active || reg.waiting || reg.installing as ServiceWorker;
-      const downloadTorrent = () => {
-        client.add(magnetLink, {}, (torrent: any) => {
-          const file = torrent.files.find((f: any) => isVideoFile(f.name));
-          file.on('stream', ({ stream: _, file, req }: {
-            stream: ReadableStream,
-            file: File,
-            req: any
-          }) => {
-            if (req.destination === 'video') {
-              console.log(`Video player requested data from ${file.name}! Ranges: ${req.headers.range}`)
-            }
-          });
-          file.streamTo(videoRef);
-        });
-      };
-      function checkState(worker: ServiceWorker) {
-        return worker.state === 'activated' && client.createServer({ controller: reg }) && downloadTorrent();
-      }
-      if (worker.state === 'activated') {
-        client.createServer({ controller: reg });
-        downloadTorrent();
-      } else {
-        worker.addEventListener('statechange', ({ target }) => {
-          if ((target as ServiceWorker).state === 'activated') {
-            client.createServer({ controller: reg });
-            downloadTorrent();
+        file.on('stream', ({ stream: _, file, req }) => {
+          if (req.destination === 'video') {
+            console.log(`Video player requested data from ${file.name}! Ranges: ${req.headers.range}`)
           }
         });
-      }
+        file.streamTo(videoRef);
+      });
     };
     setupVideo();
     return () => {

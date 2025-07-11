@@ -1,8 +1,6 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { Card } from "@heroui/card";
 import { Button } from "@heroui/button";
-import { Image } from "@heroui/image";
 import { Spinner } from "@heroui/spinner";
 
 import { VideoPlayer } from "../components/VideoPlayer";
@@ -10,13 +8,9 @@ import {
   generateMagnetLinks,
   MagnetLinkResult,
 } from "../../../../utils/magnetGenerator";
-import { MovieGenres } from "../components/MovieGenres";
-import { MovieRating } from "../components/MovieRating";
-import { MovieLanguage } from "../components/MovieLanguage";
-import { MovieRuntime } from "../components/MovieRuntime";
 import { MovieDownloads } from "../components/MovieDownloads";
-import { MovieYear } from "../components/MovieYear";
 import { useMovieContext } from "../providers/MovieProvider";
+import { MovieDetailsCard } from "../components/MovieDetailsCard";
 
 // Devuelve una lista de MagnetLinkResult con el mejor torrent 1080p (más seeds) o el de mayor calidad disponible (más seeds)
 function getBestQualityMagnets(torrents: MagnetLinkResult[]): MagnetLinkResult[] {
@@ -57,15 +51,12 @@ export const MovieDetailScreen: React.FC = () => {
   } = useMovieContext();
   const [showPlayer, setShowPlayer] = useState(false);
   const [extraMagnets, setExtraMagnets] = useState<MagnetLinkResult[]>([]);
-  const [bestQualityMagnet, setBestQualityMagnet] = useState<string>('');
 
   useEffect(() => {
     const fetchTorrents = async () => {
       if (!movie) return
       const torrents = await getMoreTorrents(movie);
       setExtraMagnets(torrents);
-      const magnets = getBestQualityMagnets([...torrents, ...extraMagnets]);
-      setBestQualityMagnet(magnets[0].magnetLink);
     }
     fetchTorrents();
   }, [movie]);
@@ -75,7 +66,6 @@ export const MovieDetailScreen: React.FC = () => {
     getMovieById(parseInt(id));
     return () => {
       setExtraMagnets([]);
-      setBestQualityMagnet('');
       setShowPlayer(false);
       cleanSelectedMovie();
     }
@@ -125,46 +115,17 @@ export const MovieDetailScreen: React.FC = () => {
       <Button color="primary" variant="ghost" onPress={() => navigate(-1)}>
         ← Volver
       </Button>
-
-      <div className="flex flex-col sm:flex-row gap-8 justify-evenly items-start gap-2">
-        <Card className="w-full max-w-sm">
-          <Image
-            alt={movie.title}
-            className="w-full h-auto object-cover"
-            src={posterUrl}
-          />
-        </Card>
-
-        <div className="flex flex-col gap-2">
-          <h1 className="text-4xl font-bold mb-2">{movie.title}</h1>
-          <div className="flex flex-wrap gap-2">
-            <MovieYear showLabel={true} size="lg" year={movie.year} />
-            <MovieRating rating={movie.rating} showLabel={true} size="lg" />
-            <MovieRuntime runtime={movie.runtime} showLabel={true} size="lg" />
-            <MovieLanguage
-              language={movie.language}
-              showLabel={true}
-              size="lg"
-            />
-          </div>
-          <div>
-            <h3 className="text-lg font-semibold mb-2">Géneros</h3>
-            <MovieGenres genres={movie.genres} />
-          </div>
-        </div>
-      </div>
+      <MovieDetailsCard
+        posterUrl={posterUrl}
+        {...movie}
+      />
 
       {showPlayer && bestMagnets.length > 0 && (
-        <div className="w-full max-w-5xl">
-          <div className="mb-4 text-center">
-            <h2 className="text-2xl font-bold mb-2">🎬 Reproductor de Video</h2>
-          </div>
-          <VideoPlayer
-            movieTitle={movie.title}
-            magnetLink={bestQualityMagnet}
-            onClose={() => setShowPlayer(false)}
-          />
-        </div>
+        <VideoPlayer
+          movieTitle={movie.title}
+          magnetLink={bestMagnets[0].magnetLink}
+          onClose={() => setShowPlayer(false)}
+        />
       )}
 
       {!showPlayer && !magnetError && bestMagnets.length > 0 && (
