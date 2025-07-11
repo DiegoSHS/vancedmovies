@@ -1,6 +1,6 @@
 import { BaseState, useBaseReducer } from "@/utils";
 import { createContext, useContext, useEffect, useState } from "react";
-import { Instance, Torrent } from "webtorrent";
+import { Instance, Torrent, TorrentFile } from "webtorrent";
 import { WebTorrentDatasourceImp } from "../../infrastructure/datasources/webTorrentDatasourceImp";
 import { WebTorrentRepositoryImp } from "../../infrastructure/repository/webTorrentRepositoryImp";
 
@@ -34,6 +34,7 @@ interface WebTorrentContextType {
     loading: boolean;
     state: BaseState<Instance>;
     addOrGetTorrent: (magnetLink: string) => Torrent | undefined;
+    findVideoFile: (torrent: Torrent) => TorrentFile | undefined;
 }
 
 const WebTorrentContext = createContext<WebTorrentContextType | undefined>(undefined);
@@ -102,6 +103,11 @@ export const WebTorrentProvider: React.FC<WebTorrentProviderProps> = ({ children
         })
     }
 
+    const findVideoFile = (torrent: Torrent) => {
+        if (!torrent || !torrent.files) return
+        return torrent.files.find((file: TorrentFile) => isVideoFile(file.name))
+    }
+
     useEffect(() => {
         loadWebTorrent();
         loadServiceWorker();
@@ -115,7 +121,8 @@ export const WebTorrentProvider: React.FC<WebTorrentProviderProps> = ({ children
         <WebTorrentContext.Provider value={{
             loading: webTorrentState.loading,
             state,
-            addOrGetTorrent: addOrGetTorrent
+            addOrGetTorrent,
+            findVideoFile
         }}>
             {children}
         </WebTorrentContext.Provider>

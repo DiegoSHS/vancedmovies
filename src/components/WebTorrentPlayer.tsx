@@ -7,47 +7,36 @@ interface WebTorrentPlayerProps {
   magnetLink: string;
 }
 
-const VIDEO_EXTENSIONS = [
-  ".mp4",
-  ".webm",
-  ".ogg",
-  ".avi",
-  ".mov",
-  ".mkv",
-  ".m4v",
-];
-
-const isVideoFile = (filename: string): boolean => {
-  const lowerName = filename.toLowerCase();
-  return VIDEO_EXTENSIONS.some((ext) => lowerName.endsWith(ext));
-};
 
 export const WebTorrentPlayer: React.FC<WebTorrentPlayerProps> = ({
   magnetLink,
 }) => {
   if (magnetLink === '' || !magnetLink) return <InvalidMagnetPlayer />
-  const { state: { selectedItem: client } } = useWebTorrentContext()
+  const { state: { selectedItem: client }, addOrGetTorrent, findVideoFile } = useWebTorrentContext()
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [warning, setWarning] = useState<string | null>(null);
   const [videoUrl, setVideoUrl] = useState<string | null>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
-  const clientRef = useRef<any>(null);
 
   const onTorrentReady = (torrent: any) => {
+    const videoFile = findVideoFile(torrent);
     console.log("Evento 'ready' del torrent disparado", torrent);
-    const videoFile = torrent.files.find((file: any) => isVideoFile(file.name));
     if (!videoFile) {
       setError("No se encontró ningún archivo de video compatible en el torrent");
       setIsLoading(false)
       return;
     }
-    videoFile.getBlobURL((err: Error | null, url?: string) => {
+    videoFile.getBlobURL((err, url) => {
       if (err || !url) {
         if (videoRef.current) {
           videoFile.renderTo(
             videoRef.current,
-            (renderErr: Error | null) => {
+            {
+              controls: true,
+              autoplay: true,
+            },
+            (renderErr) => {
               if (renderErr) {
                 setError(`Error al reproducir el archivo: ${renderErr.message}`);
               }
@@ -95,9 +84,9 @@ export const WebTorrentPlayer: React.FC<WebTorrentPlayerProps> = ({
     const setupWebTorrent = async (): Promise<void> => {
       if (!client) return
       try {
-        client.on('error', onClientError);
-        const torrent = client.add(magnetLink);
-        console.log("[WebTorrent] Torrent añadido:", torrent.infoHash);
+        client.on('error', onClientError)
+        const torrent = addOrGetTorrent(magnetLink);
+        if (!torrent) return
         torrent.on('noPeers', onNoPeers);
         torrent.on('warning', onWarning);
         torrent.on('ready', () => onTorrentReady(torrent));
@@ -117,10 +106,6 @@ export const WebTorrentPlayer: React.FC<WebTorrentPlayerProps> = ({
     setupWebTorrent();
 
     return () => {
-      if (clientRef.current) {
-        clientRef.current.destroy(() => { });
-        clientRef.current = null;
-      }
       if (videoUrl) {
         URL.revokeObjectURL(videoUrl);
       }
