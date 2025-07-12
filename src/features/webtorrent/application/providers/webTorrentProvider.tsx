@@ -90,6 +90,7 @@ export const WebTorrentProvider: React.FC<WebTorrentProviderProps> = ({ children
     }
 
     useEffect(() => {
+        dispatch({ type: 'SELECT', payload: webTorrentDatasource.getClient() })
         loadServiceWorker();
         return () => {
             dispatch({ type: 'RESET' });

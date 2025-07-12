@@ -1,6 +1,12 @@
 import { BrowserServer, Instance, NodeServer, Torrent, TorrentFile, WebTorrent } from "webtorrent";
 import { WebTorrentDatasource } from "../../domain/datasources/webTorrentDatasource";
 
+declare global {
+    interface Window {
+        WebTorrent: WebTorrent;
+    }
+}
+
 export class WebTorrentDatasourceImp extends WebTorrentDatasource {
     constructor() {
         super()
@@ -18,7 +24,7 @@ export class WebTorrentDatasourceImp extends WebTorrentDatasource {
             script.onload = () => {
                 if (window.WebTorrent) {
                     console.log("[WebTorrent] SDK cargado y window.WebTorrent disponible (UMD oficial)")
-                    const WebTorrent = window.WebTorrent as WebTorrent;
+                    const WebTorrent = window.WebTorrent;
                     this.client = new WebTorrent()
                     this.client.on('error', (err) => {
                         console.error("[WebTorrent] Error en el cliente:", err);
