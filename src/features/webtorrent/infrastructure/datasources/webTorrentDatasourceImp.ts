@@ -9,11 +9,15 @@ declare global {
 
 export class WebTorrentDatasourceImp extends WebTorrentDatasource {
     constructor() {
-        super()
-        this.loadSDK()
+        super();
+        // Ya no se llama a this.loadSDK() aquí para evitar redundancia
     }
     private client: Instance = null as any;
     loadSDK(src: string = "https://cdn.jsdelivr.net/npm/webtorrent/webtorrent.min.js"): Promise<WebTorrent> {
+        // Si el cliente ya está inicializado, no recargar el SDK
+        if (this.client) {
+            return Promise.resolve(window.WebTorrent);
+        }
         return new Promise((resolve, reject) => {
             const script = document.createElement("script")
             script.src = src

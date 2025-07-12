@@ -63,7 +63,18 @@ export const WebTorrentProvider: React.FC<WebTorrentProviderProps> = ({ children
             ...newState,
         }));
     }
-
+    // Cambiar setupClient a async y esperar a que el SDK esté listo
+    const setupClient = async () => {
+        try {
+            // Esperar a que el SDK esté cargado y el cliente inicializado
+            await webTorrentDatasource.loadSDK();
+            const client = webTorrentRepository.getClient();
+            console.log("[WebTorrent] Cliente WebTorrent configurado:", client);
+            dispatch({ type: 'SELECT', payload: client });
+        } catch (error) {
+            console.error("[WebTorrent] Error al inicializar el cliente:", error);
+        }
+    }
     const loadServiceWorker = async () => {
         try {
             updateWebTorrentState({ loading: true });
@@ -90,8 +101,8 @@ export const WebTorrentProvider: React.FC<WebTorrentProviderProps> = ({ children
     }
 
     useEffect(() => {
-        dispatch({ type: 'SELECT', payload: webTorrentDatasource.getClient() })
         loadServiceWorker();
+        setupClient();
         return () => {
             dispatch({ type: 'RESET' });
             removeServiceWorker();
