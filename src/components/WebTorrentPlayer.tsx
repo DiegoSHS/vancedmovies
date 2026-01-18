@@ -186,7 +186,7 @@ export const WebTorrentSWPlayer: React.FC<WebTorrentPlayerProps> = ({
             console.log(`Video player requested data from ${file.name}! Ranges: ${req.headers.range}`)
           }
         });
-        file.streamTo(videoRef);
+        file.appendTo(videoRef.current!);
       });
     };
     setupVideo();
