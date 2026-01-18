@@ -1,5 +1,4 @@
-import { useState } from "react";
-import { Card, CardBody, CardFooter, CardHeader } from "@heroui/card";
+import { Card, CardBody, CardHeader } from "@heroui/card";
 import { Button } from "@heroui/button";
 import { CrossIcon } from "@/components/icons";
 import { BackendStreamPlayer } from "@/components/BackendStreamPlayer";
@@ -17,10 +16,6 @@ export const VideoPlayer: React.FC<HybridVideoPlayerProps> = ({
     onClose,
 }) => {
 
-    const [playerType, setPlayerType] = useState<"default" | "webtorrent" | "worker" | "backend">(
-        "default",
-    );
-
     return (
         <Card className="w-full">
             <CardHeader className="flex flex-row items-center justify-between">
@@ -28,9 +23,8 @@ export const VideoPlayer: React.FC<HybridVideoPlayerProps> = ({
                     <h3 className="text-lg font-semibold">{movieTitle}</h3>
                     <div className="flex gap-1">
                         <p className="text-sm text-gray-500">
-                            Ver película con
+                            Ver película con streaming vía torrent
                         </p>
-                        <p className="text-sm text-secondary">{playerType === "default" ? "Webtor.io" : playerType === "webtorrent" ? "WebTorrent" : "WebTorrent"}</p>
                     </div>
                 </div>
                 {onClose && (
@@ -49,44 +43,6 @@ export const VideoPlayer: React.FC<HybridVideoPlayerProps> = ({
                     magnetLink={magnetLink}
                 />
             </CardBody>
-            <CardFooter className="flex gap-2 items-center justify-center">
-                <Button
-                    size="sm"
-                    isIconOnly
-                    radius="full"
-                    variant={playerType === "default" ? "solid" : "bordered"}
-                    onPress={() => setPlayerType("default")}
-                >
-                    1
-                </Button>
-                <Button
-                    size="sm"
-                    isIconOnly
-                    radius="full"
-                    variant={playerType === "worker" ? "solid" : "bordered"}
-                    onPress={() => setPlayerType("worker")}
-                >
-                    2
-                </Button>
-                <Button
-                    size="sm"
-                    isIconOnly
-                    radius="full"
-                    variant={playerType === "webtorrent" ? "solid" : "bordered"}
-                    onPress={() => setPlayerType("webtorrent")}
-                >
-                    3
-                </Button>
-                <Button
-                    isIconOnly
-                    size="sm"
-                    radius="full"
-                    variant={playerType === "backend" ? "solid" : "bordered"}
-                    onPress={() => setPlayerType("backend")}
-                >
-                    4
-                </Button>
-            </CardFooter>
         </Card >
     );
 };
