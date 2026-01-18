@@ -2,9 +2,7 @@ import { useState } from "react";
 import { Card, CardBody, CardFooter, CardHeader } from "@heroui/card";
 import { Button } from "@heroui/button";
 import { CrossIcon } from "@/components/icons";
-import { WebTorrentPlayer, WebTorrentSWPlayer } from "@/components/WebTorrentPlayer";
 import { BackendStreamPlayer } from "@/components/BackendStreamPlayer";
-import { WTVideoPlayer } from "@/components/WebtorVideoPlayer";
 
 interface HybridVideoPlayerProps {
     magnetLink: string;
@@ -47,26 +45,9 @@ export const VideoPlayer: React.FC<HybridVideoPlayerProps> = ({
                 )}
             </CardHeader>
             <CardBody className="flex flex-col gap-3">
-                {
-                    playerType === "default" ? (
-                        <WTVideoPlayer
-                            magnetLink={magnetLink}
-                        />
-                    ) : playerType === "worker" ? (
-                        <WebTorrentSWPlayer
-                            magnetLink={magnetLink}
-                        />
-                    ) : playerType === "webtorrent" ? (
-                        <WebTorrentPlayer
-                            magnetLink={magnetLink}
-                        />
-                    ) : (
-                        <BackendStreamPlayer
-                            magnetLink={magnetLink}
-                        />
-
-                    )
-                }
+                <BackendStreamPlayer
+                    magnetLink={magnetLink}
+                />
             </CardBody>
             <CardFooter className="flex gap-2 items-center justify-center">
                 <Button
