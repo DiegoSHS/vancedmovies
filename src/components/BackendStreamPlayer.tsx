@@ -10,7 +10,6 @@ export const BackendStreamPlayer: React.FC<BackendStreamPlayerProps> = ({ magnet
 
     if (magnetLink === '' || !magnetLink) return <InvalidMagnetPlayer />
     const backendUrl = `${import.meta.env.VITE_NEST_BACKEND_URL}?magnet=${encodeURIComponent(magnetLink)}`;
-    console.log(`🎬 BackendStreamPlayer - URL del backend: ${backendUrl}`);
     if (videoError) {
         return (
             <div className="flex flex-col items-center justify-center p-8 min-h-[200px] text-center">
@@ -46,7 +45,7 @@ export const BackendStreamPlayer: React.FC<BackendStreamPlayerProps> = ({ magnet
                 Tu navegador no soporta el elemento de video.
             </video>
             <div className="text-xs text-gray-500 mt-2 text-center">
-                Servido vía backend propio en <code>localhost:3000</code>
+                Gracias por escogernos
             </div>
         </div>
     );
