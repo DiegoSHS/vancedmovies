@@ -49,14 +49,17 @@ export const MovieDetailScreen: React.FC = () => {
     error,
     state: { selectedItem: movie },
   } = useMovieContext();
+  const [loadingExtra, setLoadingExtra] = useState(false);
   const [showPlayer, setShowPlayer] = useState(false);
   const [extraMagnets, setExtraMagnets] = useState<MagnetLinkResult[]>([]);
 
   useEffect(() => {
     const fetchTorrents = async () => {
       if (!movie) return
+      setLoadingExtra(true);
       const torrents = await getMoreTorrents(movie);
       setExtraMagnets(torrents);
+      setLoadingExtra(false);
     }
     fetchTorrents();
   }, [movie]);
@@ -155,8 +158,17 @@ export const MovieDetailScreen: React.FC = () => {
           Ver Película
         </Button>
       )}
-      <MovieDownloads items={[...magnetLinks, ...extraMagnets]} />
-      {loading && <span className="text-xs text-gray-500">Buscando torrents adicionales...</span>}
+      <MovieDownloads items={magnetLinks} />
+      Descargas extra:
+      {
+        loadingExtra && (
+          <div className="flex items-center gap-2 mt-4">
+            <Spinner size="sm" />
+            <span className="text-xs text-gray-500">Buscando torrents adicionales...</span>
+          </div>
+        )
+      }
+      <MovieDownloads items={extraMagnets} />
     </div>
   );
 };

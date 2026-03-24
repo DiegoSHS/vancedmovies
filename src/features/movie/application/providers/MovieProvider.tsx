@@ -83,7 +83,7 @@ export const MovieProvider: React.FC<MovieProviderProps> = ({ children }) => {
   };
   const getMoreTorrents = async (movie: Movie) => {
     try {
-      modifyProviderState({ loading: true, error: null });
+      modifyProviderState({ error: null });
       const data = await movieRepository.getMoreTorrents(movie);
       if (!data?.movies) return []
       const magnetLinks = generateMagnetLinksFromBackend(data.movies);
@@ -91,8 +91,6 @@ export const MovieProvider: React.FC<MovieProviderProps> = ({ children }) => {
     } catch (error) {
       modifyProviderState({ error: "Error al obtener más torrents" });
       return []
-    } finally {
-      modifyProviderState({ loading: false });
     }
   }
   const searchMovies = async (page: number) => {
