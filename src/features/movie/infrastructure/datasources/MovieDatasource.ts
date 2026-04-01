@@ -5,7 +5,6 @@ import { MovieDatasource } from "../../domain/datasources/MovieDatasource";
 import { ApiResult } from "@/utils/ApiResult";
 import { ApiClient } from "@/utils/ApiClient";
 import { MovieListResult } from "../../domain/entities/1337XMovieListResult";
-import axios from "axios";
 
 export class MovieDatasourceImp extends MovieDatasource {
   async getMovies(
@@ -13,10 +12,10 @@ export class MovieDatasourceImp extends MovieDatasource {
     limit: number = 20,
   ): Promise<ApiResult<MovieListResponse>> {
     try {
-      const { data } = await ApiClient.get<ApiResult<MovieListResponse>>(
+      const response = await ApiClient.get<ApiResult<MovieListResponse>>(
         `/list_movies.json?page=${page}&limit=${limit}&sort_by=year&order_by=desc`,
       );
-      return data
+      return response;
     } catch (error: any) {
       return {
         status: "error",
@@ -27,15 +26,16 @@ export class MovieDatasourceImp extends MovieDatasource {
 
   async getMovieById(id: number): Promise<ApiResult<Movie>> {
     try {
-      const { data } = await ApiClient.get(
+      const response = await ApiClient.get<any>(
         `/movie_details.json?movie_id=${id}`,
       );
+
       return {
-        status_message: data.status_message,
-        status: data.status,
-        data: data.data.movie,
-        "@meta": data["@meta"],
-      }
+        status_message: response.status_message,
+        status: response.status,
+        data: response.data?.movie,
+        "@meta": response["@meta"],
+      };
     } catch (error: any) {
       return {
         status: "error",
@@ -89,10 +89,10 @@ export class MovieDatasourceImp extends MovieDatasource {
     limit: number = 20,
   ): Promise<ApiResult<MovieListResponse>> {
     try {
-      const { data } = await ApiClient.get<ApiResult<MovieListResponse>>(
+      const response = await ApiClient.get<ApiResult<MovieListResponse>>(
         `/list_movies.json?query_term=${encodeURIComponent(query)}&page=${page}&limit=${limit}`,
       );
-      return data;
+      return response;
     } catch (error: any) {
       return {
         status: "error",
@@ -107,10 +107,10 @@ export class MovieDatasourceImp extends MovieDatasource {
     limit: number = 20,
   ): Promise<ApiResult<MovieListResponse>> {
     try {
-      const { data } = await ApiClient.get<ApiResult<MovieListResponse>>(
+      const response = await ApiClient.get<ApiResult<MovieListResponse>>(
         `/list_movies.json?genre=${encodeURIComponent(genre)}&page=${page}&limit=${limit}`,
       );
-      return data;
+      return response;
     } catch (error: any) {
       return {
         status: "error",
@@ -125,10 +125,10 @@ export class MovieDatasourceImp extends MovieDatasource {
     limit: number = 20,
   ): Promise<ApiResult<MovieListResponse>> {
     try {
-      const { data } = await ApiClient.get<ApiResult<MovieListResponse>>(
+      const response = await ApiClient.get<ApiResult<MovieListResponse>>(
         `/list_movies.json?year=${year}&page=${page}&limit=${limit}`,
       );
-      return data;
+      return response;
     } catch (error: any) {
       return {
         status: "error",
@@ -143,10 +143,10 @@ export class MovieDatasourceImp extends MovieDatasource {
     limit: number = 20,
   ): Promise<ApiResult<MovieListResponse>> {
     try {
-      const { data } = await ApiClient.get<ApiResult<MovieListResponse>>(
+      const response = await ApiClient.get<ApiResult<MovieListResponse>>(
         `/list_movies.json?minimum_rating=${minimum_rating}&page=${page}&limit=${limit}`,
       );
-      return data;
+      return response;
     } catch (error: any) {
       return {
         status: "error",
@@ -156,15 +156,13 @@ export class MovieDatasourceImp extends MovieDatasource {
   }
   async getMoreTorrents(movie: Movie): Promise<MovieListResult> {
     try {
-      const query = encodeURIComponent(movie.title.replace(/\s+/g, "+"));
-      const url = `${import.meta.env.VITE_FLASK_BACKEND_URL}/search?q=${query}`;
-      const { data } = await axios.get<MovieListResult>(url);
-      return data
-    }
-    catch (error: any) {
+      const url = `${import.meta.env.VITE_FLASK_BACKEND_URL}/search?q=${encodeURIComponent(movie.title)}`;
+      const data = await ApiClient.get<MovieListResult>(url);
+      return data;
+    } catch (error: any) {
       return {
         movies: [],
-      }
+      };
     }
   }
 }
