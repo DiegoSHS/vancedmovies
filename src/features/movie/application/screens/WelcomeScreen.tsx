@@ -48,10 +48,7 @@ export const WelcomeScreen: React.FC = () => {
 
             <div className="max-w-2xl text-center mx-auto">
                 <Button
-                    radius="full"
-                    color="danger"
-                    size="lg"
-                    variant="shadow"
+                    className="bg-danger text-white px-8 py-3 rounded-full text-lg font-semibold shadow-lg"
                     onPress={() => navigate("/page/1")}
                 >
                     🚀 Explorar Películas

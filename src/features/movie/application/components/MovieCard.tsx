@@ -62,9 +62,7 @@ export const MovieCard: React.FC<MovieCardProps> = ({ movie, onClick }) => {
                 </h4>
             </Card.Header>
             <Card.Footer className="absolute bottom-0 z-10 p-2 flex flex-col gap-2 bg-default-50 border-t-3 border-solid border-default-200">
-                <Accordion.Root
-                    type="single"
-                    collapsible
+                <Accordion
                     className="text-sm"
                 >
                     <Accordion.Item id={`details-${movie.id}`}>
@@ -91,7 +89,7 @@ export const MovieCard: React.FC<MovieCardProps> = ({ movie, onClick }) => {
                             />
                         </Accordion.Panel>
                     </Accordion.Item>
-                </Accordion.Root>
+                </Accordion>
             </Card.Footer>
         </Card >
     );

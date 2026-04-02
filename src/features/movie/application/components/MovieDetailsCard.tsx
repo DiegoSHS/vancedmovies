@@ -29,7 +29,7 @@ export const MovieDetailsCard = ({ genres, language, rating, runtime, posterUrl,
             <div className="flex flex-col gap-2">
                 <h1 className="text-4xl font-bold mb-2">{title}</h1>
                 <div className="flex flex-wrap gap-2">
-                    <MovieYear showLabel={true} size="lg" year={year} />
+                    <MovieYear showLabel={true} year={year} />
                     <MovieRating rating={rating} showLabel={true} size="lg" />
                     <MovieRuntime runtime={runtime} showLabel={true} size="lg" />
                     <MovieLanguage

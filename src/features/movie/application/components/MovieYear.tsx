@@ -1,6 +1,6 @@
 import { Chip } from "@heroui/react";
 
-export const MovieYear = ({ year, size = 'md', showLabel = false }: { year: number, size?: 'md' | 'lg' | 'sm', showLabel?: boolean }) => {
+export const MovieYear = ({ year, showLabel = false }: { year: number, showLabel?: boolean }) => {
     return (
         <div className="flex flex-col gap-1 items-center justify-center">
             {showLabel && (

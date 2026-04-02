@@ -59,10 +59,10 @@ export const Navbar = () => {
 
         {/* Desktop Right Content */}
         <div className="hidden sm:flex items-center gap-4">
-          <Link isExternal href={siteConfig.links.twitter} title="Twitter" className="text-default-500 hover:text-primary">
+          <Link target="_blank" rel="noopener noreferrer" href={siteConfig.links.twitter} className="text-default-500 hover:text-primary">
             <TwitterIcon className="w-5 h-5" />
           </Link>
-          <Link isExternal href={siteConfig.links.github} title="GitHub" className="text-default-500 hover:text-primary">
+          <Link target="_blank" rel="noopener noreferrer" href={siteConfig.links.github} className="text-default-500 hover:text-primary">
             <GithubIcon className="w-5 h-5" />
           </Link>
           <ThemeSwitch />
@@ -70,7 +70,7 @@ export const Navbar = () => {
 
         {/* Mobile Right Content */}
         <div className="flex md:hidden items-center gap-2">
-          <Link isExternal href={siteConfig.links.github} className="text-default-500 hover:text-primary">
+          <Link target="_blank" rel="noopener noreferrer" href={siteConfig.links.github} className="text-default-500 hover:text-primary">
             <GithubIcon className="w-5 h-5" />
           </Link>
           <ThemeSwitch />

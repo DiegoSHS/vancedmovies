@@ -16,10 +16,9 @@ export default function DefaultLayout({
       <footer className="w-full flex items-center justify-center py-3">
         <Link
           target="_blank"
-          rel="noopener"
+          rel="noopener noreferrer"
           className="flex items-center gap-1 text-current"
           href="https://x.com/SuperHackSystem"
-          title="VancedSHS Twitter"
         >
           <span className="text-default-600">Powered by</span>
           <p className="text-primary">VancedSHS</p>

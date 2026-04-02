@@ -2,7 +2,6 @@ import { StarIcon } from "@/components/icons";
 import { Chip } from "@heroui/react"
 
 export const MovieRating = ({ rating, size = 'md', showLabel = false }: { rating: number, size?: 'md' | 'lg' | 'sm', showLabel?: boolean }) => {
-    const ratingColor = rating >= 7 ? "success" : rating >= 5 ? "warning" : "danger";
     const ratingContent = rating ? rating.toFixed(1) : "N/A";
     const iconSize = size === 'lg' ? 24 : size === 'sm' ? 16 : 20;
     return (
