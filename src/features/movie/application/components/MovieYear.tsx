@@ -7,6 +7,8 @@ export const MovieYear = ({ year, showLabel = false }: { year: number, showLabel
                 <h3 className="text-lg font-semibold">Año</h3>
             )}
             <Chip.Root
+                color="default"
+                size="lg"
                 className="inline-flex items-center px-2 py-1"
             >
                 <Chip.Label>{year}</Chip.Label>

@@ -1,13 +1,7 @@
 import { Movie } from "../../domain/entities/Movie";
-import { MovieGenres } from "./MovieGenres";
-import { MovieDescription } from "./MovieDescription";
-import { MovieInfo } from "./MovieInfo";
-import { MovieRating } from "./MovieRating";
-import { MovieRuntime } from "./MovieRuntime";
-import { MovieLanguage } from "./MovieLanguage";
 import { MovieDownloadOptions } from "./MovieDownloads";
 import { generateMagnetLinks } from "@/types";
-import { Card, Separator, Accordion } from "@heroui/react";
+import { Card } from "@heroui/react";
 
 interface MovieCardProps {
     movie: Movie;
@@ -41,14 +35,9 @@ export const MovieCard: React.FC<MovieCardProps> = ({ movie, onClick }) => {
 
     return (
         <Card
-            className="relative overflow-hidden max-w-xs shadow-md"
+            className="relative overflow-hidden max-w-xs shadow-md cursor-pointer p-0"
             onClick={handleClick}
         >
-            <img
-                alt={movie.title}
-                className="z-0 w-full h-full object-cover"
-                src={posterUrl}
-            />
             <div style={overlayStyle} />
             <Card.Header
                 className="absolute top-0 left-0 right-0 h-32 flex-col items-start justify-start p-4"
@@ -61,35 +50,16 @@ export const MovieCard: React.FC<MovieCardProps> = ({ movie, onClick }) => {
                     {movie.year}
                 </h4>
             </Card.Header>
-            <Card.Footer className="absolute bottom-0 z-10 p-2 flex flex-col gap-2 bg-default-50 border-t-3 border-solid border-default-200">
-                <Accordion
-                    className="text-sm"
-                >
-                    <Accordion.Item id={`details-${movie.id}`}>
-                        <Accordion.Heading>
-                            <Accordion.Trigger>Detalles</Accordion.Trigger>
-                        </Accordion.Heading>
-                        <Accordion.Panel>
-                            <div className="flex flex-wrap gap-2">
-                                <MovieInfo type="year" value={movie.year} />
-                                <MovieRating rating={movie.rating} />
-                                <MovieRuntime runtime={movie.runtime} />
-                                <MovieLanguage language={movie.language} />
-                                <MovieGenres genres={movie.genres} show={2} />
-                            </div>
-                            {movie.description_full && (
-                                <div className="mb-2">
-                                    <MovieDescription description={movie.description_full} maxWords={10} />
-                                </div>
-                            )}
-                            <Separator />
-                            <MovieDownloadOptions
-                                items={magnetLinks}
-                                isDisabled={!Array.isArray(movie.torrents) || magnetError !== null || magnetLinks.length === 0}
-                            />
-                        </Accordion.Panel>
-                    </Accordion.Item>
-                </Accordion>
+            <img
+                alt={movie.title}
+                className="rounded-xl z-0 w-full h-full object-cover"
+                src={posterUrl}
+            />
+            <Card.Footer className="absolute bottom-3 right-3 flex flex-col gap-2">
+                <MovieDownloadOptions
+                    items={magnetLinks}
+                    isDisabled={!Array.isArray(movie.torrents) || magnetError !== null || magnetLinks.length === 0}
+                />
             </Card.Footer>
         </Card >
     );

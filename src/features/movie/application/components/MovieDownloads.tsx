@@ -41,30 +41,26 @@ export function MovieDropdownItem({
   const [copied, setCopied] = useState(false);
 
   return (
-    <Button
-      className={`w-full justify-start px-2 py-1 ${copied ? "bg-success text-white" : ""}`}
-      onPress={() => {
+    <div className={`flex items-center justify-between w-full w-full`}
+      onClick={() => {
         handleMagnetCopy(magnetLink, setCopied);
-      }}
-    >
-      <div className="flex items-center justify-between w-full">
-        <div className="flex gap-2 items-center">
-          {copied ? <CheckIcon size={20} /> : <CopyIcon size={20} />}
-          <div className="flex gap-1 items-center">
-            <span className="font-medium text-sm">{torrent.quality}</span>
-            <span className="text-xs opacity-60">{torrent.size}</span>
-          </div>
-        </div>
-        <div className="flex items-center gap-1">
-          <Chip.Root className="inline-flex items-center px-2 py-1">
-            <Chip.Label>{torrent.seeds}</Chip.Label>
-          </Chip.Root>
-          <Chip.Root className="inline-flex items-center px-2 py-1">
-            <Chip.Label>{torrent.peers}</Chip.Label>
-          </Chip.Root>
+      }}>
+      <div className="flex gap-2 items-center">
+        {copied ? <CheckIcon size={20} /> : <CopyIcon size={20} />}
+        <div className="flex gap-1 items-center">
+          <span className="font-medium text-sm">{torrent.quality}</span>
+          <span className="text-xs opacity-60">{torrent.size}</span>
         </div>
       </div>
-    </Button>
+      <div className="flex items-center gap-1">
+        <Chip className="inline-flex items-center px-2 py-1">
+          <Chip.Label>{torrent.seeds}</Chip.Label>
+        </Chip>
+        <Chip className="inline-flex items-center px-2 py-1">
+          <Chip.Label>{torrent.peers}</Chip.Label>
+        </Chip>
+      </div>
+    </div>
   );
 }
 
@@ -82,29 +78,27 @@ export const MovieDownloadOptions = ({
 
   return (
     <Dropdown.Root>
-      <Dropdown.Trigger>
-        <Button
-          isDisabled={isDisabled}
-          className="rounded-full px-3 py-1 text-sm"
-        >
-          <DownloadIcon size={20} />
-          Descargar
-        </Button>
-      </Dropdown.Trigger>
+      <Button
+        isDisabled={isDisabled}
+      >
+        <DownloadIcon size={20} />
+        Descargar
+      </Button>
+      <Dropdown.Popover>
 
-      <Dropdown.Menu className="flex flex-col gap-2 p-0">
-        {items
-          .slice()
-          .sort((prev, next) => next.torrent.seeds - prev.torrent.seeds)
-          .map(({ magnetLink, torrent }) => (
-            <Dropdown.Item
-              key={torrent.hash}
-              className="p-0 m-0"
-            >
-              <MovieDropdownItem magnetLink={magnetLink} torrent={torrent} />
-            </Dropdown.Item>
-          ))}
-      </Dropdown.Menu>
+        <Dropdown.Menu className="flex flex-col gap-2 ">
+          {items
+            .slice()
+            .sort((prev, next) => next.torrent.seeds - prev.torrent.seeds)
+            .map(({ magnetLink, torrent }) => (
+              <Dropdown.Item
+                id={torrent.hash}
+              >
+                <MovieDropdownItem magnetLink={magnetLink} torrent={torrent} />
+              </Dropdown.Item>
+            ))}
+        </Dropdown.Menu>
+      </Dropdown.Popover>
     </Dropdown.Root>
   );
 };
@@ -120,13 +114,13 @@ export const MovieDownloadCard = ({
       key={torrent.hash}
       className="overflow-hidden hover:shadow-lg transition-shadow"
     >
-      <Card.Header>
-        <Chip.Root className="inline-flex items-center px-2 py-1">
+      <Card.Header className="flex flex-row gap-2 justify-between">
+        <Chip className="inline-flex items-center px-2 py-1">
           <Chip.Label>{torrent.quality}</Chip.Label>
-        </Chip.Root>
-        <Chip.Root className="inline-flex items-center px-2 py-1 text-sm">
+        </Chip>
+        <Chip className="inline-flex items-center px-2 py-1 text-sm">
           <Chip.Label>{torrent.type}</Chip.Label>
-        </Chip.Root>
+        </Chip>
       </Card.Header>
       <Card.Content className="flex flex-col gap-2 text-sm py-0 my-0">
         <div className="flex items-center gap-1">
@@ -134,29 +128,31 @@ export const MovieDownloadCard = ({
           <span className="font-medium">{torrent.size}</span>
         </div>
         <div className="flex items-center gap-1">
-          <Chip.Root className="inline-flex items-center px-2 py-1">
-            <Chip.Label>{torrent.seeds}</Chip.Label>
-          </Chip.Root>
-          <Chip.Root className="inline-flex items-center px-2 py-1">
-            <Chip.Label>{torrent.peers}</Chip.Label>
-          </Chip.Root>
+          <Chip color="success" className="inline-flex items-center px-2 py-1">
+            <Chip.Label>Seeders: {torrent.seeds}</Chip.Label>
+          </Chip>
+          <Chip color="success" className="inline-flex items-center px-2 py-1">
+            <Chip.Label>Peers: {torrent.peers}</Chip.Label>
+          </Chip>
         </div>
       </Card.Content>
-      <Card.Footer>
-        <button
-          disabled={copied}
-          className={copied ? "bg-success text-white px-3 py-1 rounded" : "px-3 py-1 rounded"}
+      <Card.Footer className="flex gap-2">
+        <Button
+          size="sm"
+          isDisabled={copied}
+          className={`${copied ? "bg-success" : "bg-primary "}`}
           onClick={() => handleMagnetCopy(magnetLink, setCopied)}
         >
           {copied ? <><CheckIcon size={20} /> Copiado</> : <><CopyIcon size={20} /> Copiar enlace</>}
-        </button>
+        </Button>
         <a
-          className="bg-slate-700 text-white px-3 py-1 rounded"
           href={magnetLink}
           target="_blank"
           rel="noreferrer noopener"
         >
-          Abrir torrent
+          <Button size="sm" variant="secondary">
+            Abrir torrent
+          </Button>
         </a>
       </Card.Footer>
     </Card>

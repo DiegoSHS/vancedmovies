@@ -132,7 +132,8 @@ export const MovieDetailScreen: React.FC = () => {
 
       {!showPlayer && !magnetError && bestMagnets.length > 0 && (
         <Button
-          className="bg-blue-600 text-white rounded-full px-4 py-2 flex items-center gap-2"
+          size="lg"
+          className="px-4 py-2 flex items-center gap-2"
           onPress={() => setShowPlayer(true)}
         >
           <svg

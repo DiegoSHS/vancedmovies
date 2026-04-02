@@ -1,5 +1,4 @@
-import { Card, Button } from "@heroui/react";
-import { CrossIcon } from "@/components/icons";
+import { Card, CloseButton } from "@heroui/react";
 import { BackendStreamPlayer } from "@/components/BackendStreamPlayer";
 
 interface HybridVideoPlayerProps {
@@ -27,21 +26,17 @@ export const VideoPlayer: React.FC<HybridVideoPlayerProps> = ({
                     </div>
                 </div>
                 {onClose && (
-                    <Button
-                        isIconOnly
+                    <CloseButton
                         className="hover:bg-default-100"
                         onPress={onClose}
                         aria-label="Cerrar reproductor"
                     >
-                        <CrossIcon size={24} />
-                    </Button>
+                    </CloseButton>
                 )}
             </Card.Header>
-            <div className="flex flex-col gap-3 p-4">
-                <BackendStreamPlayer
-                    magnetLink={magnetLink}
-                />
-            </div>
+            <BackendStreamPlayer
+                magnetLink={magnetLink}
+            />
         </Card>
     );
 };
