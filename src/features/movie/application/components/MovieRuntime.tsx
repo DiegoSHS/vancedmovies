@@ -30,7 +30,7 @@ export const MovieRuntime: React.FC<MovieRuntimeProps> = ({
                 <h3 className="text-lg font-semibold">Duración</h3>
             )}
             <Chip.Root
-                className="inline-flex items-center gap-1 px-2 py-1"
+                className="inline-flex items-center px-2 py-1 rounded-full gap-1"
             >
                 <TimeIcon size={iconSize} />
                 <Chip.Label>{finalDisplay}</Chip.Label>

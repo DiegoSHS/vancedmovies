@@ -16,16 +16,33 @@ export const MovieLanguage: React.FC<MovieLanguageProps> = ({
     const iconSize = size === 'lg' ? 20 : size === 'sm' ? 14 : 16;
 
     return (
-        <div className="flex flex-col gap-1 items-center justify-center">
-            {showLabel && (
-                <h3 className="text-lg font-semibold">Idioma</h3>
-            )}
-            <Chip.Root
-                className="inline-flex items-center gap-1 px-2 py-1"
-            >
-                <LanguageIcon size={iconSize} />
-                <Chip.Label>{displayLanguage}</Chip.Label>
-            </Chip.Root>
-        </div>
+        <BaseMovieChip label="Idioma" showLabel={showLabel} content={displayLanguage}>
+            <LanguageIcon size={iconSize} />
+        </BaseMovieChip>
     );
 };
+
+interface BaseChipProps {
+    children: React.ReactNode,
+    label: string,
+    content: string | number,
+    showLabel: boolean
+}
+
+export const BaseMovieChip = ({ children, label, content, showLabel }: BaseChipProps) => {
+    return (
+        <div className="flex flex-col gap-1 items-center justify-center">
+            {showLabel && (
+                <h3 className="text-lg font-semibold">{label}</h3>
+            )}
+            <Chip.Root
+                className="inline-flex items-center px-2 py-1 rounded-full gap-1"
+            >
+                {children}
+                <Chip.Label>
+                    {content}
+                </Chip.Label>
+            </Chip.Root>
+        </div>
+    )
+}

@@ -2,6 +2,7 @@ import { Movie } from "../../domain/entities/Movie";
 import { MovieDownloadOptions } from "./MovieDownloads";
 import { generateMagnetLinks } from "@/types";
 import { Card } from "@heroui/react";
+import { MovieRuntime } from "./MovieRuntime";
 
 interface MovieCardProps {
     movie: Movie;
@@ -55,7 +56,8 @@ export const MovieCard: React.FC<MovieCardProps> = ({ movie, onClick }) => {
                 className="rounded-xl z-0 w-full h-full object-cover"
                 src={posterUrl}
             />
-            <Card.Footer className="absolute bottom-3 right-3 flex flex-col gap-2">
+            <Card.Footer className="absolute w-full justify-between bottom-3 flex flex-row gap-2 px-3">
+                <MovieRuntime runtime={movie.runtime} size="sm" showLabel={false} />
                 <MovieDownloadOptions
                     items={magnetLinks}
                     isDisabled={!Array.isArray(movie.torrents) || magnetError !== null || magnetLinks.length === 0}

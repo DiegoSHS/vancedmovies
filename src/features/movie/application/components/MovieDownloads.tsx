@@ -79,6 +79,7 @@ export const MovieDownloadOptions = ({
   return (
     <Dropdown.Root>
       <Button
+        size="sm"
         isDisabled={isDisabled}
       >
         <DownloadIcon size={20} />
