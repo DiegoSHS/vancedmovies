@@ -1,4 +1,4 @@
-import { Chip } from "@heroui/chip";
+import { Chip } from "@heroui/react";
 
 export const MovieYear = ({ year, size = 'md', showLabel = false }: { year: number, size?: 'md' | 'lg' | 'sm', showLabel?: boolean }) => {
     return (
@@ -6,12 +6,11 @@ export const MovieYear = ({ year, size = 'md', showLabel = false }: { year: numb
             {showLabel && (
                 <h3 className="text-lg font-semibold">Año</h3>
             )}
-            <Chip
-                size={size}
-                variant="flat"
+            <Chip.Root
+                className="inline-flex items-center px-2 py-1"
             >
-                {year}
-            </Chip>
+                <Chip.Label>{year}</Chip.Label>
+            </Chip.Root>
         </div>
     )
 }

@@ -1,4 +1,4 @@
-import { Chip } from "@heroui/chip"
+import { Chip } from "@heroui/react"
 
 export const MovieGenres = ({ genres, show = 0 }: { genres: string[], show?: number }) => {
     if (!genres || !Array.isArray(genres)) {
@@ -15,13 +15,12 @@ export const MovieGenres = ({ genres, show = 0 }: { genres: string[], show?: num
     return (
         <div className="flex flex-wrap gap-2">
             {genresToShow.map((genre, index) => (
-                <Chip
+                <Chip.Root
                     key={`${genre}-${index}`}
-                    color="secondary"
-                    variant="flat"
+                    className="inline-flex items-center px-2 py-1"
                 >
-                    {genre}
-                </Chip>
+                    <Chip.Label>{genre}</Chip.Label>
+                </Chip.Root>
             ))}
         </div>
     )

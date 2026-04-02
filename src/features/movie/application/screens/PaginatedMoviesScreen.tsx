@@ -1,19 +1,19 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { Input } from "@heroui/input";
-import { Button } from "@heroui/button";
+import { Input } from "@heroui/react";
+import { Button } from "@heroui/react";
 import { Movie } from "../../domain/entities/Movie";
 import { MovieList } from "../components/MovieList";
 import { MoviePagination } from "../components/MoviePagination";
 import { CrossIcon, SearchIcon } from "@/components/icons";
 import { useMovieContext } from "../providers/MovieProvider";
-import { Chip } from "@heroui/chip";
-import { Progress } from "@heroui/progress";
+import { Chip } from "@heroui/react";
 
 export const LoadMoviesInfo = () => (
     <>
-        <Chip variant="shadow" color="primary" >Cargando</Chip>
-        <Progress size="md" isIndeterminate />
+        <span className="inline-flex items-center rounded px-2 py-1 bg-default-100 text-default-800">
+            Cargando
+        </span>
     </>
 )
 
@@ -79,29 +79,24 @@ export const PaginatedMoviesScreen: React.FC = () => {
 
                 <div className="flex gap-2">
                     <Input
-                        isClearable
-                        isDisabled={loading}
+                        disabled={loading}
                         placeholder="Buscar películas"
                         type="search"
                         value={query}
                         onChange={(e) => updateQuery(e.target.value)}
-                        onClear={resetQuery}
                         onKeyDown={(e) => e.key === "Enter" && handleSearch()}
                     />
                     <Button
-                        isIconOnly
-                        color="primary"
                         isDisabled={!query.trim()}
                         onPress={handleSearch}
+                        className="px-3 py-1"
                     >
                         <SearchIcon />
                     </Button>
                     <Button
-                        isIconOnly
-                        color="secondary"
                         isDisabled={!query.trim()}
-                        variant="bordered"
                         onPress={handleClearSearch}
+                        className="px-3 py-1"
                     >
                         <CrossIcon />
                     </Button>
@@ -112,13 +107,12 @@ export const PaginatedMoviesScreen: React.FC = () => {
                         <LoadMoviesInfo />
                     ) : (
                         <>
-                            <Chip>
-                                Mostrando {movies.length} de {totalResults}{" "}
-                                películas
-                            </Chip>
-                            <Chip>
-                                Página {currentPage} de {totalPages}
-                            </Chip>
+                            <Chip.Root className="inline-flex items-center rounded bg-default-100 px-2 py-1">
+                                <Chip.Label>Mostrando {movies.length} de {totalResults} películas</Chip.Label>
+                            </Chip.Root>
+                            <Chip.Root className="inline-flex items-center rounded bg-default-100 px-2 py-1">
+                                <Chip.Label>Página {currentPage} de {totalPages}</Chip.Label>
+                            </Chip.Root>
                         </>
 
                     )}

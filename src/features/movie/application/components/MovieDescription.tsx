@@ -1,23 +1,21 @@
-import { Chip } from "@heroui/chip"
+import { Chip } from "@heroui/react";
 
 export const MovieDescription = ({
     description,
     maxWords = 10,
-    size = 'md'
 }: {
     description?: string,
     maxWords?: number,
-    size?: 'md' | 'lg' | 'sm'
 }) => {
     // Validar si la descripción existe y no está vacía
     if (!description || description.trim() === '') {
         return (
             <Chip
-                color="default"
-                size={size}
-                variant="flat"
+                className="px-2 py-1"
             >
-                Sin descripción
+                <Chip.Label>
+                    Sin descripción
+                </Chip.Label>
             </Chip>
         );
     }
@@ -30,12 +28,12 @@ export const MovieDescription = ({
 
     return (
         <Chip
-            color="primary"
-            size={size}
-            variant="flat"
+            className="px-2 py-1"
             title={description} // Tooltip con la descripción completa
         >
-            {truncatedDescription}
+            <Chip.Label>
+                {truncatedDescription}
+            </Chip.Label>
         </Chip>
     );
 }

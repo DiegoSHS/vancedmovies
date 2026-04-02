@@ -1,4 +1,4 @@
-import { Chip } from "@heroui/chip";
+import { Chip } from "@heroui/react";
 import { LanguageIcon } from "@/components/icons";
 
 interface MovieLanguageProps {
@@ -20,14 +20,12 @@ export const MovieLanguage: React.FC<MovieLanguageProps> = ({
             {showLabel && (
                 <h3 className="text-lg font-semibold">Idioma</h3>
             )}
-            <Chip
-                color="primary"
-                size={size}
-                variant="flat"
-                startContent={<LanguageIcon size={iconSize} />}
+            <Chip.Root
+                className="inline-flex items-center gap-1 px-2 py-1"
             >
-                {displayLanguage}
-            </Chip>
+                <LanguageIcon size={iconSize} />
+                <Chip.Label>{displayLanguage}</Chip.Label>
+            </Chip.Root>
         </div>
     );
 };

@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { Button } from "@heroui/button";
-import { Spinner } from "@heroui/spinner";
+import { Button, Spinner } from "@heroui/react";
 
 import { VideoPlayer } from "../components/VideoPlayer";
 import {
@@ -77,7 +76,7 @@ export const MovieDetailScreen: React.FC = () => {
   if (loading || !movie) {
     return (
       <div className="flex justify-center items-center min-h-screen">
-        <Spinner size="lg" />
+        <Spinner className="w-12 h-12" />
       </div>
     );
   }
@@ -92,7 +91,7 @@ export const MovieDetailScreen: React.FC = () => {
           <p className="text-gray-600 dark:text-gray-300 mb-6">
             {error || "No se encontró la película"}
           </p>
-          <Button color="primary" onPress={() => navigate("/")}>
+          <Button className="bg-blue-600 text-white px-4 py-2 rounded" onPress={() => navigate("/")}>
             Volver al inicio
           </Button>
         </div>
@@ -115,7 +114,7 @@ export const MovieDetailScreen: React.FC = () => {
 
   return (
     <div className="container mx-auto px-4 py-8 flex flex-col gap-2 items-center">
-      <Button color="primary" variant="ghost" onPress={() => navigate(-1)}>
+      <Button className="bg-transparent text-blue-600 hover:text-blue-800 px-3 py-1" onPress={() => navigate(-1)}>
         ← Volver
       </Button>
       <MovieDetailsCard
@@ -133,28 +132,23 @@ export const MovieDetailScreen: React.FC = () => {
 
       {!showPlayer && !magnetError && bestMagnets.length > 0 && (
         <Button
-          color="primary"
-          radius="full"
-          size="lg"
-          startContent={
-            <svg
-              className="size-6"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth={1.5}
-              viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M5.25 5.653c0-.856.917-1.398 1.667-.986l11.54 6.347a1.125 1.125 0 0 1 0 1.972l-11.54 6.347a1.125 1.125 0 0 1-1.667-.986V5.653Z"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-          }
-          variant="solid"
+          className="bg-blue-600 text-white rounded-full px-4 py-2 flex items-center gap-2"
           onPress={() => setShowPlayer(true)}
         >
+          <svg
+            className="h-6 w-6"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth={1.5}
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M5.25 5.653c0-.856.917-1.398 1.667-.986l11.54 6.347a1.125 1.125 0 0 1 0 1.972l-11.54 6.347a1.125 1.125 0 0 1-1.667-.986V5.653Z"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
           Ver Película
         </Button>
       )}
@@ -163,7 +157,7 @@ export const MovieDetailScreen: React.FC = () => {
       {
         loadingExtra && (
           <div className="flex items-center gap-2 mt-4">
-            <Spinner size="sm" />
+            <Spinner className="w-4 h-4" />
             <span className="text-xs text-gray-500">Buscando torrents adicionales...</span>
           </div>
         )

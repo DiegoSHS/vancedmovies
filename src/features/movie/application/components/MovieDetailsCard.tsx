@@ -1,10 +1,9 @@
-import { Card } from "@heroui/card"
-import { Image } from "@heroui/image"
 import { MovieYear } from "./MovieYear"
 import { MovieRating } from "./MovieRating"
 import { MovieRuntime } from "./MovieRuntime"
 import { MovieLanguage } from "./MovieLanguage"
 import { MovieGenres } from "./MovieGenres"
+import { Card } from "@heroui/react"
 
 interface MovieDetailsCardProps {
     genres: string[]
@@ -20,7 +19,7 @@ export const MovieDetailsCard = ({ genres, language, rating, runtime, posterUrl,
     return (
         <div className="flex flex-col sm:flex-row gap-8 justify-evenly items-start gap-2">
             <Card className="w-full max-w-sm">
-                <Image
+                <img
                     alt={title}
                     className="w-full h-auto object-cover"
                     src={posterUrl}

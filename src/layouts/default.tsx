@@ -1,4 +1,4 @@
-import { Link } from "@heroui/link";
+import { Link } from "@heroui/react";
 
 import { Navbar } from "@/components/navbar";
 
@@ -15,10 +15,11 @@ export default function DefaultLayout({
       </main>
       <footer className="w-full flex items-center justify-center py-3">
         <Link
-          isExternal
+          target="_blank"
+          rel="noopener"
           className="flex items-center gap-1 text-current"
           href="https://x.com/SuperHackSystem"
-          title="heroui.com homepage"
+          title="VancedSHS Twitter"
         >
           <span className="text-default-600">Powered by</span>
           <p className="text-primary">VancedSHS</p>

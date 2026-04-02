@@ -1,5 +1,4 @@
-import { Card, CardBody, CardHeader } from "@heroui/card";
-import { Button } from "@heroui/button";
+import { Card, CardBody, CardHeader, Button } from "@heroui/react";
 import { CrossIcon } from "@/components/icons";
 import { BackendStreamPlayer } from "@/components/BackendStreamPlayer";
 

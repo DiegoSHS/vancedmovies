@@ -1,5 +1,5 @@
 import React from "react";
-import { Pagination } from "@heroui/pagination";
+import { Pagination } from "@heroui/react";
 
 interface MoviePaginationProps {
   currentPage: number;
