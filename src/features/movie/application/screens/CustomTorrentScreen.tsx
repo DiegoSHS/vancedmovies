@@ -1,6 +1,6 @@
 import { Button, Input } from "@heroui/react"
 import { VideoPlayer } from "../components/VideoPlayer"
-import { ChangeEvent, ClipboardEvent, useState } from "react"
+import { ChangeEvent, useState } from "react"
 
 export const CustomTorrentScreen: React.FC = () => {
     /**
