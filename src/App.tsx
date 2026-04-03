@@ -4,6 +4,7 @@ import IndexPage from "@/pages/index";
 import AboutPage from "@/pages/about";
 import MovieDetailPage from "@/pages/movie";
 import MoviesPage from "./pages/movies";
+import Torrent from "./pages/torrent";
 
 function App() {
   return (
@@ -13,6 +14,7 @@ function App() {
       <Route element={<MoviesPage />} path="/page/:id" />
       <Route element={<MovieDetailPage />} path="/movie/:id" />
       <Route element={<AboutPage />} path="/about" />
+      <Route element={<Torrent />} path="/torrent" />
     </Routes>
   );
 }

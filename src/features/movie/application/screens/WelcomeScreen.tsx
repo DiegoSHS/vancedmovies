@@ -1,7 +1,6 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import { Button } from "@heroui/button";
-import { Chip } from "@heroui/chip";
+import { Button, Chip } from "@heroui/react";
 
 
 export const WelcomeScreen: React.FC = () => {
@@ -21,9 +20,9 @@ export const WelcomeScreen: React.FC = () => {
                 <p className="text-xl md:text-2xl text-gray-600 dark:text-gray-300 mb-6">
                     Tu plataforma de streaming favorita
                 </p>
-                <Chip size="lg" color="primary" variant="flat">
-                    🎉 Completamente Gratuito
-                </Chip>
+                <Chip.Root size="lg" color="default" variant="primary" className="inline-flex items-center">
+                    <Chip.Label>🎉 Completamente Gratuito</Chip.Label>
+                </Chip.Root>
             </div>
 
             <div className="max-w-4xl mx-auto text-center">
@@ -49,10 +48,7 @@ export const WelcomeScreen: React.FC = () => {
 
             <div className="max-w-2xl text-center mx-auto">
                 <Button
-                    radius="full"
-                    color="danger"
-                    size="lg"
-                    variant="shadow"
+                    className="bg-danger text-white px-8 py-3 rounded-full text-lg font-semibold shadow-lg"
                     onPress={() => navigate("/page/1")}
                 >
                     🚀 Explorar Películas

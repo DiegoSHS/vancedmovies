@@ -1,16 +1,8 @@
-import { Card, CardHeader, CardFooter } from "@heroui/card";
-import { Image } from "@heroui/image";
-import { Accordion, AccordionItem } from "@heroui/accordion";
-import { Divider } from "@heroui/divider";
 import { Movie } from "../../domain/entities/Movie";
-import { MovieGenres } from "./MovieGenres";
-import { MovieDescription } from "./MovieDescription";
-import { MovieInfo } from "./MovieInfo";
-import { MovieRating } from "./MovieRating";
-import { MovieRuntime } from "./MovieRuntime";
-import { MovieLanguage } from "./MovieLanguage";
 import { MovieDownloadOptions } from "./MovieDownloads";
 import { generateMagnetLinks } from "@/types";
+import { Card } from "@heroui/react";
+import { MovieRuntime } from "./MovieRuntime";
 
 interface MovieCardProps {
     movie: Movie;
@@ -44,19 +36,11 @@ export const MovieCard: React.FC<MovieCardProps> = ({ movie, onClick }) => {
 
     return (
         <Card
-            isPressable
-            className="relative overflow-hidden max-w-xs"
-            shadow="lg"
-            onPress={handleClick}
+            className="relative overflow-hidden max-w-xs shadow-md cursor-pointer p-0"
+            onClick={handleClick}
         >
-            <Image
-                removeWrapper
-                alt={movie.title}
-                className="z-0 w-full h-full object-cover"
-                src={posterUrl}
-            />
             <div style={overlayStyle} />
-            <CardHeader
+            <Card.Header
                 className="absolute top-0 left-0 right-0 h-32 flex-col items-start justify-start p-4"
                 style={{ zIndex: 10 }}
             >
@@ -66,36 +50,19 @@ export const MovieCard: React.FC<MovieCardProps> = ({ movie, onClick }) => {
                 <h4 className="text-white font-medium text-xl relative z-10 drop-shadow-lg">
                     {movie.year}
                 </h4>
-            </CardHeader>
-            <CardFooter className="absolute bottom-0 z-10 p-2 flex flex-col gap-2 bg-default-50 border-t-3 border-solid border-default-200">
-                <Accordion isCompact>
-                    <AccordionItem
-                        key={`${movie.id}-details`}
-                        classNames={{
-                            content: "flex flex-col gap-2",
-                        }}
-                        title="Detalles"
-                    >
-                        <div className="flex flex-wrap gap-2">
-                            <MovieInfo type="year" value={movie.year} />
-                            <MovieRating rating={movie.rating} />
-                            <MovieRuntime runtime={movie.runtime} />
-                            <MovieLanguage language={movie.language} />
-                            <MovieGenres genres={movie.genres} show={2} />
-                        </div>
-                        {movie.description_full && (
-                            <div className="mb-2">
-                                <MovieDescription description={movie.description_full} maxWords={10} size="sm" />
-                            </div>
-                        )}
-                        <Divider />
-                        <MovieDownloadOptions
-                            items={magnetLinks}
-                            isDisabled={!Array.isArray(movie.torrents) || magnetError !== null || magnetLinks.length === 0}
-                        />
-                    </AccordionItem>
-                </Accordion>
-            </CardFooter>
+            </Card.Header>
+            <img
+                alt={movie.title}
+                className="rounded-xl z-0 w-full h-full object-cover"
+                src={posterUrl}
+            />
+            <Card.Footer className="absolute w-full justify-between bottom-3 flex flex-row gap-2 px-3">
+                <MovieRuntime runtime={movie.runtime} size="sm" showLabel={false} />
+                <MovieDownloadOptions
+                    items={magnetLinks}
+                    isDisabled={!Array.isArray(movie.torrents) || magnetError !== null || magnetLinks.length === 0}
+                />
+            </Card.Footer>
         </Card >
     );
 };

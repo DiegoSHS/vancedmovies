@@ -1,5 +1,5 @@
 import React from "react";
-import { Pagination } from "@heroui/pagination";
+import { Pagination } from "@heroui/react";
 
 interface MoviePaginationProps {
   currentPage: number;
@@ -19,16 +19,33 @@ export const MoviePagination: React.FC<MoviePaginationProps> = ({
   }
 
   return (
-    <div className="flex justify-center">
-      <Pagination
-        isCompact
-        showControls
-        color="primary"
-        isDisabled={isLoading}
-        page={currentPage || 1}
-        total={totalPages || 1}
-        onChange={onPageChange}
-      />
-    </div>
+    <Pagination>
+      <Pagination.Summary>
+        Página {currentPage} de {totalPages}
+      </Pagination.Summary>
+      <Pagination.Content>
+        <Pagination.Item>
+          <Pagination.Previous
+            isDisabled={currentPage <= 1 || isLoading}
+            onPress={() => currentPage > 1 && onPageChange(currentPage - 1)}
+          >
+            <Pagination.PreviousIcon>
+            </Pagination.PreviousIcon>
+            Anterior
+          </Pagination.Previous>
+        </Pagination.Item>
+        <Pagination.Item>
+          <Pagination.Next
+            onPress={() => currentPage < totalPages && onPageChange(currentPage + 1)}
+            isDisabled={currentPage >= totalPages || isLoading}
+          >
+            Siguiente
+            <Pagination.NextIcon>
+            </Pagination.NextIcon>
+          </Pagination.Next>
+        </Pagination.Item>
+      </Pagination.Content>
+    </Pagination>
+
   );
 };

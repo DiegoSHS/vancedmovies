@@ -1,17 +1,11 @@
-import { Chip } from "@heroui/chip";
+import { CalendarIcon } from "@/components/icons";
+import { BaseMovieChip } from "./MovieLanguage";
 
-export const MovieYear = ({ year, size = 'md', showLabel = false }: { year: number, size?: 'md' | 'lg' | 'sm', showLabel?: boolean }) => {
+export const MovieYear = ({ year, size, showLabel = false }: { year: number, size: 'lg' | 'md' | 'sm', showLabel?: boolean }) => {
+    const iconSize = size === 'lg' ? 24 : size === 'sm' ? 16 : 20;
     return (
-        <div className="flex flex-col gap-1 items-center justify-center">
-            {showLabel && (
-                <h3 className="text-lg font-semibold">Año</h3>
-            )}
-            <Chip
-                size={size}
-                variant="flat"
-            >
-                {year}
-            </Chip>
-        </div>
+        <BaseMovieChip showLabel={showLabel} content={year} label="Año">
+            <CalendarIcon size={iconSize} />
+        </BaseMovieChip>
     )
 }

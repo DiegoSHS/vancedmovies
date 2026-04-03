@@ -1,10 +1,10 @@
-import { Chip } from "@heroui/chip";
+import { Chip } from "@heroui/react";
 import { StarIcon, LanguageIcon, TimeIcon } from "@/components/icons";
 
 interface MovieInfoProps {
     type: 'year' | 'rating' | 'language' | 'runtime' | 'quality' | 'size' | 'custom';
     value?: string | number;
-    color?: 'primary' | 'secondary' | 'success' | 'warning' | 'danger' | 'default';
+    color?: 'accent' | 'default' | 'success' | 'warning' | 'danger';
     size?: 'sm' | 'md' | 'lg';
     customIcon?: React.ReactNode;
     customLabel?: string;
@@ -13,7 +13,7 @@ interface MovieInfoProps {
 export const MovieInfo: React.FC<MovieInfoProps> = ({
     type,
     value,
-    color = 'primary',
+    color = 'default',
     size = 'md',
     customIcon,
     customLabel
@@ -69,34 +69,25 @@ export const MovieInfo: React.FC<MovieInfoProps> = ({
         }
     };
 
-    const getColor = () => {
-        if (color !== 'primary') return color;
-
-        switch (type) {
-            case 'rating':
-                if (typeof value === 'number') {
-                    return value >= 7 ? 'success' : value >= 5 ? 'warning' : 'danger';
-                }
-                return 'primary';
-            case 'year':
-                return 'secondary';
-            default:
-                return 'primary';
-        }
-    };
-
     const displayValue = getDisplayValue();
     const icon = getIcon();
-    const chipColor = getColor();
+
+    const colorClass = color === 'accent'
+        ? 'bg-accent-100 text-accent-800'
+        : color === 'success'
+            ? 'bg-success-100 text-success-800'
+            : color === 'warning'
+                ? 'bg-warning-100 text-warning-800'
+                : color === 'danger'
+                    ? 'bg-danger-100 text-danger-800'
+                    : 'bg-default-100 text-default-800';
 
     return (
-        <Chip
-            color={chipColor}
-            size={size}
-            variant="flat"
-            startContent={icon}
+        <Chip.Root
+            className={`inline-flex items-center gap-1 px-2 py-1 ${colorClass}`}
         >
-            {displayValue}
-        </Chip>
+            {icon && <span className="inline-flex items-center">{icon}</span>}
+            <Chip.Label>{displayValue}</Chip.Label>
+        </Chip.Root>
     );
 };

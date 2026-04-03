@@ -1,15 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Input } from "@heroui/input";
-import { Button } from "@heroui/button";
-import { Chip } from "@heroui/chip";
+import { Input, Button, Chip, Spinner } from "@heroui/react";
 
 import { Movie } from "../../domain/entities/Movie";
 import { MovieList } from "../components/MovieList";
 import { MoviePagination } from "../components/MoviePagination";
 import { CrossIcon, SearchIcon } from "@/components/icons";
 import { useMovieContext } from "../providers/MovieProvider";
-import { LoadMoviesInfo } from "./PaginatedMoviesScreen";
 
 export const MoviesScreen: React.FC = () => {
   const { state: { items: movies }, totalResults, query, loading, error, getMovies, searchMovies, resetQuery, updateQuery } =
@@ -62,18 +59,15 @@ export const MoviesScreen: React.FC = () => {
 
         <div className="flex gap-2">
           <Input
-            isClearable
-            isDisabled={loading}
+            disabled={loading}
             placeholder="Buscar películas"
             type="search"
             value={query}
             onChange={(e) => updateQuery(e.target.value)}
-            onClear={resetQuery}
             onKeyDown={(e) => e.key === "Enter" && handleSearch()}
           />
           <Button
             isIconOnly
-            color="primary"
             isDisabled={!query.trim()}
             onPress={handleSearch}
           >
@@ -81,9 +75,7 @@ export const MoviesScreen: React.FC = () => {
           </Button>
           <Button
             isIconOnly
-            color="secondary"
             isDisabled={!query.trim()}
-            variant="bordered"
             onPress={handleClearSearch}
           >
             <CrossIcon />
@@ -92,18 +84,13 @@ export const MoviesScreen: React.FC = () => {
 
         <div className="flex gap-2 mb-4">
           {loading ? (
-            <LoadMoviesInfo />
+            <Spinner />
           ) : (
-            <>
-              <Chip>
-                Mostrando {movies.length} de {totalResults}{" "}
-                películas
-              </Chip>
-              <Chip>
-                Página {currentPage} de {totalPages}
-              </Chip>
-            </>
-
+            <Chip.Root className="inline-flex items-center rounded bg-default-100 px-2 py-1">
+              <Chip.Label>
+                Mostrando {movies.length} de {totalResults} películas
+              </Chip.Label>
+            </Chip.Root>
           )}
         </div>
 
