@@ -1,10 +1,11 @@
-import { Button, Card, Chip, Dropdown, EmptyState, Switch, Table } from "@heroui/react";
+import { Button, Card, Chip, Dropdown, EmptyState, Link, Switch, Table } from "@heroui/react";
 import { useState } from "react";
 
 import { Torrent } from "../../domain/entities/Torrent";
 
 import { copyMagnetToClipboard, MagnetLinkResult } from "@/types";
 import { CheckIcon, CopyIcon, DownloadIcon, ListIcon, SquaresIcon } from "@/components/icons";
+import { useLocalStorage } from "@/hooks/useLocalStorage";
 
 export const handleOpenTorrentApp = (magnetLink: string) => {
   window.open(magnetLink, "_blank");
@@ -29,9 +30,10 @@ export const CopyTorrentButton = ({ magnetLink, isIconOnly = false }: { magnetLi
   return (
     <Button
       size="sm"
+      variant="secondary"
       isIconOnly={isIconOnly}
       isDisabled={copied}
-      className={`flex ${copied ? "bg-success" : "bg-primary "}`}
+      className={`${copied ? "text-success" : ""}`}
       onClick={() => handleMagnetCopy(magnetLink, setCopied)}
     >
       {
@@ -48,10 +50,11 @@ export const CopyTorrentButton = ({ magnetLink, isIconOnly = false }: { magnetLi
 
 export const OpenTorrentButton = ({ magnetLink, isIconOnly = false }: { magnetLink: string, isIconOnly?: boolean }) => {
   return (
-    <a
+    <Link
       href={magnetLink}
       target="_blank"
       rel="noreferrer noopener"
+      className="no-underline"
     >
       <Button
         size="sm"
@@ -67,7 +70,7 @@ export const OpenTorrentButton = ({ magnetLink, isIconOnly = false }: { magnetLi
           )
         }
       </Button>
-    </a>
+    </Link>
   )
 }
 
@@ -195,23 +198,13 @@ interface MovieDownloadsProps {
 }
 
 export const MovieDownloads = ({ items }: MovieDownloadsProps) => {
-  const checkViewMode = () => {
-    const viewMode = localStorage.getItem('viewMode')
-    if (viewMode !== null) {
-      return viewMode
-    }
-    localStorage.setItem('viewMode', 'card')
-    return localStorage.getItem('viewMode')
-  }
-  const [viewMode, setViewMode] = useState(checkViewMode);
+  const { item, setItem } = useLocalStorage('viewMode', 'card')
   const swapViewMode = () => {
-    const viewMode = localStorage.getItem('viewMode')
-    if (viewMode === 'table') {
-      localStorage.setItem('viewMode', 'card')
+    if (item === 'table') {
+      setItem('card')
     } else {
-      localStorage.setItem('viewMode', 'table')
+      setItem('table')
     }
-    setViewMode(localStorage.getItem('viewMode'))
   }
   if (!items || items.length === 0) {
     return (
@@ -228,7 +221,7 @@ export const MovieDownloads = ({ items }: MovieDownloadsProps) => {
 
       </h2>
       <div className="flex w-full items-center justify-end">
-        <Switch size="lg" isSelected={viewMode === 'table'} onChange={swapViewMode}>
+        <Switch size="lg" isSelected={item === 'table'} onChange={swapViewMode}>
           {
             ({ isSelected }) => (
               <>
@@ -252,7 +245,7 @@ export const MovieDownloads = ({ items }: MovieDownloadsProps) => {
       </div>
       <div>
         {
-          viewMode === 'card' ? (
+          item === 'card' ? (
 
             <div className="flex flex-wrap gap-2 justify-center items-center">
               {items.sort((prev, next) => next.torrent.seeds - prev.torrent.seeds).map(({ torrent, magnetLink }, index) => (
