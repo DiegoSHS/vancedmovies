@@ -1,10 +1,10 @@
-import { Button, Card, Chip, Dropdown } from "@heroui/react";
+import { Button, Card, Chip, Dropdown, EmptyState, Switch, Table } from "@heroui/react";
 import { useState } from "react";
 
 import { Torrent } from "../../domain/entities/Torrent";
 
 import { copyMagnetToClipboard, MagnetLinkResult } from "@/types";
-import { CheckIcon, CopyIcon, DownloadIcon } from "@/components/icons";
+import { CheckIcon, CopyIcon, DownloadIcon, ListIcon, SquaresIcon } from "@/components/icons";
 
 export const handleOpenTorrentApp = (magnetLink: string) => {
   window.open(magnetLink, "_blank");
@@ -22,6 +22,53 @@ export async function handleMagnetCopy(
     setCopied(false);
     setTimeout(() => setCopied(false), 2000);
   }
+}
+
+export const CopyTorrentButton = ({ magnetLink, isIconOnly = false }: { magnetLink: string, isIconOnly?: boolean }) => {
+  const [copied, setCopied] = useState(false);
+  return (
+    <Button
+      size="sm"
+      isIconOnly={isIconOnly}
+      isDisabled={copied}
+      className={`flex ${copied ? "bg-success" : "bg-primary "}`}
+      onClick={() => handleMagnetCopy(magnetLink, setCopied)}
+    >
+      {
+        copied ? <CheckIcon /> : <CopyIcon />
+      }
+      {
+        isIconOnly || (
+          "Copiar"
+        )
+      }
+    </Button>
+  )
+}
+
+export const OpenTorrentButton = ({ magnetLink, isIconOnly = false }: { magnetLink: string, isIconOnly?: boolean }) => {
+  return (
+    <a
+      href={magnetLink}
+      target="_blank"
+      rel="noreferrer noopener"
+    >
+      <Button
+        size="sm"
+        variant="secondary"
+        isIconOnly={isIconOnly}
+      >
+        {
+          <DownloadIcon />
+        }
+        {
+          isIconOnly || (
+            "Abrir torrent"
+          )
+        }
+      </Button>
+    </a>
+  )
 }
 
 interface MovieDownloadOptionsProps {
@@ -108,8 +155,6 @@ export const MovieDownloadCard = ({
   torrent,
   magnetLink,
 }: MagnetLinkResult) => {
-  const [copied, setCopied] = useState<boolean>(false);
-
   return (
     <Card
       key={torrent.hash}
@@ -138,23 +183,8 @@ export const MovieDownloadCard = ({
         </div>
       </Card.Content>
       <Card.Footer className="flex gap-2">
-        <Button
-          size="sm"
-          isDisabled={copied}
-          className={`${copied ? "bg-success" : "bg-primary "}`}
-          onClick={() => handleMagnetCopy(magnetLink, setCopied)}
-        >
-          {copied ? <><CheckIcon size={20} /> Copiado</> : <><CopyIcon size={20} /> Copiar enlace</>}
-        </Button>
-        <a
-          href={magnetLink}
-          target="_blank"
-          rel="noreferrer noopener"
-        >
-          <Button size="sm" variant="secondary">
-            Abrir torrent
-          </Button>
-        </a>
+        <CopyTorrentButton magnetLink={magnetLink} />
+        <OpenTorrentButton magnetLink={magnetLink} />
       </Card.Footer>
     </Card>
   );
@@ -165,6 +195,24 @@ interface MovieDownloadsProps {
 }
 
 export const MovieDownloads = ({ items }: MovieDownloadsProps) => {
+  const checkViewMode = () => {
+    const viewMode = localStorage.getItem('viewMode')
+    if (viewMode !== null) {
+      return viewMode
+    }
+    localStorage.setItem('viewMode', 'card')
+    return localStorage.getItem('viewMode')
+  }
+  const [viewMode, setViewMode] = useState(checkViewMode);
+  const swapViewMode = () => {
+    const viewMode = localStorage.getItem('viewMode')
+    if (viewMode === 'table') {
+      localStorage.setItem('viewMode', 'card')
+    } else {
+      localStorage.setItem('viewMode', 'table')
+    }
+    setViewMode(localStorage.getItem('viewMode'))
+  }
   if (!items || items.length === 0) {
     return (
       <div className="text-center text-gray-500 dark:text-gray-400">
@@ -174,19 +222,116 @@ export const MovieDownloads = ({ items }: MovieDownloadsProps) => {
   }
 
   return (
-    <div className="flex flex-col gap-2 items-center justify-center">
+    <div className="flex w-full flex-col gap-2 items-center justify-center">
       <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
         Descargas disponibles
+
       </h2>
-      <div className="flex flex-wrap gap-2 justify-center items-center">
-        {items.sort((prev, next) => next.torrent.seeds - prev.torrent.seeds).map(({ torrent, magnetLink }, index) => (
-          <MovieDownloadCard
-            key={index}
-            magnetLink={magnetLink}
-            torrent={torrent}
-          />
-        ))}
+      <div className="flex w-full items-center justify-end">
+        <Switch size="lg" isSelected={viewMode === 'table'} onChange={swapViewMode}>
+          {
+            ({ isSelected }) => (
+              <>
+                <Switch.Control className="bg-default">
+                  <Switch.Thumb>
+                    <Switch.Icon>
+                      {
+                        isSelected ? (
+                          <ListIcon className="size-5" />
+                        ) : (
+                          <SquaresIcon className="size-5" />
+                        )
+                      }
+                    </Switch.Icon>
+                  </Switch.Thumb>
+                </Switch.Control>
+              </>
+            )
+          }
+        </Switch>
+      </div>
+      <div>
+        {
+          viewMode === 'card' ? (
+
+            <div className="flex flex-wrap gap-2 justify-center items-center">
+              {items.sort((prev, next) => next.torrent.seeds - prev.torrent.seeds).map(({ torrent, magnetLink }, index) => (
+                <MovieDownloadCard
+                  key={index}
+                  magnetLink={magnetLink}
+                  torrent={torrent}
+                />
+              ))}
+            </div>
+          ) : (
+            <MovieDownloadsTable items={items}></MovieDownloadsTable>
+          )
+        }
       </div>
     </div>
   );
 };
+
+export const MovieDownloadsTable = ({ items }: MovieDownloadsProps) => {
+  return (
+    <Table>
+      <Table.ScrollContainer>
+        <Table.Content>
+          <Table.Header>
+            <Table.Column>
+              Calidad
+            </Table.Column>
+            <Table.Column>
+              Tipo
+            </Table.Column>
+            <Table.Column>
+              Tamaño
+            </Table.Column>
+            <Table.Column>
+              Seeds
+            </Table.Column>
+            <Table.Column>
+              Peers
+            </Table.Column>
+            <Table.Column>
+              Accciones
+            </Table.Column>
+          </Table.Header>
+          <Table.Body renderEmptyState={() => (
+            <EmptyState className="flex h-full w-full flex-col items-center justify-center gap-4 text-center">
+              <span className="text-sm text-muted">Sin descargas disponibles</span>
+            </EmptyState>
+          )} className={'font-bold'}>
+            <Table.Collection items={items}>
+              {
+                (item) => (
+                  <Table.Row id={item.torrent.hash}>
+                    <Table.Cell>
+                      {item.torrent.quality}
+                    </Table.Cell>
+                    <Table.Cell>
+                      {item.torrent.type}
+                    </Table.Cell>
+                    <Table.Cell>
+                      {item.torrent.size}
+                    </Table.Cell>
+                    <Table.Cell className={'text-success'}>
+                      {item.torrent.seeds}
+                    </Table.Cell>
+                    <Table.Cell className={'text-success'}>
+                      {item.torrent.peers}
+                    </Table.Cell>
+                    <Table.Cell className="flex gap-1">
+                      <CopyTorrentButton magnetLink={item.magnetLink} />
+                      <OpenTorrentButton magnetLink={item.magnetLink} />
+                    </Table.Cell>
+                  </Table.Row>
+                )
+              }
+            </Table.Collection>
+          </Table.Body>
+        </Table.Content>
+      </Table.ScrollContainer>
+    </Table>
+  )
+}
