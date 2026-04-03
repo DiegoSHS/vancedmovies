@@ -1,13 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Input, Button, Chip } from "@heroui/react";
+import { Input, Button, Chip, Spinner } from "@heroui/react";
 
 import { Movie } from "../../domain/entities/Movie";
 import { MovieList } from "../components/MovieList";
 import { MoviePagination } from "../components/MoviePagination";
 import { CrossIcon, SearchIcon } from "@/components/icons";
 import { useMovieContext } from "../providers/MovieProvider";
-import { LoadMoviesInfo } from "./PaginatedMoviesScreen";
 
 export const MoviesScreen: React.FC = () => {
   const { state: { items: movies }, totalResults, query, loading, error, getMovies, searchMovies, resetQuery, updateQuery } =
@@ -68,16 +67,16 @@ export const MoviesScreen: React.FC = () => {
             onKeyDown={(e) => e.key === "Enter" && handleSearch()}
           />
           <Button
+            isIconOnly
             isDisabled={!query.trim()}
             onPress={handleSearch}
-            className="px-3 py-1"
           >
             <SearchIcon />
           </Button>
           <Button
+            isIconOnly
             isDisabled={!query.trim()}
             onPress={handleClearSearch}
-            className="px-3 py-1"
           >
             <CrossIcon />
           </Button>
@@ -85,19 +84,13 @@ export const MoviesScreen: React.FC = () => {
 
         <div className="flex gap-2 mb-4">
           {loading ? (
-            <LoadMoviesInfo />
+            <Spinner />
           ) : (
-            <>
-              <Chip.Root className="inline-flex items-center rounded bg-default-100 px-2 py-1">
-                <Chip.Label>
-                  Mostrando {movies.length} de {totalResults} películas
-                </Chip.Label>
-              </Chip.Root>
-              <Chip.Root className="inline-flex items-center rounded bg-default-100 px-2 py-1">
-                <Chip.Label>Página {currentPage} de {totalPages}</Chip.Label>
-              </Chip.Root>
-            </>
-
+            <Chip.Root className="inline-flex items-center rounded bg-default-100 px-2 py-1">
+              <Chip.Label>
+                Mostrando {movies.length} de {totalResults} películas
+              </Chip.Label>
+            </Chip.Root>
           )}
         </div>
 

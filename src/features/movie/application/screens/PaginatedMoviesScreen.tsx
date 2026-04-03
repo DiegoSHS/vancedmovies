@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { Input } from "@heroui/react";
+import { Input, Spinner } from "@heroui/react";
 import { Button } from "@heroui/react";
 import { Movie } from "../../domain/entities/Movie";
 import { MovieList } from "../components/MovieList";
@@ -8,14 +8,6 @@ import { MoviePagination } from "../components/MoviePagination";
 import { CrossIcon, SearchIcon } from "@/components/icons";
 import { useMovieContext } from "../providers/MovieProvider";
 import { Chip } from "@heroui/react";
-
-export const LoadMoviesInfo = () => (
-    <>
-        <span className="inline-flex items-center rounded px-2 py-1 bg-default-100 text-default-800">
-            Cargando
-        </span>
-    </>
-)
 
 export const PaginatedMoviesScreen: React.FC = () => {
     const { state: { items: movies }, totalResults, loading, error, query, getMovies, searchMovies, updateQuery, resetQuery } =
@@ -87,6 +79,8 @@ export const PaginatedMoviesScreen: React.FC = () => {
                         onKeyDown={(e) => e.key === "Enter" && handleSearch()}
                     />
                     <Button
+                        variant="ghost"
+                        isIconOnly
                         isDisabled={!query.trim()}
                         onPress={handleSearch}
                         className="px-3 py-1"
@@ -94,9 +88,10 @@ export const PaginatedMoviesScreen: React.FC = () => {
                         <SearchIcon />
                     </Button>
                     <Button
+                        variant="ghost"
+                        isIconOnly
                         isDisabled={!query.trim()}
                         onPress={handleClearSearch}
-                        className="px-3 py-1"
                     >
                         <CrossIcon />
                     </Button>
@@ -104,17 +99,13 @@ export const PaginatedMoviesScreen: React.FC = () => {
 
                 <div className="flex gap-2 items-center justify-center">
                     {loading ? (
-                        <LoadMoviesInfo />
+                        <Spinner />
                     ) : (
                         <>
-                            <Chip.Root className="inline-flex items-center rounded bg-default-100 px-2 py-1">
+                            <Chip.Root>
                                 <Chip.Label>Mostrando {movies.length} de {totalResults} películas</Chip.Label>
                             </Chip.Root>
-                            <Chip.Root className="inline-flex items-center rounded bg-default-100 px-2 py-1">
-                                <Chip.Label>Página {currentPage} de {totalPages}</Chip.Label>
-                            </Chip.Root>
                         </>
-
                     )}
                 </div>
 
