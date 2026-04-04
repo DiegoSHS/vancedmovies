@@ -154,7 +154,7 @@ export const MovieDetailScreen: React.FC = () => {
         </Button>
       )}
       <MovieDownloads items={magnetLinks} />
-      Descargas extra:
+      Descargas extra
       {
         loadingExtra && (
           <div className="flex items-center gap-2 mt-4">

@@ -1,11 +1,12 @@
 import { useState } from "react";
-import { Link } from "@heroui/react";
+import { Button, Link } from "@heroui/react";
 
 import { siteConfig } from "@/config/site";
 import { ThemeSwitch } from "@/components/theme-switch";
 import {
   TwitterIcon,
   GithubIcon,
+  CrossIcon,
 } from "@/components/icons";
 import { Logo } from "@/components/icons";
 
@@ -17,29 +18,29 @@ export const Navbar = () => {
       <header className="flex h-16 items-center justify-between px-6 max-w-7xl mx-auto">
         {/* Logo & Brand */}
         <div className="flex items-center gap-3">
-          <button
-            className="inline-flex md:hidden items-center justify-center rounded-md p-2 text-default-500 hover:bg-default-100"
+          <Button
+            isIconOnly
+            variant="ghost"
+            className="inline-flex md:hidden"
             onClick={() => setIsMenuOpen(!isMenuOpen)}
             aria-label="Toggle menu"
             aria-expanded={isMenuOpen}
           >
             {isMenuOpen ? (
-              <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              </svg>
+              <CrossIcon />
             ) : (
               <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
               </svg>
             )}
-          </button>
+          </Button>
 
           <Link
-            className="flex items-center gap-1 hover:opacity-80"
+            className="flex items-center gap-1 text-red-600 no-underline"
             href="/"
           >
             <Logo />
-            <p className="font-bold">BOLI</p>
+            <p className="font-bold text-red-600">BOLI</p>
           </Link>
         </div>
 
@@ -48,7 +49,7 @@ export const Navbar = () => {
           {siteConfig.navItems.map((item) => (
             <li key={item.href}>
               <Link
-                className="text-default-700 hover:text-primary transition-colors"
+                className="no-underline"
                 href={item.href}
               >
                 {item.label}
@@ -59,10 +60,10 @@ export const Navbar = () => {
 
         {/* Desktop Right Content */}
         <div className="hidden sm:flex items-center gap-4">
-          <Link target="_blank" rel="noopener noreferrer" href={siteConfig.links.twitter} className="text-default-500 hover:text-primary">
+          <Link target="_blank" rel="noopener noreferrer" href={siteConfig.links.twitter}>
             <TwitterIcon className="w-5 h-5" />
           </Link>
-          <Link target="_blank" rel="noopener noreferrer" href={siteConfig.links.github} className="text-default-500 hover:text-primary">
+          <Link target="_blank" rel="noopener noreferrer" href={siteConfig.links.github}>
             <GithubIcon className="w-5 h-5" />
           </Link>
           <ThemeSwitch />
@@ -84,7 +85,7 @@ export const Navbar = () => {
             {siteConfig.navMenuItems.map((item, index) => (
               <li key={`${item}-${index}`}>
                 <Link
-                  className="block py-2 text-default-700 hover:text-primary transition-colors"
+                  className="block py-2 no-underline"
                   href={item.href || "#"}
                 >
                   {item.label}

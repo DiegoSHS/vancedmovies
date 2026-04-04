@@ -7,11 +7,7 @@ import { copyMagnetToClipboard, MagnetLinkResult } from "@/types";
 import { CheckIcon, CopyIcon, DownloadIcon, ListIcon, SquaresIcon } from "@/components/icons";
 import { useLocalStorage } from "@/hooks/useLocalStorage";
 
-export const handleOpenTorrentApp = (magnetLink: string) => {
-  window.open(magnetLink, "_blank");
-};
-
-export async function handleMagnetCopy(
+async function handleMagnetCopy(
   magnetLink: string,
   setCopied: (value: boolean) => void,
 ) {
@@ -23,6 +19,14 @@ export async function handleMagnetCopy(
     setCopied(false);
     setTimeout(() => setCopied(false), 2000);
   }
+}
+
+const NoDownloadsAvailable = ({ message = "No hay descargas disponibles" }: { message?: string }) => {
+  return (
+    <div className="text-center text-gray-500 dark:text-gray-400">
+      {message}
+    </div>
+  )
 }
 
 export const CopyTorrentButton = ({ magnetLink, isIconOnly = false }: { magnetLink: string, isIconOnly?: boolean }) => {
@@ -208,17 +212,14 @@ export const MovieDownloads = ({ items }: MovieDownloadsProps) => {
   }
   if (!items || items.length === 0) {
     return (
-      <div className="text-center text-gray-500 dark:text-gray-400">
-        No hay descargas disponibles
-      </div>
+      <NoDownloadsAvailable />
     );
   }
 
   return (
     <div className="flex w-full flex-col gap-2 items-center justify-center">
-      <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
+      <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
         Descargas disponibles
-
       </h2>
       <div className="flex w-full items-center justify-end">
         <Switch size="lg" isSelected={item === 'table'} onChange={swapViewMode}>
@@ -227,7 +228,7 @@ export const MovieDownloads = ({ items }: MovieDownloadsProps) => {
               <>
                 <Switch.Control className="bg-default">
                   <Switch.Thumb>
-                    <Switch.Icon>
+                    <Switch.Icon className="text-default">
                       {
                         isSelected ? (
                           <ListIcon className="size-5" />
@@ -246,24 +247,31 @@ export const MovieDownloads = ({ items }: MovieDownloadsProps) => {
       <div>
         {
           item === 'card' ? (
-
-            <div className="flex flex-wrap gap-2 justify-center items-center">
-              {items.sort((prev, next) => next.torrent.seeds - prev.torrent.seeds).map(({ torrent, magnetLink }, index) => (
-                <MovieDownloadCard
-                  key={index}
-                  magnetLink={magnetLink}
-                  torrent={torrent}
-                />
-              ))}
-            </div>
+            <MovieDownloadCards items={items} />
           ) : (
-            <MovieDownloadsTable items={items}></MovieDownloadsTable>
+            <MovieDownloadsTable items={items} />
           )
         }
       </div>
-    </div>
+    </div >
   );
 };
+
+export const MovieDownloadCards = ({ items }: MovieDownloadsProps) => {
+  return (
+    <div className="flex flex-wrap gap-2 justify-center items-center">
+      {
+        items.map(({ magnetLink, torrent }) => (
+          <MovieDownloadCard
+            key={torrent.hash}
+            magnetLink={magnetLink}
+            torrent={torrent}
+          />
+        ))
+      }
+    </div>
+  )
+}
 
 export const MovieDownloadsTable = ({ items }: MovieDownloadsProps) => {
   return (
