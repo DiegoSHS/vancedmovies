@@ -1,5 +1,5 @@
-import { Movie } from "./1337XMovie";
+import { XMovie } from "./1337XMovie";
 
 export interface MovieListResult {
-    movies: Movie[];
+    movies: XMovie[];
 }
