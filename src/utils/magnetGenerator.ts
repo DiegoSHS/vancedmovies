@@ -1,4 +1,4 @@
-import { Movie } from "@/features/movie/domain/entities/1337XMovie";
+import { XMovie } from "@/features/movie/domain/entities/1337XMovie";
 import { Torrent } from "../features/movie/domain/entities/Torrent";
 
 const TRACKERS = [
@@ -130,10 +130,6 @@ const WS_TRACKERS = [
  * @returns boolean - true si el torrent es válido
  */
 const validateTorrent = (torrent: Torrent): boolean => {
-  if (!torrent) {
-    return false;
-  }
-
   if (!torrent.hash || typeof torrent.hash !== 'string' || torrent.hash.trim().length === 0) {
     return false;
   }
@@ -417,11 +413,11 @@ export const extractMagnetInfo = (magnetLink: string): {
 };
 
 
-export function generateMagnetLinksFromBackend(scrapperTorrents: Movie[]): MagnetLinkResult[] {
+export function generateMagnetLinksFromBackend(scrapperTorrents: XMovie[]): MagnetLinkResult[] {
   return scrapperTorrents.map(generateMagnetLinkFromBackend);
 }
 
-export const generateMagnetLinkFromBackend = (item: Movie): MagnetLinkResult => ({
+export const generateMagnetLinkFromBackend = (item: XMovie): MagnetLinkResult => ({
   torrent: {
     url: '',
     hash: item.info_hash,

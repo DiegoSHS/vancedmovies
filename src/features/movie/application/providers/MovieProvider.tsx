@@ -5,6 +5,9 @@ import { MovieDatasourceImp } from "../../infrastructure/datasources/MovieDataso
 import { BaseState, useBaseReducer } from "@/utils";
 import { Movie } from "../../domain/entities/Movie";
 import { generateMagnetLinksFromBackend, MagnetLinkResult } from "@/types";
+export interface MovieProviderProps {
+  children: ReactNode;
+}
 
 interface MovieContextType {
   state: BaseState<Movie>;
@@ -23,11 +26,8 @@ interface MovieContextType {
 
 const MovieContext = createContext<MovieContextType | undefined>(undefined);
 
-interface MovieProviderProps {
-  children: ReactNode;
-}
 
-interface ProviderState {
+export interface ProviderState {
   query: string;
   totalResults: number;
   loading: boolean;

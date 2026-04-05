@@ -1,10 +1,11 @@
 import { Movie } from "../../domain/entities/Movie";
 import { MovieListResponse } from "../../domain/entities/YTSMovieListResponse";
-import { MovieDatasource } from "../../domain/datasources/MovieDatasource";
+import { MovieDatasource, TPBMovieDatasource } from "../../domain/datasources/MovieDatasource";
 
 import { ApiResult } from "@/utils/ApiResult";
 import { ApiClient } from "@/utils/ApiClient";
 import { MovieListResult } from "../../domain/entities/1337XMovieListResult";
+import { TPBMovie } from "../../domain/entities/ThePirateBayMovie";
 
 export class MovieDatasourceImp extends MovieDatasource {
   async getMovies(
@@ -163,6 +164,18 @@ export class MovieDatasourceImp extends MovieDatasource {
       return {
         movies: [],
       };
+    }
+  }
+}
+
+export class TPBMovieDatasourceImp extends TPBMovieDatasource {
+  async searchMovies(query: string): Promise<TPBMovie[]> {
+    try {
+      const url = `${import.meta.env.VITE_TPB_API}?q=${encodeURIComponent(query)}`
+      const data = await ApiClient.get<TPBMovie[]>(url)
+      return data
+    } catch (error) {
+      return []
     }
   }
 }

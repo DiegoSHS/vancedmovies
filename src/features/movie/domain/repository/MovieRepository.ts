@@ -1,5 +1,6 @@
 import { MovieListResult } from "../entities/1337XMovieListResult";
 import { Movie } from "../entities/Movie";
+import { TPBMovie } from "../entities/ThePirateBayMovie";
 import { MovieListResponse } from "../entities/YTSMovieListResponse";
 
 import { ApiResult } from "@/utils/ApiResult";
@@ -39,4 +40,8 @@ export abstract class MovieRepository {
   abstract getMoreTorrents(
     movie: Movie,
   ): Promise<MovieListResult>;
+}
+
+export abstract class TPBMovieRepository {
+  abstract searchMovies(query: string): Promise<TPBMovie[]>
 }

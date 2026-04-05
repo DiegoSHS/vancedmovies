@@ -10,6 +10,8 @@ import {
 import { MovieDownloads } from "../components/MovieDownloads";
 import { useMovieContext } from "../providers/MovieProvider";
 import { MovieDetailsCard } from "../components/MovieDetailsCard";
+import { useTPBMovieContext } from "../providers/TPBMovieProvider";
+import { TPBtoTorrent } from "../../domain/entities/Torrent";
 
 // Devuelve una lista de MagnetLinkResult con el mejor torrent 1080p (más seeds) o el de mayor calidad disponible (más seeds)
 function getBestQualityMagnets(torrents: MagnetLinkResult[]): MagnetLinkResult[] {
@@ -42,23 +44,27 @@ export const MovieDetailScreen: React.FC = () => {
   const navigate = useNavigate();
   const {
     getMovieById,
-    getMoreTorrents,
     cleanSelectedMovie,
     loading,
     error,
     state: { selectedItem: movie },
   } = useMovieContext();
-  const [loadingExtra, setLoadingExtra] = useState(false);
+  const {
+    loading: loadingExtra,
+    searchMovies,
+    updateQuery,
+    state: { items },
+  } = useTPBMovieContext()
   const [showPlayer, setShowPlayer] = useState(false);
   const [extraMagnets, setExtraMagnets] = useState<MagnetLinkResult[]>([]);
 
   useEffect(() => {
     const fetchTorrents = async () => {
       if (!movie) return
-      setLoadingExtra(true);
-      const torrents = await getMoreTorrents(movie);
-      setExtraMagnets(torrents);
-      setLoadingExtra(false);
+      updateQuery(movie.title)
+      searchMovies()
+      const { data } = generateMagnetLinks(items.map(TPBtoTorrent), movie.title)
+      setExtraMagnets(data);
     }
     fetchTorrents();
   }, [movie]);
@@ -154,7 +160,7 @@ export const MovieDetailScreen: React.FC = () => {
         </Button>
       )}
       <MovieDownloads items={magnetLinks} />
-      Descargas extra:
+      Descargas extra
       {
         loadingExtra && (
           <div className="flex items-center gap-2 mt-4">

@@ -1,47 +1,41 @@
-import { FC, useState, useEffect } from "react";
-
 import { SunFilledIcon, MoonFilledIcon } from "@/components/icons";
+import { useLocalStorage } from "@/hooks/useLocalStorage";
+import { Button } from "@heroui/react";
 
-export interface ThemeSwitchProps {
-  className?: string;
-}
 
-export const ThemeSwitch: FC<ThemeSwitchProps> = ({ className }) => {
-  const [isMounted, setIsMounted] = useState(false);
-  const [isDark, setIsDark] = useState(false);
-
-  useEffect(() => {
-    setIsMounted(true);
-    // Check if dark mode is enabled
-    const isDarkMode = document.documentElement.classList.contains("dark");
-    setIsDark(isDarkMode);
-  }, []);
-
-  const handleThemeChange = (isSelected: boolean) => {
+export const ThemeSwitch = () => {
+  const html = document.documentElement
+  const isDarkMode = html.classList.contains("dark");
+  const defaultMode = isDarkMode ? 'dark' : 'light'
+  const { item, setItem } = useLocalStorage('heroui-theme', defaultMode)
+  if (item === 'dark') {
+    html.classList.add('dark')
+  } else {
+    html.classList.remove('dark')
+  }
+  const swapTheme = () => {
     const html = document.documentElement;
-    if (isSelected) {
-      html.classList.add("dark");
-      setIsDark(true);
-    } else {
+    if (item === "dark") {
       html.classList.remove("dark");
-      setIsDark(false);
+      setItem('light')
+    } else {
+      html.classList.add("dark");
+      setItem('dark')
     }
   };
 
-  // Prevent Hydration Mismatch
-  if (!isMounted) return <div className="w-6 h-6" />;
-
   return (
-    <button
-      onClick={() => handleThemeChange(!isDark)}
-      className={`inline-flex items-center justify-center rounded-lg p-2 hover:bg-default-100 transition-colors ${className || ""}`}
-      aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
+    <Button
+      variant="ghost"
+      isIconOnly
+      onPress={swapTheme}
+      aria-label={item === 'dark' ? "Switch to light mode" : "Switch to dark mode"}
     >
-      {isDark ? (
+      {item !== 'dark' ? (
         <MoonFilledIcon size={20} className="text-default-500" />
       ) : (
         <SunFilledIcon size={20} className="text-default-500" />
       )}
-    </button>
+    </Button>
   );
 };

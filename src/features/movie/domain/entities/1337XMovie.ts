@@ -1,4 +1,4 @@
-export interface Movie {
+export interface XMovie {
     category: string;
     date_uploaded: string;
     description: string;
