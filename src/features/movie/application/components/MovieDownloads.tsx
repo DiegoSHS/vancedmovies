@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Torrent } from "../../domain/entities/Torrent";
 
 import { copyMagnetToClipboard, MagnetLinkResult } from "@/types";
-import { CheckIcon, CopyIcon, DownloadIcon, ListIcon, SquaresIcon } from "@/components/icons";
+import { CheckIcon, CopyIcon, DownloadIcon, ListIcon, PlayIcon, SquaresIcon } from "@/components/icons";
 
 async function handleMagnetCopy(
   magnetLink: string,
@@ -28,7 +28,12 @@ const NoDownloadsAvailable = ({ message = "No hay descargas disponibles" }: { me
   )
 }
 
-export const CopyTorrentButton = ({ magnetLink, isIconOnly = false }: { magnetLink: string, isIconOnly?: boolean }) => {
+interface TorrentActionButtonProps {
+  magnetLink: string
+  isIconOnly?: boolean
+}
+
+export const CopyTorrentButton = ({ magnetLink, isIconOnly = false }: TorrentActionButtonProps) => {
   const [copied, setCopied] = useState(false);
   return (
     <Button
@@ -51,7 +56,7 @@ export const CopyTorrentButton = ({ magnetLink, isIconOnly = false }: { magnetLi
   )
 }
 
-export const OpenTorrentButton = ({ magnetLink, isIconOnly = false }: { magnetLink: string, isIconOnly?: boolean }) => {
+export const OpenTorrentButton = ({ magnetLink, isIconOnly = false }: TorrentActionButtonProps) => {
   return (
     <Link
       href={magnetLink}
@@ -64,9 +69,7 @@ export const OpenTorrentButton = ({ magnetLink, isIconOnly = false }: { magnetLi
         variant="secondary"
         isIconOnly={isIconOnly}
       >
-        {
-          <DownloadIcon />
-        }
+        <DownloadIcon />
         {
           isIconOnly || (
             "Abrir torrent"
@@ -74,6 +77,22 @@ export const OpenTorrentButton = ({ magnetLink, isIconOnly = false }: { magnetLi
         }
       </Button>
     </Link>
+  )
+}
+
+export const PlayTorrentButton = ({ magnetLink, isIconOnly }: TorrentActionButtonProps) => {
+  return (
+    <Button
+      size="sm"
+      variant="secondary"
+      isIconOnly={isIconOnly}
+      onPress={() => {
+        console.log(magnetLink)
+      }}
+    >
+      <PlayIcon />
+      Ver
+    </Button>
   )
 }
 
@@ -191,6 +210,7 @@ export const MovieDownloadCard = ({
       <Card.Footer className="flex gap-2">
         <CopyTorrentButton magnetLink={magnetLink} />
         <OpenTorrentButton magnetLink={magnetLink} />
+        <PlayTorrentButton magnetLink={magnetLink} />
       </Card.Footer>
     </Card>
   );

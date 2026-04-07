@@ -1,39 +1,30 @@
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext } from "react";
 import { TPBMovie } from "../../domain/entities/ThePirateBayMovie";
 import { TPBMovieDatasourceImp } from "../../infrastructure/datasources/MovieDatasource";
 import { TPBMovieRepositoryImp } from "../../infrastructure/repository/MovieRepository";
-import { MovieProviderProps, ProviderState } from "./MovieProvider";
-import { BaseState, useBaseReducer } from "@/utils";
+import { MovieProviderProps } from "./MovieProvider";
+import { BaseState, ProviderState, useBaseProviderState, useBaseReducer } from "@/utils";
 
-interface TPBMovieContextType {
+interface TPBMovieContextType extends ProviderState {
     searchMovies(): Promise<TPBMovie[]>
     updateQuery(query: string): void
     resetQuery(): void
     state: BaseState<TPBMovie>
-    query: string
-    loading: boolean
-    totalResults: number
-    error: string | null
 }
 
 const TPBMovieContext = createContext<TPBMovieContextType | undefined>(undefined)
 
 export const TPBMovieProvider: React.FC<MovieProviderProps> = ({ children }) => {
-    const [{ error, loading, query, totalResults }, setProviderState] = useState<ProviderState>({
-        error: null,
-        loading: false,
-        query: '',
-        totalResults: 0
-    });
-    const modifyProviderState = (newState: Partial<ProviderState>) => {
-        setProviderState((prev) => ({
-            ...prev,
-            ...newState
-        }))
-    }
+    const {
+        error,
+        loading,
+        query,
+        totalResults,
+        modifyProviderState
+    } = useBaseProviderState()
+    const { state, dispatch } = useBaseReducer<TPBMovie>()
     const movieDatasource = new TPBMovieDatasourceImp()
     const movieRepository = new TPBMovieRepositoryImp(movieDatasource)
-    const { state, dispatch } = useBaseReducer<TPBMovie>()
     const searchMovies = async () => {
         try {
             modifyProviderState({ loading: true, error: null })
@@ -46,10 +37,8 @@ export const TPBMovieProvider: React.FC<MovieProviderProps> = ({ children }) => 
             })
             return movies
         } catch (error) {
-            modifyProviderState({
-                error: 'Error al buscar peliculas'
-            })
             dispatch({ type: 'RESET' })
+            modifyProviderState({ error: 'Error al buscar peliculas' })
             return []
         } finally {
             modifyProviderState({ loading: false })

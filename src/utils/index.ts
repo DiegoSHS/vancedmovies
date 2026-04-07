@@ -1,4 +1,4 @@
-import { useReducer } from "react";
+import { useReducer, useState } from "react";
 
 export interface Action<T> {
     type: 'SET' | 'SELECT' | 'RESET' | 'UPDATE_SELECTED';
@@ -30,3 +30,32 @@ export function useBaseReducer<T>() {
     });
     return { state, dispatch };
 }
+
+export interface ProviderState {
+    query: string;
+    totalResults: number;
+    loading: boolean;
+    error: string | null;
+}
+
+const defaultProviderState: ProviderState = {
+    error: null,
+    loading: false,
+    query: '',
+    totalResults: 0
+}
+
+export function useBaseProviderState(initialState: ProviderState = defaultProviderState) {
+    const [providerState, setProviderState] = useState<ProviderState>(initialState);
+    const modifyProviderState = (newState: Partial<ProviderState>) => {
+        setProviderState((prev) => ({
+            ...prev,
+            ...newState
+        }))
+    }
+    return {
+        ...providerState,
+        modifyProviderState
+    }
+}
+

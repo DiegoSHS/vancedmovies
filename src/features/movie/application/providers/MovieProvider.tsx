@@ -1,8 +1,7 @@
-import React, { createContext, useContext, ReactNode, useState } from "react";
-
+import { createContext, useContext, ReactNode } from "react";
 import { MovieRepositoryImp } from "../../infrastructure/repository/MovieRepository";
 import { MovieDatasourceImp } from "../../infrastructure/datasources/MovieDatasource";
-import { BaseState, useBaseReducer } from "@/utils";
+import { BaseState, useBaseProviderState, useBaseReducer } from "@/utils";
 import { Movie } from "../../domain/entities/Movie";
 import { Torrent, XMovieToTorrent } from "../../domain/entities/Torrent";
 export interface MovieProviderProps {
@@ -27,29 +26,18 @@ interface MovieContextType {
 const MovieContext = createContext<MovieContextType | undefined>(undefined);
 
 
-export interface ProviderState {
-  query: string;
-  totalResults: number;
-  loading: boolean;
-  error: string | null;
-}
 
 export const MovieProvider: React.FC<MovieProviderProps> = ({ children }) => {
-  const [{ error, loading, query, totalResults }, setProviderState] = useState<ProviderState>({
-    query: '',
-    totalResults: 0,
-    loading: false,
-    error: null,
-  });
-  const modifyProviderState = (newState: Partial<ProviderState>) => {
-    setProviderState((prev) => ({
-      ...prev,
-      ...newState,
-    }));
-  }
+  const {
+    error,
+    loading,
+    query,
+    totalResults,
+    modifyProviderState
+  } = useBaseProviderState()
+  const { state, dispatch } = useBaseReducer<Movie>()
   const movieDatasource = new MovieDatasourceImp();
   const movieRepository = new MovieRepositoryImp(movieDatasource);
-  const { state, dispatch } = useBaseReducer<Movie>()
   const getMovies = async (page: number) => {
     try {
       modifyProviderState({ loading: true, error: null });
