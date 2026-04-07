@@ -15,13 +15,13 @@ export class ApiError extends Error {
 export interface FetchHttpClientOptions {
   baseURL?: string;
   timeout?: number;
-  defaultHeaders?: HeadersInit;
+  defaultHeaders?: Record<string, string>;
 }
 
 export class FetchHttpClient implements IHttpClient {
   private readonly baseURL: string;
   private readonly timeout: number;
-  private readonly defaultHeaders: HeadersInit;
+  private readonly defaultHeaders: Record<string, string>;
 
   constructor(options: FetchHttpClientOptions = {}) {
     this.baseURL = options.baseURL || import.meta.env.VITE_API_BASE_URL || "https://yts.mx/api/v2";

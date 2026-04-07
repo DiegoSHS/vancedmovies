@@ -5,7 +5,6 @@ import { Torrent } from "../../domain/entities/Torrent";
 
 import { copyMagnetToClipboard, MagnetLinkResult } from "@/types";
 import { CheckIcon, CopyIcon, DownloadIcon, ListIcon, SquaresIcon } from "@/components/icons";
-import { useLocalStorage } from "@/hooks/useLocalStorage";
 
 async function handleMagnetCopy(
   magnetLink: string,
@@ -197,19 +196,44 @@ export const MovieDownloadCard = ({
   );
 };
 
-interface MovieDownloadsProps {
-  items: MagnetLinkResult[];
+interface ViewModeSwitchProps {
+  mode: string
+  swapViewMode: () => void
 }
 
-export const MovieDownloads = ({ items }: MovieDownloadsProps) => {
-  const { item, setItem } = useLocalStorage('viewMode', 'card')
-  const swapViewMode = () => {
-    if (item === 'table') {
-      setItem('card')
-    } else {
-      setItem('table')
-    }
-  }
+export const ViewModeSwitch = ({ mode, swapViewMode }: ViewModeSwitchProps) => {
+  return (
+    <Switch size="lg" isSelected={mode === 'table'} onChange={swapViewMode}>
+      {
+        ({ isSelected }) => (
+          <>
+            <Switch.Control className="bg-default">
+              <Switch.Thumb>
+                <Switch.Icon className="text-default">
+                  {
+                    isSelected ? (
+                      <ListIcon className="size-5" />
+                    ) : (
+                      <SquaresIcon className="size-5" />
+                    )
+                  }
+                </Switch.Icon>
+              </Switch.Thumb>
+            </Switch.Control>
+          </>
+        )
+      }
+    </Switch>
+  )
+}
+
+interface MovieDownloadsProps {
+  items: MagnetLinkResult[];
+  mode: string
+}
+
+
+export const MovieDownloads = ({ items, mode }: MovieDownloadsProps) => {
   if (!items || items.length === 0) {
     return (
       <NoDownloadsAvailable />
@@ -221,32 +245,9 @@ export const MovieDownloads = ({ items }: MovieDownloadsProps) => {
       <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
         Descargas disponibles
       </h2>
-      <div className="flex w-full items-center justify-end">
-        <Switch size="lg" isSelected={item === 'table'} onChange={swapViewMode}>
-          {
-            ({ isSelected }) => (
-              <>
-                <Switch.Control className="bg-default">
-                  <Switch.Thumb>
-                    <Switch.Icon className="text-default">
-                      {
-                        isSelected ? (
-                          <ListIcon className="size-5" />
-                        ) : (
-                          <SquaresIcon className="size-5" />
-                        )
-                      }
-                    </Switch.Icon>
-                  </Switch.Thumb>
-                </Switch.Control>
-              </>
-            )
-          }
-        </Switch>
-      </div>
       <div>
         {
-          item === 'card' ? (
+          mode === 'card' ? (
             <MovieDownloadCards items={items} />
           ) : (
             <MovieDownloadsTable items={items} />
@@ -257,7 +258,7 @@ export const MovieDownloads = ({ items }: MovieDownloadsProps) => {
   );
 };
 
-export const MovieDownloadCards = ({ items }: MovieDownloadsProps) => {
+export const MovieDownloadCards = ({ items }: Omit<MovieDownloadsProps, 'mode'>) => {
   return (
     <div className="flex flex-wrap gap-2 justify-center items-center">
       {
@@ -273,13 +274,13 @@ export const MovieDownloadCards = ({ items }: MovieDownloadsProps) => {
   )
 }
 
-export const MovieDownloadsTable = ({ items }: MovieDownloadsProps) => {
+export const MovieDownloadsTable = ({ items }: Omit<MovieDownloadsProps, 'mode'>) => {
   return (
     <Table>
-      <Table.ScrollContainer>
-        <Table.Content>
+      <Table.ScrollContainer aria-label="Descargas disponibles">
+        <Table.Content aria-label="Descargas">
           <Table.Header>
-            <Table.Column>
+            <Table.Column isRowHeader>
               Calidad
             </Table.Column>
             <Table.Column>

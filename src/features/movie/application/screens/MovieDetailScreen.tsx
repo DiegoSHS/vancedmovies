@@ -1,17 +1,18 @@
 import { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
-import { Button, Spinner } from "@heroui/react";
+import { useParams } from "react-router-dom";
+import { Button, Link, Spinner } from "@heroui/react";
 
 import { VideoPlayer } from "../components/VideoPlayer";
 import {
   generateMagnetLinks,
   MagnetLinkResult,
 } from "../../../../utils/magnetGenerator";
-import { MovieDownloads } from "../components/MovieDownloads";
+import { MovieDownloads, ViewModeSwitch } from "../components/MovieDownloads";
 import { useMovieContext } from "../providers/MovieProvider";
 import { MovieDetailsCard } from "../components/MovieDetailsCard";
 import { useTPBMovieContext } from "../providers/TPBMovieProvider";
 import { TPBtoTorrent } from "../../domain/entities/Torrent";
+import { useLocalStorage } from "@/hooks/useLocalStorage";
 
 // Devuelve una lista de MagnetLinkResult con el mejor torrent 1080p (más seeds) o el de mayor calidad disponible (más seeds)
 function getBestQualityMagnets(torrents: MagnetLinkResult[]): MagnetLinkResult[] {
@@ -41,7 +42,14 @@ function getBestQualityMagnets(torrents: MagnetLinkResult[]): MagnetLinkResult[]
 
 export const MovieDetailScreen: React.FC = () => {
   const { id } = useParams<{ id: string }>();
-  const navigate = useNavigate();
+  const { item: viewMode, setItem } = useLocalStorage('viewMode', 'card')
+  const swapViewMode = () => {
+    if (viewMode === 'table') {
+      setItem('card')
+    } else {
+      setItem('table')
+    }
+  }
   const {
     getMovieById,
     cleanSelectedMovie,
@@ -53,17 +61,20 @@ export const MovieDetailScreen: React.FC = () => {
     loading: loadingExtra,
     searchMovies,
     updateQuery,
-    state: { items },
   } = useTPBMovieContext()
   const [showPlayer, setShowPlayer] = useState(false);
   const [extraMagnets, setExtraMagnets] = useState<MagnetLinkResult[]>([]);
 
   useEffect(() => {
     const fetchTorrents = async () => {
-      if (!movie) return
+      if (!movie?.title) return
       updateQuery(movie.title)
-      searchMovies()
-      const { data } = generateMagnetLinks(items.map(TPBtoTorrent), movie.title)
+      const movies = await searchMovies()
+      console.log('Fetched', movies)
+      const torrents = movies.map(TPBtoTorrent)
+      console.log('Added torrents', torrents)
+      const { data } = generateMagnetLinks(torrents, movie.title)
+      console.log('Generated magnets', data)
       setExtraMagnets(data);
     }
     fetchTorrents();
@@ -97,9 +108,11 @@ export const MovieDetailScreen: React.FC = () => {
           <p className="text-gray-600 dark:text-gray-300 mb-6">
             {error || "No se encontró la película"}
           </p>
-          <Button className="bg-blue-600 text-white px-4 py-2 rounded" onPress={() => navigate("/")}>
-            Volver al inicio
-          </Button>
+          <Link href="/page/1" className='no-underline'>
+            <Button className="bg-blue-600 text-white px-4 py-2 rounded">
+              Volver al inicio
+            </Button>
+          </Link>
         </div>
       </div>
     );
@@ -120,9 +133,11 @@ export const MovieDetailScreen: React.FC = () => {
 
   return (
     <div className="container mx-auto px-4 py-8 flex flex-col gap-2 items-center">
-      <Button className="bg-transparent text-blue-600 hover:text-blue-800 px-3 py-1" onPress={() => navigate(-1)}>
-        ← Volver
-      </Button>
+      <Link href="/page/1" className="no-underline">
+        <Button size="sm" variant="ghost">
+          ← Volver
+        </Button>
+      </Link>
       <MovieDetailsCard
         posterUrl={posterUrl}
         {...movie}
@@ -159,7 +174,10 @@ export const MovieDetailScreen: React.FC = () => {
           Ver Película
         </Button>
       )}
-      <MovieDownloads items={magnetLinks} />
+      <div className="flex w-full items-center justify-end">
+        <ViewModeSwitch mode={viewMode} swapViewMode={swapViewMode} />
+      </div>
+      <MovieDownloads items={magnetLinks.sort((prev, next) => next.torrent.seeds - prev.torrent.seeds)} mode={viewMode} />
       Descargas extra
       {
         loadingExtra && (
@@ -169,7 +187,7 @@ export const MovieDetailScreen: React.FC = () => {
           </div>
         )
       }
-      <MovieDownloads items={extraMagnets} />
+      <MovieDownloads items={extraMagnets.sort((prev, next) => next.torrent.seeds - prev.torrent.seeds)} mode={viewMode} />
     </div>
   );
 };

@@ -10,11 +10,11 @@ export const siteConfig = {
     },
     {
       label: "Películas",
-      href: "/movies",
+      href: "/page/1",
     },
     {
-      label: "Acerca de",
-      href: "/about",
+      label: "Mi torrent",
+      href: "/torrent",
     },
   ],
   navMenuItems: [
@@ -24,11 +24,11 @@ export const siteConfig = {
     },
     {
       label: "Películas",
-      href: "/movies",
+      href: "/page/1",
     },
     {
-      label: "Acerca de",
-      href: "/about",
+      label: "Mi torrent",
+      href: "/torrent",
     },
   ],
   links: {

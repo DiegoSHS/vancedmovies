@@ -171,7 +171,8 @@ export class MovieDatasourceImp extends MovieDatasource {
 export class TPBMovieDatasourceImp extends TPBMovieDatasource {
   async searchMovies(query: string): Promise<TPBMovie[]> {
     try {
-      const url = `${import.meta.env.VITE_TPB_API}?q=${encodeURIComponent(query)}`
+      if (!Boolean(query)) return []
+      const url = `${import.meta.env.VITE_FLASK_BACKEND_URL}/tpb_search?q=${encodeURIComponent(query)}`
       const data = await ApiClient.get<TPBMovie[]>(url)
       return data
     } catch (error) {

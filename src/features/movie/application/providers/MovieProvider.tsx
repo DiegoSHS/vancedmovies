@@ -4,7 +4,7 @@ import { MovieRepositoryImp } from "../../infrastructure/repository/MovieReposit
 import { MovieDatasourceImp } from "../../infrastructure/datasources/MovieDatasource";
 import { BaseState, useBaseReducer } from "@/utils";
 import { Movie } from "../../domain/entities/Movie";
-import { generateMagnetLinksFromBackend, MagnetLinkResult } from "@/types";
+import { Torrent, XMovieToTorrent } from "../../domain/entities/Torrent";
 export interface MovieProviderProps {
   children: ReactNode;
 }
@@ -13,7 +13,7 @@ interface MovieContextType {
   state: BaseState<Movie>;
   getMovies: (page: number) => Promise<void>;
   getMovieById: (id: number) => Promise<void>;
-  getMoreTorrents: (movie: Movie) => Promise<MagnetLinkResult[]>;
+  getMoreTorrents: (movie: Movie) => Promise<Torrent[]>;
   cleanSelectedMovie: () => void;
   searchMovies: (page: number) => Promise<void>;
   updateQuery: (newQuery: string) => void;
@@ -86,7 +86,7 @@ export const MovieProvider: React.FC<MovieProviderProps> = ({ children }) => {
       modifyProviderState({ error: null });
       const data = await movieRepository.getMoreTorrents(movie);
       if (!data?.movies) return []
-      const magnetLinks = generateMagnetLinksFromBackend(data.movies);
+      const magnetLinks = data.movies.map(XMovieToTorrent)
       return magnetLinks
     } catch (error) {
       modifyProviderState({ error: "Error al obtener más torrents" });

@@ -1,4 +1,3 @@
-import { XMovie } from "@/features/movie/domain/entities/1337XMovie";
 import { Torrent } from "../features/movie/domain/entities/Torrent";
 
 const TRACKERS = [
@@ -125,6 +124,20 @@ const WS_TRACKERS = [
 ];
 
 /**
+ * Source - https://stackoverflow.com/a/19707059
+ * Posted by Jimbo, modified by community.
+ * See post 'Timeline' for change history
+ * Retrieved 2026-04-02, License - CC BY-SA 4.0
+ */
+const magnetRegExp = /magnet:\?xt=urn:[a-z0-9]+:[a-z0-9]{32}/i
+
+export const checkMagnet = (magnet: string) => {
+  return magnet.match(magnetRegExp)
+}
+
+const hashRegex = /^[a-fA-F0-9]{40}$/;
+
+/**
  * Valida que un torrent tenga los datos mínimos necesarios
  * @param torrent - El objeto torrent a validar
  * @returns boolean - true si el torrent es válido
@@ -133,13 +146,7 @@ const validateTorrent = (torrent: Torrent): boolean => {
   if (!torrent.hash || typeof torrent.hash !== 'string' || torrent.hash.trim().length === 0) {
     return false;
   }
-
-  const hashRegex = /^[a-fA-F0-9]{40}$/;
   if (!hashRegex.test(torrent.hash.trim())) {
-    return false;
-  }
-
-  if (!torrent.quality || typeof torrent.quality !== 'string' || torrent.quality.trim().length === 0) {
     return false;
   }
 
@@ -282,20 +289,10 @@ export const generateMagnetLinks = (
       magnetLink: magnetResult.data,
     }));
 
-  if (results.length === 0) {
-    const errors = processedResults
-      .filter(({ magnetResult }) => magnetResult.error)
-      .map(({ torrent, magnetResult }) => `Error en torrent ${torrent.quality}: ${magnetResult.error}`);
-
-    const errorMessage = errors.length > 0
-      ? `No se encontraron torrents válidos. Errores: ${errors.join(', ')}`
-      : "No se encontraron torrents válidos para generar enlaces magnet";
-
-    return {
-      error: errorMessage,
-      data: [],
-    };
-  }
+  if (results.length === 0) return {
+    error: 'Error al generar los magnets',
+    data: [],
+  };
 
   return {
     error: null,
@@ -411,28 +408,3 @@ export const extractMagnetInfo = (magnetLink: string): {
     trackers
   };
 };
-
-
-export function generateMagnetLinksFromBackend(scrapperTorrents: XMovie[]): MagnetLinkResult[] {
-  return scrapperTorrents.map(generateMagnetLinkFromBackend);
-}
-
-export const generateMagnetLinkFromBackend = (item: XMovie): MagnetLinkResult => ({
-  torrent: {
-    url: '',
-    hash: item.info_hash,
-    quality: item.name.match(/(\d{3,4}p)/)?.[1] || item.type || 'HD',
-    type: item.type || '',
-    is_repack: '',
-    video_codec: '',
-    bit_depth: '',
-    audio_channels: '',
-    seeds: parseInt(item.seeders) || 0,
-    peers: parseInt(item.leechers) || 0,
-    size: item.size,
-    size_bytes: 0, // No disponible
-    date_uploaded: item.date_uploaded,
-    date_uploaded_unix: 0, // No disponible
-  },
-  magnetLink: item.magnet_link,
-})

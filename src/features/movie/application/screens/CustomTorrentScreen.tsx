@@ -1,23 +1,15 @@
 import { Button, Input, toast } from "@heroui/react"
 import { VideoPlayer } from "../components/VideoPlayer"
 import { ChangeEvent, useState } from "react"
-import { extractMagnetInfo } from "@/types"
+import { checkMagnet, extractMagnetInfo } from "@/types"
 
 export const CustomTorrentScreen: React.FC = () => {
-    /**
-     * Source - https://stackoverflow.com/a/19707059
-     * Posted by Jimbo, modified by community.
-     * See post 'Timeline' for change history
-     * Retrieved 2026-04-02, License - CC BY-SA 4.0
-     */
-    const magnetRegExp = /magnet:\?xt=urn:[a-z0-9]+:[a-z0-9]{32}/i
+
 
     const [magnetLink, setMagnetLink] = useState('');
     const [disabled, setDisabled] = useState(false);
     const [movieTitle, setMovieTitle] = useState("Tu propia pelicula");
-    const checkMagnet = (magnet: string) => {
-        return magnet.match(magnetRegExp)
-    }
+
     const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
         console.log(event.target.value)
         if (!checkMagnet(event.target.value)) return

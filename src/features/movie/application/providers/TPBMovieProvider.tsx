@@ -6,7 +6,7 @@ import { MovieProviderProps, ProviderState } from "./MovieProvider";
 import { BaseState, useBaseReducer } from "@/utils";
 
 interface TPBMovieContextType {
-    searchMovies(): Promise<void>
+    searchMovies(): Promise<TPBMovie[]>
     updateQuery(query: string): void
     resetQuery(): void
     state: BaseState<TPBMovie>
@@ -38,16 +38,19 @@ export const TPBMovieProvider: React.FC<MovieProviderProps> = ({ children }) => 
         try {
             modifyProviderState({ loading: true, error: null })
             const movies = await movieRepository.searchMovies(query)
+            console.log('Fetched movies', movies)
             dispatch({ type: 'SET', payload: movies })
             modifyProviderState({
                 totalResults: movies.length,
                 loading: false,
             })
+            return movies
         } catch (error) {
             modifyProviderState({
                 error: 'Error al buscar peliculas'
             })
             dispatch({ type: 'RESET' })
+            return []
         } finally {
             modifyProviderState({ loading: false })
         }
