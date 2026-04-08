@@ -3,12 +3,13 @@ import { TPBMovie } from "../../domain/entities/ThePirateBayMovie";
 import { TPBMovieDatasourceImp } from "../../infrastructure/datasources/MovieDatasource";
 import { TPBMovieRepositoryImp } from "../../infrastructure/repository/MovieRepository";
 import { MovieProviderProps } from "./MovieProvider";
-import { BaseState, ProviderState, useBaseProviderState, useBaseReducer } from "@/utils";
+import { BaseState, defaultProviderState, ProviderState, useBaseProviderState, useBaseReducer } from "@/utils";
 
 interface TPBMovieContextType extends ProviderState {
     searchMovies(): Promise<TPBMovie[]>
     updateQuery(query: string): void
     resetQuery(): void
+    cleanMovies(): void
     state: BaseState<TPBMovie>
 }
 
@@ -29,7 +30,6 @@ export const TPBMovieProvider: React.FC<MovieProviderProps> = ({ children }) => 
         try {
             modifyProviderState({ loading: true, error: null })
             const movies = await movieRepository.searchMovies(query)
-            console.log('Fetched movies', movies)
             dispatch({ type: 'SET', payload: movies })
             modifyProviderState({
                 totalResults: movies.length,
@@ -44,6 +44,10 @@ export const TPBMovieProvider: React.FC<MovieProviderProps> = ({ children }) => 
             modifyProviderState({ loading: false })
         }
     }
+    const cleanMovies = () => {
+        dispatch({ type: 'RESET' })
+        modifyProviderState(defaultProviderState)
+    }
     const updateQuery = (query: string) => {
         modifyProviderState({ query })
     }
@@ -55,6 +59,7 @@ export const TPBMovieProvider: React.FC<MovieProviderProps> = ({ children }) => 
         searchMovies,
         resetQuery,
         updateQuery,
+        cleanMovies,
         query,
         error,
         loading,

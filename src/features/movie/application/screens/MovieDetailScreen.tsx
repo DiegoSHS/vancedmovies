@@ -32,6 +32,7 @@ export const MovieDetailScreen: React.FC = () => {
     loading: loadingExtra,
     searchMovies,
     updateQuery,
+    cleanMovies,
   } = useTPBMovieContext()
   const {
     addMagnetLinks,
@@ -47,7 +48,6 @@ export const MovieDetailScreen: React.FC = () => {
       addMagnetLinks(movie.torrents, movie.title)
       updateQuery(movie.title)
       const movies = await searchMovies()
-      console.log('Fetched', movies)
       const torrents = movies.map(TPBtoTorrent)
       addMagnetLinks(torrents, movie.title)
       autoSelectMagnetLink()
@@ -62,6 +62,7 @@ export const MovieDetailScreen: React.FC = () => {
       setShowPlayer(false)
       cleanMagnetLinks()
       cleanSelectedMovie()
+      cleanMovies()
     }
   }, [id]);
 
@@ -111,7 +112,7 @@ export const MovieDetailScreen: React.FC = () => {
         {...movie}
       />
 
-      {(showPlayer && magnets.length > 0 && selectedMagnet) && (
+      {(showPlayer && selectedMagnet) && (
         <VideoPlayer
           movieTitle={movie.title}
           magnetLink={selectedMagnet.magnetLink}
@@ -123,7 +124,7 @@ export const MovieDetailScreen: React.FC = () => {
         <Button
           size="lg"
           className="px-4 py-2 flex items-center gap-2"
-          onPress={() => setShowPlayer(false)}
+          onPress={() => setShowPlayer(true)}
         >
           <PlayIcon />
           Ver Película
@@ -133,7 +134,6 @@ export const MovieDetailScreen: React.FC = () => {
         <ViewModeSwitch mode={viewMode} swapViewMode={swapViewMode} />
       </div>
       <MovieDownloads items={magnets} mode={viewMode} />
-      Descargas extra
       {
         loadingExtra && (
           <div className="flex items-center gap-2 mt-4">

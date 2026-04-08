@@ -38,7 +38,7 @@ export interface ProviderState {
     error: string | null;
 }
 
-const defaultProviderState: ProviderState = {
+export const defaultProviderState: ProviderState = {
     error: null,
     loading: false,
     query: '',

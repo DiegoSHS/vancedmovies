@@ -1,10 +1,11 @@
-import { Button, Card, Chip, Dropdown, EmptyState, Link, Switch, Table } from "@heroui/react";
+import { Button, Card, Chip, Dropdown, EmptyState, Link, Switch, Table, toast } from "@heroui/react";
 import { useState } from "react";
 
 import { Torrent } from "../../domain/entities/Torrent";
 
 import { copyMagnetToClipboard, MagnetLinkResult } from "@/types";
 import { CheckIcon, CopyIcon, DownloadIcon, ListIcon, PlayIcon, SquaresIcon } from "@/components/icons";
+import { useTorrentContext } from "../providers/TorrentProvider";
 
 async function handleMagnetCopy(
   magnetLink: string,
@@ -29,11 +30,11 @@ const NoDownloadsAvailable = ({ message = "No hay descargas disponibles" }: { me
 }
 
 interface TorrentActionButtonProps {
-  magnetLink: string
+  torrent: MagnetLinkResult
   isIconOnly?: boolean
 }
 
-export const CopyTorrentButton = ({ magnetLink, isIconOnly = false }: TorrentActionButtonProps) => {
+export const CopyTorrentButton = ({ torrent, isIconOnly = false }: TorrentActionButtonProps) => {
   const [copied, setCopied] = useState(false);
   return (
     <Button
@@ -42,7 +43,7 @@ export const CopyTorrentButton = ({ magnetLink, isIconOnly = false }: TorrentAct
       isIconOnly={isIconOnly}
       isDisabled={copied}
       className={`${copied ? "text-success" : ""}`}
-      onClick={() => handleMagnetCopy(magnetLink, setCopied)}
+      onClick={() => handleMagnetCopy(torrent.magnetLink, setCopied)}
     >
       {
         copied ? <CheckIcon /> : <CopyIcon />
@@ -56,10 +57,10 @@ export const CopyTorrentButton = ({ magnetLink, isIconOnly = false }: TorrentAct
   )
 }
 
-export const OpenTorrentButton = ({ magnetLink, isIconOnly = false }: TorrentActionButtonProps) => {
+export const OpenTorrentButton = ({ torrent, isIconOnly = false }: TorrentActionButtonProps) => {
   return (
     <Link
-      href={magnetLink}
+      href={torrent.magnetLink}
       target="_blank"
       rel="noreferrer noopener"
       className="no-underline"
@@ -80,18 +81,25 @@ export const OpenTorrentButton = ({ magnetLink, isIconOnly = false }: TorrentAct
   )
 }
 
-export const PlayTorrentButton = ({ magnetLink, isIconOnly }: TorrentActionButtonProps) => {
+export const PlayTorrentButton = ({ torrent, isIconOnly }: TorrentActionButtonProps) => {
+  const { selectMagnetLink } = useTorrentContext()
+  const handleClick = () => {
+    selectMagnetLink(torrent)
+    toast.info('Añadido para reproducción')
+  }
   return (
     <Button
       size="sm"
       variant="secondary"
       isIconOnly={isIconOnly}
-      onPress={() => {
-        console.log(magnetLink)
-      }}
+      onPress={handleClick}
     >
       <PlayIcon />
-      Ver
+      {
+        isIconOnly || (
+          "Ver"
+        )
+      }
     </Button>
   )
 }
@@ -176,46 +184,58 @@ export const MovieDownloadOptions = ({
   );
 };
 
-export const MovieDownloadCard = ({
-  torrent,
-  magnetLink,
-}: MagnetLinkResult) => {
+export const MovieDownloadCard = ({ item,
+}: { item: MagnetLinkResult }) => {
   return (
     <Card
-      key={torrent.hash}
+      key={item.torrent.hash}
       className="overflow-hidden hover:shadow-lg transition-shadow"
     >
       <Card.Header className="flex flex-row gap-2 justify-between">
         <Chip className="inline-flex items-center px-2 py-1">
-          <Chip.Label>{torrent.quality}</Chip.Label>
+          <Chip.Label>{item.torrent.quality}</Chip.Label>
         </Chip>
         <Chip className="inline-flex items-center px-2 py-1 text-sm">
-          <Chip.Label>{torrent.type}</Chip.Label>
+          <Chip.Label>{item.torrent.type}</Chip.Label>
         </Chip>
       </Card.Header>
       <Card.Content className="flex flex-col gap-2 text-sm py-0 my-0">
         <div className="flex items-center gap-1">
           <span className="text-gray-600 dark:text-gray-400">Tamaño:</span>
-          <span className="font-medium">{torrent.size}</span>
+          <span className="font-medium">{item.torrent.size}</span>
         </div>
         <div className="flex items-center gap-1">
           <Chip color="success" className="inline-flex items-center px-2 py-1">
-            <Chip.Label>Seeders: {torrent.seeds}</Chip.Label>
+            <Chip.Label>Seeders: {item.torrent.seeds}</Chip.Label>
           </Chip>
           <Chip color="success" className="inline-flex items-center px-2 py-1">
-            <Chip.Label>Peers: {torrent.peers}</Chip.Label>
+            <Chip.Label>Peers: {item.torrent.peers}</Chip.Label>
           </Chip>
         </div>
       </Card.Content>
       <Card.Footer className="flex gap-2">
-        <CopyTorrentButton magnetLink={magnetLink} />
-        <OpenTorrentButton magnetLink={magnetLink} />
-        <PlayTorrentButton magnetLink={magnetLink} />
+        <CopyTorrentButton torrent={item} />
+        <OpenTorrentButton torrent={item} />
+        <PlayTorrentButton torrent={item} />
       </Card.Footer>
     </Card>
   );
 };
 
+export const MovieDownloadCards = ({ items }: Omit<MovieDownloadsProps, 'mode'>) => {
+  return (
+    <div className="flex flex-wrap gap-2 justify-center items-center">
+      {
+        items.map((item) => (
+          <MovieDownloadCard
+            key={item.torrent.hash}
+            item={item}
+          />
+        ))
+      }
+    </div>
+  )
+}
 interface ViewModeSwitchProps {
   mode: string
   swapViewMode: () => void
@@ -278,21 +298,6 @@ export const MovieDownloads = ({ items, mode }: MovieDownloadsProps) => {
   );
 };
 
-export const MovieDownloadCards = ({ items }: Omit<MovieDownloadsProps, 'mode'>) => {
-  return (
-    <div className="flex flex-wrap gap-2 justify-center items-center">
-      {
-        items.map(({ magnetLink, torrent }) => (
-          <MovieDownloadCard
-            key={torrent.hash}
-            magnetLink={magnetLink}
-            torrent={torrent}
-          />
-        ))
-      }
-    </div>
-  )
-}
 
 export const MovieDownloadsTable = ({ items }: Omit<MovieDownloadsProps, 'mode'>) => {
   return (
@@ -344,8 +349,9 @@ export const MovieDownloadsTable = ({ items }: Omit<MovieDownloadsProps, 'mode'>
                       {item.torrent.peers}
                     </Table.Cell>
                     <Table.Cell className="flex gap-1">
-                      <CopyTorrentButton magnetLink={item.magnetLink} />
-                      <OpenTorrentButton magnetLink={item.magnetLink} />
+                      <CopyTorrentButton torrent={item} />
+                      <OpenTorrentButton torrent={item} />
+                      <PlayTorrentButton torrent={item} />
                     </Table.Cell>
                   </Table.Row>
                 )

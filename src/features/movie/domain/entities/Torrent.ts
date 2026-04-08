@@ -29,6 +29,7 @@ export const parseSeedPeers = (input: string) => {
 
 export const TPBtoTorrent = (input: TPBMovie): Torrent => {
   const upperName = input.name.toUpperCase()
+  const isDual = upperName.includes('DUAL')
   const type = upperName.includes('WEB') ? 'web' : upperName.includes('BLURAY') ? 'bluray' : upperName.includes('HDRIP') ? 'hdrip' : 'hp'
   return {
     url: '',
@@ -44,7 +45,7 @@ export const TPBtoTorrent = (input: TPBMovie): Torrent => {
     size: formatBytes(parseInt(input.size)),
     size_bytes: parseInt(input.size),
     video_codec: '',
-    type
+    type: `${type}${isDual ? ' - Dual' : ''}`
   }
 }
 
