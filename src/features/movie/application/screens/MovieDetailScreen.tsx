@@ -46,6 +46,7 @@ export const MovieDetailScreen: React.FC = () => {
     const fetchTorrents = async () => {
       if (!movie?.title) return
       addMagnetLinks(movie.torrents, movie.title)
+      autoSelectMagnetLink()
       updateQuery(movie.title)
       const movies = await searchMovies()
       const torrents = movies.map(TPBtoTorrent)
@@ -111,15 +112,13 @@ export const MovieDetailScreen: React.FC = () => {
         posterUrl={posterUrl}
         {...movie}
       />
-
-      {(showPlayer && selectedMagnet) && (
+      {(showPlayer && selectedMagnet) &&
         <VideoPlayer
           movieTitle={movie.title}
           magnetLink={selectedMagnet.magnetLink}
           onClose={() => setShowPlayer(false)}
         />
-      )}
-
+      }
       {!showPlayer && magnets.length > 0 && (
         <Button
           size="lg"
