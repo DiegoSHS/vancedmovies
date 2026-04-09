@@ -1,11 +1,11 @@
-import { Button, Card, Chip, Dropdown, EmptyState, Link, Switch, Table, toast } from "@heroui/react";
+import { Button, Card, Chip, Dropdown, EmptyState, Link, Switch, Table, TableLayout, toast, Virtualizer } from "@heroui/react";
 import { useState } from "react";
 
 import { Torrent } from "../../domain/entities/Torrent";
 
 import { copyMagnetToClipboard, MagnetLinkResult } from "@/types";
 import { CheckIcon, CopyIcon, DownloadIcon, ListIcon, PlayIcon, SquaresIcon } from "@/components/icons";
-import { useTorrentContext } from "../providers/TorrentProvider";
+import { useTPBMovieContext } from "../providers/TPBMovieProvider";
 
 async function handleMagnetCopy(
   magnetLink: string,
@@ -82,7 +82,7 @@ export const OpenTorrentButton = ({ torrent, isIconOnly = false }: TorrentAction
 }
 
 export const PlayTorrentButton = ({ torrent, isIconOnly }: TorrentActionButtonProps) => {
-  const { selectMagnetLink } = useTorrentContext()
+  const { selectMagnetLink } = useTPBMovieContext()
   const handleClick = () => {
     selectMagnetLink(torrent)
     toast.info('Añadido para reproducción')
@@ -195,9 +195,19 @@ export const MovieDownloadCard = ({ item,
         <Chip className="inline-flex items-center px-2 py-1">
           <Chip.Label>{item.torrent.quality}</Chip.Label>
         </Chip>
-        <Chip className="inline-flex items-center px-2 py-1 text-sm">
-          <Chip.Label>{item.torrent.type}</Chip.Label>
-        </Chip>
+
+        <Dropdown>
+          <Dropdown.Trigger className="bg-default rounded-full m-0 py-1.5 px-3 text-accent font-medium text-sm">
+            Detalles
+          </Dropdown.Trigger>
+          <Dropdown.Popover>
+            <Dropdown.Menu>
+              <Dropdown.Item className="hover:cursor-default">
+                {item.torrent.type}
+              </Dropdown.Item>
+            </Dropdown.Menu>
+          </Dropdown.Popover>
+        </Dropdown>
       </Card.Header>
       <Card.Content className="flex flex-col gap-2 text-sm py-0 my-0">
         <div className="flex items-center gap-1">
@@ -301,65 +311,84 @@ export const MovieDownloads = ({ items, mode }: MovieDownloadsProps) => {
 
 export const MovieDownloadsTable = ({ items }: Omit<MovieDownloadsProps, 'mode'>) => {
   return (
-    <Table>
-      <Table.ScrollContainer aria-label="Descargas disponibles">
-        <Table.Content aria-label="Descargas">
-          <Table.Header>
-            <Table.Column isRowHeader>
-              Calidad
-            </Table.Column>
-            <Table.Column>
-              Tipo
-            </Table.Column>
-            <Table.Column>
-              Tamaño
-            </Table.Column>
-            <Table.Column>
-              Seeds
-            </Table.Column>
-            <Table.Column>
-              Peers
-            </Table.Column>
-            <Table.Column>
-              Accciones
-            </Table.Column>
-          </Table.Header>
-          <Table.Body renderEmptyState={() => (
-            <EmptyState className="flex h-full w-full flex-col items-center justify-center gap-4 text-center">
-              <span className="text-sm text-muted">Sin descargas disponibles</span>
-            </EmptyState>
-          )} className={'font-bold'}>
-            <Table.Collection items={items}>
-              {
-                (item) => (
-                  <Table.Row id={item.torrent.hash}>
-                    <Table.Cell>
-                      {item.torrent.quality}
-                    </Table.Cell>
-                    <Table.Cell>
-                      {item.torrent.type}
-                    </Table.Cell>
-                    <Table.Cell>
-                      {item.torrent.size}
-                    </Table.Cell>
-                    <Table.Cell className={'text-success'}>
-                      {item.torrent.seeds}
-                    </Table.Cell>
-                    <Table.Cell className={'text-success'}>
-                      {item.torrent.peers}
-                    </Table.Cell>
-                    <Table.Cell className="flex gap-1">
-                      <CopyTorrentButton torrent={item} />
-                      <OpenTorrentButton torrent={item} />
-                      <PlayTorrentButton torrent={item} />
-                    </Table.Cell>
-                  </Table.Row>
-                )
-              }
-            </Table.Collection>
-          </Table.Body>
-        </Table.Content>
-      </Table.ScrollContainer>
-    </Table>
+    <Virtualizer layout={TableLayout} layoutOptions={{
+      headingHeight: 42,
+      rowHeight: 42,
+    }}>
+      <Table className="w-full">
+        <Table.ScrollContainer aria-label="Descargas disponibles">
+          <Table.Content
+            aria-label="Descargas"
+            className="h-[500px] min-w-full overflow-auto"
+          >
+            <Table.Header className={'min-w-full h-full'}>
+              <Table.Column isRowHeader>
+                Calidad
+              </Table.Column>
+              <Table.Column>
+                Detalles
+              </Table.Column>
+              <Table.Column>
+                Tamaño
+              </Table.Column>
+              <Table.Column>
+                Seeds
+              </Table.Column>
+              <Table.Column>
+                Peers
+              </Table.Column>
+              <Table.Column>
+                Accciones
+              </Table.Column>
+            </Table.Header>
+            <Table.Body renderEmptyState={() => (
+              <EmptyState className="flex h-full w-full flex-col items-center justify-center gap-4 text-center">
+                <span className="text-sm text-muted">Sin descargas disponibles</span>
+              </EmptyState>
+            )} className={'font-bold'}>
+              <Table.Collection items={items}>
+                {
+                  (item) => (
+                    <Table.Row id={item.torrent.hash}>
+                      <Table.Cell>
+                        {item.torrent.quality}
+                      </Table.Cell>
+                      <Table.Cell>
+                        <Dropdown>
+                          <Dropdown.Trigger className="bg-default rounded-full m-0 py-1.5 px-3 text-accent font-medium">
+                            Detalles
+                          </Dropdown.Trigger>
+                          <Dropdown.Popover>
+                            <Dropdown.Menu>
+                              <Dropdown.Item className="hover:cursor-default">
+                                {item.torrent.type}
+                              </Dropdown.Item>
+                            </Dropdown.Menu>
+                          </Dropdown.Popover>
+                        </Dropdown>
+                      </Table.Cell>
+                      <Table.Cell>
+                        {item.torrent.size}
+                      </Table.Cell>
+                      <Table.Cell className={'text-success'}>
+                        {item.torrent.seeds}
+                      </Table.Cell>
+                      <Table.Cell className={'text-success'}>
+                        {item.torrent.peers}
+                      </Table.Cell>
+                      <Table.Cell className="flex gap-1">
+                        <CopyTorrentButton torrent={item} />
+                        <OpenTorrentButton torrent={item} />
+                        <PlayTorrentButton torrent={item} />
+                      </Table.Cell>
+                    </Table.Row>
+                  )
+                }
+              </Table.Collection>
+            </Table.Body>
+          </Table.Content>
+        </Table.ScrollContainer>
+      </Table>
+    </Virtualizer>
   )
 }

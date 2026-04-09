@@ -6,10 +6,8 @@ import { MovieDownloads, ViewModeSwitch } from "../components/MovieDownloads";
 import { useMovieContext } from "../providers/MovieProvider";
 import { MovieDetailsCard } from "../components/MovieDetailsCard";
 import { useTPBMovieContext } from "../providers/TPBMovieProvider";
-import { TPBtoTorrent } from "../../domain/entities/Torrent";
 import { useLocalStorage } from "@/hooks/useLocalStorage";
 import { PlayIcon } from "@/components/icons";
-import { useTorrentContext } from "../providers/TorrentProvider";
 
 export const MovieDetailScreen: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -31,41 +29,36 @@ export const MovieDetailScreen: React.FC = () => {
   const {
     loading: loadingExtra,
     searchMovies,
-    updateQuery,
     cleanMovies,
-  } = useTPBMovieContext()
-  const {
+    cleanMagnetLinks,
     addMagnetLinks,
     autoSelectMagnetLink,
-    cleanMagnetLinks,
-    state: { selectedItem: selectedMagnet, items: magnets }
-  } = useTorrentContext()
+    magnetState: { items: magnets, selectedItem: selectedMagnet }
+  } = useTPBMovieContext()
   const [showPlayer, setShowPlayer] = useState(false);
 
-  useEffect(() => {
-    const fetchTorrents = async () => {
-      if (!movie?.title) return
-      addMagnetLinks(movie.torrents, movie.title)
-      autoSelectMagnetLink()
-      updateQuery(movie.title)
-      const movies = await searchMovies()
-      const torrents = movies.map(TPBtoTorrent)
-      addMagnetLinks(torrents, movie.title)
-      autoSelectMagnetLink()
-    }
-    fetchTorrents();
-  }, [movie]);
+  const cleanup = () => {
+    setShowPlayer(false)
+    cleanMagnetLinks()
+    cleanSelectedMovie()
+    cleanMovies()
+  }
 
-  useEffect(() => {
+  const effect = () => {
     if (!id) return;
-    getMovieById(parseInt(id))
-    return () => {
-      setShowPlayer(false)
-      cleanMagnetLinks()
-      cleanSelectedMovie()
-      cleanMovies()
+    const fetchMovieData = async () => {
+      const result = await getMovieById(parseInt(id))
+      if (!result) return
+      addMagnetLinks(result.torrents, result.title)
+      autoSelectMagnetLink()
+      searchMovies(result.title)
+      autoSelectMagnetLink()
     }
-  }, [id]);
+    fetchMovieData()
+    return cleanup
+  }
+
+  useEffect(effect, [id]);
 
   if (loading || !movie) {
     return (

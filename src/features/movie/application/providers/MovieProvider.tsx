@@ -10,11 +10,11 @@ export interface MovieProviderProps {
 
 interface MovieContextType {
   state: BaseState<Movie>;
-  getMovies: (page: number) => Promise<void>;
-  getMovieById: (id: number) => Promise<void>;
+  getMovies: (page: number) => Promise<Movie[]>;
+  getMovieById: (id: number) => Promise<Movie | undefined>;
   getMoreTorrents: (movie: Movie) => Promise<Torrent[]>;
   cleanSelectedMovie: () => void;
-  searchMovies: (page: number) => Promise<void>;
+  searchMovies: (page: number) => Promise<Movie[]>;
   updateQuery: (newQuery: string) => void;
   resetQuery: () => void;
   query: string;
@@ -42,16 +42,18 @@ export const MovieProvider: React.FC<MovieProviderProps> = ({ children }) => {
     try {
       modifyProviderState({ loading: true, error: null });
       const { data } = await movieRepository.getMovies(page);
-      if (!data?.movies) return
+      if (!data?.movies) return []
       modifyProviderState({
         totalResults: data.movie_count,
         loading: false,
         error: null,
       })
       dispatch({ type: "SET", payload: data.movies });
+      return data.movies
     } catch (error) {
       dispatch({ type: "RESET" });
       modifyProviderState({ error: "Error al obtener las películas" });
+      return []
     } finally {
       modifyProviderState({ loading: false });
     }
@@ -62,6 +64,7 @@ export const MovieProvider: React.FC<MovieProviderProps> = ({ children }) => {
       const { data } = await movieRepository.getMovieById(id);
       if (!data) return
       dispatch({ type: "SELECT", payload: data });
+      return data
     } catch (error) {
       dispatch({ type: "RESET" });
       modifyProviderState({ error: "Error al obtener la película" });
@@ -83,18 +86,20 @@ export const MovieProvider: React.FC<MovieProviderProps> = ({ children }) => {
   }
   const searchMovies = async (page: number) => {
     try {
-      if (query.trim() === '') return;
+      if (query.trim() === '') return []
       modifyProviderState({ loading: true, error: null });
       const { data } = await movieRepository.searchMovies(query, page);
       modifyProviderState
-      if (!data?.movies) return
+      if (!data?.movies) return []
       modifyProviderState({
         totalResults: data.movie_count
       });
       dispatch({ type: "SET", payload: data.movies });
+      return data.movies
     } catch (error) {
       modifyProviderState({ error: "Error al buscar películas" });
       dispatch({ type: "RESET" });
+      return []
     } finally {
       modifyProviderState({ loading: false });
     }
