@@ -312,32 +312,31 @@ export const MovieDownloads = ({ items, mode }: MovieDownloadsProps) => {
 export const MovieDownloadsTable = ({ items }: Omit<MovieDownloadsProps, 'mode'>) => {
   return (
     <Virtualizer layout={TableLayout} layoutOptions={{
-      headingHeight: 42,
-      rowHeight: 42,
+
     }}>
-      <Table className="w-full">
+      <Table>
         <Table.ScrollContainer aria-label="Descargas disponibles">
           <Table.Content
             aria-label="Descargas"
-            className="h-[500px] min-w-full overflow-auto"
+            className="min-w-[700px] overflow-auto"
           >
-            <Table.Header className={'min-w-full h-full'}>
-              <Table.Column isRowHeader>
+            <Table.Header className={''}>
+              <Table.Column isRowHeader width={50}>
                 Calidad
               </Table.Column>
-              <Table.Column>
+              <Table.Column width={100}>
                 Detalles
               </Table.Column>
-              <Table.Column>
+              <Table.Column width={100}>
                 Tamaño
               </Table.Column>
-              <Table.Column>
+              <Table.Column width={50}>
                 Seeds
               </Table.Column>
-              <Table.Column>
+              <Table.Column width={50}>
                 Peers
               </Table.Column>
-              <Table.Column>
+              <Table.Column width={340}>
                 Accciones
               </Table.Column>
             </Table.Header>

@@ -33,7 +33,7 @@ export const MovieDetailScreen: React.FC = () => {
     cleanMagnetLinks,
     addMagnetLinks,
     autoSelectMagnetLink,
-    magnetState: { items: magnets, selectedItem: selectedMagnet }
+    state: { items: magnets, selectedItem: selectedMagnet }
   } = useTPBMovieContext()
   const [showPlayer, setShowPlayer] = useState(false);
 

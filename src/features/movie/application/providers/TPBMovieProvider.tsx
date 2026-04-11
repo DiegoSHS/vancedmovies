@@ -41,8 +41,7 @@ interface TPBMovieContextType extends ProviderState {
     selectMagnetLink(magnet: MagnetLinkResult): void
     cleanMagnetLinks(): void
     addMagnetLinks(torrents: Torrent[], movieTitle: string, initial?: MagnetLinkResult[]): MagnetLinkResult[]
-    state: BaseState<TPBMovie>
-    magnetState: BaseState<MagnetLinkResult>
+    state: BaseState<MagnetLinkResult>
 }
 
 const TPBMovieContext = createContext<TPBMovieContextType | undefined>(undefined)
@@ -55,8 +54,7 @@ export const TPBMovieProvider: React.FC<MovieProviderProps> = ({ children }) => 
         totalResults,
         modifyProviderState
     } = useBaseProviderState()
-    const { state, dispatch } = useBaseReducer<TPBMovie>()
-    const { state: magnetState, dispatch: magnetDispatch } = useBaseReducer<MagnetLinkResult>()
+    const { state, dispatch } = useBaseReducer<MagnetLinkResult>()
     const movieDatasource = new TPBMovieDatasourceImp()
     const movieRepository = new TPBMovieRepositoryImp(movieDatasource)
     const addMagnetLinks = (torrents: Torrent[], movieTitle: string, initial: MagnetLinkResult[] = []) => {
@@ -73,10 +71,10 @@ export const TPBMovieProvider: React.FC<MovieProviderProps> = ({ children }) => 
                 return false
             })
             const sorted = filtered.sort(sortFunction)
-            magnetDispatch({ type: "SET", payload: sorted })
+            dispatch({ type: "SET", payload: sorted })
             return sorted
         } catch (error) {
-            magnetDispatch({ type: 'RESET' })
+            dispatch({ type: 'RESET' })
             return []
         }
     }
@@ -85,9 +83,8 @@ export const TPBMovieProvider: React.FC<MovieProviderProps> = ({ children }) => 
             if (!title) return []
             modifyProviderState({ loading: true, error: null })
             const movies = await movieRepository.searchMovies(title || query)
-            dispatch({ type: 'SET', payload: movies })
             const torrents = movies.map(TPBtoTorrent)
-            addMagnetLinks(torrents, title, magnetState.items)
+            addMagnetLinks(torrents, title, state.items)
             modifyProviderState({
                 totalResults: movies.length,
                 loading: false,
@@ -115,19 +112,18 @@ export const TPBMovieProvider: React.FC<MovieProviderProps> = ({ children }) => 
         modifyProviderState({ query: '' })
     }
     const autoSelectMagnetLink = () => {
-        const bestMagnets = getBestQualityMagnets(magnetState.items)
+        const bestMagnets = getBestQualityMagnets(state.items)
         if (!bestMagnets.length) return
-        magnetDispatch({ type: 'SELECT', payload: bestMagnets[0] })
+        dispatch({ type: 'SELECT', payload: bestMagnets[0] })
     }
     const selectMagnetLink = (magnet: MagnetLinkResult) => {
-        magnetDispatch({ type: 'SELECT', payload: magnet })
+        dispatch({ type: 'SELECT', payload: magnet })
     }
     const cleanMagnetLinks = () => {
-        magnetDispatch({ type: 'RESET' })
+        dispatch({ type: 'RESET' })
     }
     const value: TPBMovieContextType = {
         state,
-        magnetState,
         searchMovies,
         resetQuery,
         updateQuery,
