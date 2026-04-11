@@ -37,6 +37,13 @@ export const MovieDetailScreen: React.FC = () => {
   } = useTPBMovieContext()
   const [showPlayer, setShowPlayer] = useState(false);
 
+  const onPlayMovie = () => {
+    if (!selectedMagnet) {
+      autoSelectMagnetLink()
+    }
+    setShowPlayer(true)
+  }
+
   const cleanup = () => {
     setShowPlayer(false)
     cleanMagnetLinks()
@@ -50,9 +57,7 @@ export const MovieDetailScreen: React.FC = () => {
       const result = await getMovieById(parseInt(id))
       if (!result) return
       addMagnetLinks(result.torrents, result.title)
-      autoSelectMagnetLink()
       searchMovies(result.title)
-      autoSelectMagnetLink()
     }
     fetchMovieData()
     return cleanup
@@ -116,7 +121,7 @@ export const MovieDetailScreen: React.FC = () => {
         <Button
           size="lg"
           className="px-4 py-2 flex items-center gap-2"
-          onPress={() => setShowPlayer(true)}
+          onPress={onPlayMovie}
         >
           <PlayIcon />
           Ver Película

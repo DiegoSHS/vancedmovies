@@ -312,7 +312,7 @@ export const MovieDownloads = ({ items, mode }: MovieDownloadsProps) => {
 export const MovieDownloadsTable = ({ items }: Omit<MovieDownloadsProps, 'mode'>) => {
   return (
     <Virtualizer layout={TableLayout} layoutOptions={{
-
+      headingHeight: 42
     }}>
       <Table>
         <Table.ScrollContainer aria-label="Descargas disponibles">
