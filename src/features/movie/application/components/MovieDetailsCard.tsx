@@ -6,19 +6,31 @@ import { MovieGenres } from "./MovieGenres"
 import { MovieDescription } from "./MovieDescription"
 import { Movie } from "../../domain/entities/Movie"
 
-interface MovieDetailsCardProps extends Movie {
-    posterUrl: string
-}
-
-export const MovieDetailsCard = ({ genres, language, rating, runtime, posterUrl, title, year, description_full }: MovieDetailsCardProps) => {
+export const MovieDetailsCard = ({
+    movie: {
+        genres,
+        language,
+        rating,
+        runtime,
+        title,
+        year,
+        description_full,
+        large_cover_image,
+        medium_cover_image
+    } }: { movie: Movie }) => {
     return (
         <div className="flex flex-col sm:flex-row gap-8 justify-evenly items-start gap-2">
-            <img
-                alt={title}
-                className="relative w-xs aspect-[9/16] inset-0 w-full object-cover rounded-xl"
-                src={posterUrl}
-            />
-
+            <picture className="relative w-xs aspect-[9/16] inset-0 w-full object-cover rounded-xl" aria-label="Carátula">
+                <source media="(min-width: 650px)" srcSet={large_cover_image} />
+                <source media="(min-width: 430px)" srcSet={medium_cover_image} />
+                <img
+                    className="relative w-xs aspect-[9/16] inset-0 w-full object-cover rounded-xl"
+                    alt={title}
+                    loading="lazy"
+                    fetchPriority="high"
+                    src={medium_cover_image}
+                />
+            </picture>
             <div className="flex flex-col gap-2">
                 <h1 className="text-4xl font-bold mb-2">{title}</h1>
                 <div className="flex flex-wrap gap-2">

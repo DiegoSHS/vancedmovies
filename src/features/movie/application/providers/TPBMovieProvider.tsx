@@ -5,7 +5,6 @@ import { generateMagnetLinks, MagnetLinkResult } from "@/types";
 import { Torrent } from "../../domain/entities/Torrent";
 import { MovieDatasourceImp } from "../../infrastructure/datasources/MovieDatasource";
 import { MovieRepositoryImp } from "../../infrastructure/repository/MovieRepository";
-import { toast } from "@heroui/react";
 
 // Devuelve una lista de MagnetLinkResult con el mejor torrent 1080p (más seeds) o el de mayor calidad disponible (más seeds)
 export function getBestQualityMagnets(torrents: MagnetLinkResult[]): MagnetLinkResult[] {
@@ -34,12 +33,9 @@ export function getBestQualityMagnets(torrents: MagnetLinkResult[]): MagnetLinkR
 }
 interface TPBMovieContextType extends ProviderState {
     getMoreTorrents(title?: string): Promise<Torrent[]>
-    updateQuery(query: string): void
-    resetQuery(): void
-    cleanMovies(): void
-    autoSelectMagnetLink(): void
+    cleanupState(): void
+    autoSelectMagnetLink(magnets?: MagnetLinkResult[]): MagnetLinkResult | undefined
     selectMagnetLink(magnet: MagnetLinkResult): void
-    cleanMagnetLinks(): void
     addMagnetLinks(torrents: Torrent[], movieTitle: string, initial?: MagnetLinkResult[]): MagnetLinkResult[]
     state: BaseState<MagnetLinkResult>
 }
@@ -63,13 +59,15 @@ export const TPBMovieProvider: React.FC<MovieProviderProps> = ({ children }) => 
             if (error) return []
             const merged = [...data, ...initial]
             const hashes = new Set<string>()
-            const filtered = merged.filter((item) => {
-                if (!hashes.has(item.torrent.hash)) {
-                    hashes.add(item.torrent.hash)
-                    return true
-                }
-                return false
-            })
+            const filtered = merged
+                .filter((item) => {
+                    const available = (item.torrent.peers > 0 && item.torrent.seeds > 0)
+                    if (!hashes.has(item.torrent.hash)) {
+                        hashes.add(item.torrent.hash)
+                        return true && available
+                    }
+                    return false
+                })
             const sorted = filtered.sort(sortFunction)
             dispatch({ type: "SET", payload: sorted })
             return sorted
@@ -91,10 +89,8 @@ export const TPBMovieProvider: React.FC<MovieProviderProps> = ({ children }) => 
             const dualMagnet = magnets.find(item => item.torrent.type.toUpperCase().includes('DUAL'))
             if (dualMagnet) {
                 selectMagnetLink(dualMagnet)
-                toast.success('Opción en español encontrada')
             } else {
-                autoSelectMagnetLink()
-                toast.success('Opcion seleccionada de forma automatica')
+                autoSelectMagnetLink(magnets)
             }
             return torrents
         } catch (error) {
@@ -108,36 +104,25 @@ export const TPBMovieProvider: React.FC<MovieProviderProps> = ({ children }) => 
     const sortFunction = (prev: MagnetLinkResult, next: MagnetLinkResult) => {
         return next.torrent.seeds - prev.torrent.seeds
     }
-    const cleanMovies = () => {
+    const cleanupState = () => {
         dispatch({ type: 'RESET' })
         modifyProviderState(defaultProviderState)
     }
-    const updateQuery = (query: string) => {
-        modifyProviderState({ query })
-    }
-    const resetQuery = () => {
-        modifyProviderState({ query: '' })
-    }
-    const autoSelectMagnetLink = () => {
-        const bestMagnets = getBestQualityMagnets(state.items)
+    const autoSelectMagnetLink = (magnets: MagnetLinkResult[]) => {
+        const bestMagnets = getBestQualityMagnets(magnets || state.items)
         if (!bestMagnets.length) return
         dispatch({ type: 'SELECT', payload: bestMagnets[0] })
+        return bestMagnets[0]
     }
     const selectMagnetLink = (magnet: MagnetLinkResult) => {
         dispatch({ type: 'SELECT', payload: magnet })
     }
-    const cleanMagnetLinks = () => {
-        dispatch({ type: 'RESET' })
-    }
     const value: TPBMovieContextType = {
         state,
         getMoreTorrents,
-        resetQuery,
-        updateQuery,
-        cleanMovies,
+        cleanupState,
         autoSelectMagnetLink,
         selectMagnetLink,
-        cleanMagnetLinks,
         addMagnetLinks,
         query,
         error,

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { Button, Link, Spinner } from "@heroui/react";
 import { VideoPlayer } from "../components/VideoPlayer";
@@ -7,7 +7,6 @@ import { useMovieContext } from "../providers/MovieProvider";
 import { MovieDetailsCard } from "../components/MovieDetailsCard";
 import { useTPBMovieContext } from "../providers/TPBMovieProvider";
 import { useLocalStorage } from "@/hooks/useLocalStorage";
-import { PlayIcon } from "@/components/icons";
 
 export const MovieDetailScreen: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -29,26 +28,14 @@ export const MovieDetailScreen: React.FC = () => {
   const {
     loading: loadingExtra,
     getMoreTorrents,
-    cleanMovies,
-    cleanMagnetLinks,
+    cleanupState,
     addMagnetLinks,
-    autoSelectMagnetLink,
     state: { items: magnets, selectedItem: selectedMagnet }
   } = useTPBMovieContext()
-  const [showPlayer, setShowPlayer] = useState(false);
-
-  const onPlayMovie = () => {
-    if (!selectedMagnet) {
-      autoSelectMagnetLink()
-    }
-    setShowPlayer(true)
-  }
 
   const cleanup = () => {
-    setShowPlayer(false)
-    cleanMagnetLinks()
     cleanSelectedMovie()
-    cleanMovies()
+    cleanupState()
   }
 
   const effect = () => {
@@ -95,12 +82,6 @@ export const MovieDetailScreen: React.FC = () => {
 
   const shouldBeViewModeTable = magnets.length > 10
 
-  const posterUrl =
-    movie.large_cover_image ||
-    movie.medium_cover_image ||
-    movie.small_cover_image ||
-    "/placeholder-movie.jpg";
-
   return (
     <div className="container mx-auto px-4 py-8 flex flex-col gap-2 items-center">
       <Link href="/page/1" className="no-underline">
@@ -109,30 +90,25 @@ export const MovieDetailScreen: React.FC = () => {
         </Button>
       </Link>
       <MovieDetailsCard
-        posterUrl={posterUrl}
-        {...movie}
+        movie={movie}
       />
-      {(showPlayer && selectedMagnet) &&
+      {selectedMagnet &&
         <VideoPlayer
           movieTitle={movie.title}
           magnetLink={selectedMagnet.magnetLink}
-          onClose={() => setShowPlayer(false)}
         />
       }
-      {!showPlayer && magnets.length > 0 && (
-        <Button
-          size="lg"
-          className="px-4 py-2 flex items-center gap-2"
-          onPress={onPlayMovie}
-        >
-          <PlayIcon />
-          Ver Película
-        </Button>
-      )}
       <div className="flex w-full items-center justify-end">
-        <ViewModeSwitch isDisabled={shouldBeViewModeTable} mode={shouldBeViewModeTable ? 'table' : viewMode} swapViewMode={swapViewMode} />
+        <ViewModeSwitch
+          isDisabled={shouldBeViewModeTable}
+          mode={shouldBeViewModeTable ? 'table' : viewMode}
+          swapViewMode={swapViewMode}
+        />
       </div>
-      <MovieDownloads items={magnets} mode={shouldBeViewModeTable ? 'table' : viewMode} />
+      <MovieDownloads
+        items={magnets}
+        mode={shouldBeViewModeTable ? 'table' : viewMode}
+      />
       {
         loadingExtra && (
           <div className="flex items-center gap-2 mt-4">
