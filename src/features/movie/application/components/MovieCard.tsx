@@ -51,7 +51,7 @@ export const MovieCard: React.FC<MovieCardProps> = ({ movie, onClick }) => {
                 <img
                     alt={movie.title}
                     loading="lazy"
-                    className="rounded-xl z-0 w-full h-full object-cover"
+                    className="rounded-xl z-0 w-full h-full object-cover aspect-[9/16]"
                     src={movie.medium_cover_image}
                 />
             </picture>

@@ -19,7 +19,7 @@ export const MovieDetailsCard = ({
         medium_cover_image
     } }: { movie: Movie }) => {
     return (
-        <div className="flex flex-col sm:flex-row gap-8 justify-evenly items-start gap-2">
+        <div className="flex flex-col sm:flex-row sm:items-start gap-8 justify-evenly items-center gap-2">
             <picture className="relative w-xs aspect-[9/16] inset-0 w-full object-cover rounded-xl" aria-label="Carátula">
                 <source media="(min-width: 650px)" srcSet={large_cover_image} />
                 <source media="(min-width: 430px)" srcSet={medium_cover_image} />

@@ -21,7 +21,7 @@ export const MovieList: React.FC<MovieListProps> = ({
 }) => {
   if (loading) {
     return (
-      <div className="flex flex-wrap gap-6 justify-center">
+      <div className="flex flex-wrap gap-2 justify-center">
         {Array.from({ length: 20 }).map((_, index) => (
           <MovieCardSkeleton key={index} />
         ))}

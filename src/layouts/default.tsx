@@ -9,7 +9,7 @@ export default function DefaultLayout({
 }) {
   return (
     <div className="relative flex flex-col h-screen">
-      <Toast.Provider placement="top end" />
+      <Toast.Provider placement="top end" aria-label="Notificacion" />
       <Navbar />
       <main className="container mx-auto max-w-7xl px-6 flex-grow pt-16">
         {children}

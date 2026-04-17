@@ -14,10 +14,6 @@ export const MoviePagination: React.FC<MoviePaginationProps> = ({
   onPageChange,
   isLoading = false,
 }) => {
-  if (totalPages <= 1) {
-    return null;
-  }
-
   return (
     <Pagination>
       <Pagination.Summary>

@@ -121,7 +121,7 @@ export function MovieDropdownItem({
   const [copied, setCopied] = useState(false);
 
   return (
-    <div className={`flex items-center justify-between w-full w-full`}
+    <div className={`flex items-center justify-between w-full`}
       onClick={() => {
         handleMagnetCopy(magnetLink, setCopied);
       }}>
@@ -167,7 +167,7 @@ export const MovieDownloadOptions = ({
       </Button>
       <Dropdown.Popover>
 
-        <Dropdown.Menu className="flex flex-col gap-2 ">
+        <Dropdown.Menu className="">
           {items
             .slice()
             .sort((prev, next) => next.torrent.seeds - prev.torrent.seeds)
@@ -321,7 +321,7 @@ export const MovieDownloadsTable = ({ items }: Omit<MovieDownloadsProps, 'mode'>
           <Table.ResizableContainer>
             <Table.Content
               aria-label="Descargas"
-              className="min-w-[770px] h-[300px] overflow-auto"
+              className="min-w-[770px] max-h-[300px] overflow-auto"
             >
               <Table.Header className={'h-full h-full'}>
                 <Table.Column isRowHeader width={75}>

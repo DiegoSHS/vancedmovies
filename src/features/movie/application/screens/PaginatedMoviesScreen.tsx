@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { Input, Spinner } from "@heroui/react";
+import { Input } from "@heroui/react";
 import { Button } from "@heroui/react";
 import { Movie } from "../../domain/entities/Movie";
 import { MovieList } from "../components/MovieList";
@@ -10,7 +10,18 @@ import { useMovieContext } from "../providers/MovieProvider";
 import { Chip } from "@heroui/react";
 
 export const PaginatedMoviesScreen: React.FC = () => {
-    const { state: { items: movies }, totalResults, loading, error, query, getMovies, searchMovies, updateQuery, resetQuery } =
+    const {
+        state: { items: movies },
+        totalResults,
+        loading,
+        error,
+        query,
+        getMovies,
+        searchMovies,
+        updateQuery,
+        resetQuery,
+        selectMovie
+    } =
         useMovieContext();
     const navigate = useNavigate();
     const { id } = useParams<{ id: string }>();
@@ -26,9 +37,9 @@ export const PaginatedMoviesScreen: React.FC = () => {
         const loadInitialMovies = async () => {
             if (query) {
                 searchMovies(currentPage)
-            } else {
-                getMovies(currentPage);
+                return
             }
+            getMovies(currentPage);
         };
         loadInitialMovies();
     }, [id]);
@@ -54,6 +65,7 @@ export const PaginatedMoviesScreen: React.FC = () => {
     };
 
     const handleMovieClick = (movie: Movie) => {
+        selectMovie(movie)
         navigate(`/movie/${movie.id}`);
     };
 
@@ -101,15 +113,9 @@ export const PaginatedMoviesScreen: React.FC = () => {
                 </div>
 
                 <div className="flex gap-2 items-center justify-center">
-                    {loading ? (
-                        <Spinner />
-                    ) : (
-                        <>
-                            <Chip.Root>
-                                <Chip.Label>Mostrando {movies.length} de {totalResults} películas</Chip.Label>
-                            </Chip.Root>
-                        </>
-                    )}
+                    <Chip.Root>
+                        <Chip.Label>Mostrando {movies.length} de {totalResults} películas</Chip.Label>
+                    </Chip.Root>
                 </div>
 
                 <MoviePagination

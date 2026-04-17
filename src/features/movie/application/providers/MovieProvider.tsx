@@ -15,6 +15,7 @@ interface MovieContextType {
   searchMovies: (page: number) => Promise<Movie[]>;
   updateQuery: (newQuery: string) => void;
   resetQuery: () => void;
+  selectMovie: (movie: Movie) => void
   query: string;
   loading: boolean;
   totalResults: number;
@@ -93,7 +94,9 @@ export const MovieProvider: React.FC<MovieProviderProps> = ({ children }) => {
   const cleanSelectedMovie = () => {
     dispatch({ type: "SELECT", payload: undefined });
   }
-
+  const selectMovie = (movie: Movie) => {
+    dispatch({ type: 'SELECT', payload: movie })
+  }
   const updateQuery = (newQuery: string) => {
     modifyProviderState({ query: newQuery });
   };
@@ -108,6 +111,7 @@ export const MovieProvider: React.FC<MovieProviderProps> = ({ children }) => {
     searchMovies,
     updateQuery,
     resetQuery,
+    selectMovie,
     query,
     loading,
     totalResults,
