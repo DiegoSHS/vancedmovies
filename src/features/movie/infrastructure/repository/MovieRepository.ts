@@ -1,11 +1,10 @@
 import { Movie } from "../../domain/entities/Movie";
 import { MovieListResponse } from "../../domain/entities/YTSMovieListResponse";
-import { MovieRepository, TPBMovieRepository } from "../../domain/repository/MovieRepository";
-import { MovieDatasource, TPBMovieDatasource } from "../../domain/datasources/MovieDatasource";
+import { MovieRepository } from "../../domain/repository/MovieRepository";
+import { MovieDatasource } from "../../domain/datasources/MovieDatasource";
 
 import { ApiResult } from "@/utils/ApiResult";
-import { MovieListResult } from "../../domain/entities/1337XMovieListResult";
-import { TPBMovie } from "../../domain/entities/ThePirateBayMovie";
+import { Torrent } from "../../domain/entities/Torrent";
 
 export class MovieRepositoryImp extends MovieRepository {
   constructor(private readonly datasource: MovieDatasource) {
@@ -69,16 +68,7 @@ export class MovieRepositoryImp extends MovieRepository {
   ): Promise<ApiResult<MovieListResponse>> {
     return await this.datasource.getMoviesByRating(minimum_rating, page, limit);
   }
-  async getMoreTorrents(movie: Movie): Promise<MovieListResult> {
-    return await this.datasource.getMoreTorrents(movie);
-  }
-}
-
-export class TPBMovieRepositoryImp extends TPBMovieRepository {
-  constructor(private readonly datasource: TPBMovieDatasource) {
-    super()
-  }
-  searchMovies(query: string): Promise<TPBMovie[]> {
-    return this.datasource.searchMovies(query)
+  async getMoreTorrents(title: string): Promise<Torrent[]> {
+    return await this.datasource.getMoreTorrents(title);
   }
 }

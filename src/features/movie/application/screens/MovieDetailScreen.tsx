@@ -28,7 +28,7 @@ export const MovieDetailScreen: React.FC = () => {
   } = useMovieContext();
   const {
     loading: loadingExtra,
-    searchMovies,
+    getMoreTorrents,
     cleanMovies,
     cleanMagnetLinks,
     addMagnetLinks,
@@ -57,7 +57,7 @@ export const MovieDetailScreen: React.FC = () => {
       const result = await getMovieById(parseInt(id))
       if (!result) return
       addMagnetLinks(result.torrents, result.title)
-      searchMovies(result.title)
+      getMoreTorrents(result.title)
     }
     fetchMovieData()
     return cleanup
@@ -92,6 +92,8 @@ export const MovieDetailScreen: React.FC = () => {
       </div>
     );
   }
+
+  const shouldBeViewModeTable = magnets.length > 10
 
   const posterUrl =
     movie.large_cover_image ||
@@ -128,9 +130,9 @@ export const MovieDetailScreen: React.FC = () => {
         </Button>
       )}
       <div className="flex w-full items-center justify-end">
-        <ViewModeSwitch mode={viewMode} swapViewMode={swapViewMode} />
+        <ViewModeSwitch isDisabled={shouldBeViewModeTable} mode={shouldBeViewModeTable ? 'table' : viewMode} swapViewMode={swapViewMode} />
       </div>
-      <MovieDownloads items={magnets} mode={viewMode} />
+      <MovieDownloads items={magnets} mode={shouldBeViewModeTable ? 'table' : viewMode} />
       {
         loadingExtra && (
           <div className="flex items-center gap-2 mt-4">

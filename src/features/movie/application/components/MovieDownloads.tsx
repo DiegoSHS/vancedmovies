@@ -184,7 +184,7 @@ export const MovieDownloadOptions = ({
   );
 };
 
-export const MovieDownloadCard = ({ item,
+const MovieDownloadCard = ({ item,
 }: { item: MagnetLinkResult }) => {
   return (
     <Card
@@ -232,7 +232,7 @@ export const MovieDownloadCard = ({ item,
   );
 };
 
-export const MovieDownloadCards = ({ items }: Omit<MovieDownloadsProps, 'mode'>) => {
+const MovieDownloadCards = ({ items }: Omit<MovieDownloadsProps, 'mode'>) => {
   return (
     <div className="flex flex-wrap gap-2 justify-center items-center">
       {
@@ -248,12 +248,13 @@ export const MovieDownloadCards = ({ items }: Omit<MovieDownloadsProps, 'mode'>)
 }
 interface ViewModeSwitchProps {
   mode: string
+  isDisabled?: boolean
   swapViewMode: () => void
 }
 
-export const ViewModeSwitch = ({ mode, swapViewMode }: ViewModeSwitchProps) => {
+export const ViewModeSwitch = ({ mode, isDisabled = false, swapViewMode }: ViewModeSwitchProps) => {
   return (
-    <Switch size="lg" isSelected={mode === 'table'} onChange={swapViewMode}>
+    <Switch isDisabled={isDisabled} size="lg" isSelected={mode === 'table'} onChange={swapViewMode}>
       {
         ({ isSelected }) => (
           <>
@@ -312,15 +313,16 @@ export const MovieDownloads = ({ items, mode }: MovieDownloadsProps) => {
 export const MovieDownloadsTable = ({ items }: Omit<MovieDownloadsProps, 'mode'>) => {
   return (
     <Virtualizer layout={TableLayout} layoutOptions={{
-      headingHeight: 42
+      headingHeight: 42,
+      rowHeight: 60
     }}>
       <Table>
         <Table.ScrollContainer aria-label="Descargas disponibles">
           <Table.Content
             aria-label="Descargas"
-            className="min-w-[700px] overflow-auto"
+            className="min-w-[700px] h-[300px] overflow-auto"
           >
-            <Table.Header className={''}>
+            <Table.Header className={'h-full w-full'}>
               <Table.Column isRowHeader width={50}>
                 Calidad
               </Table.Column>
@@ -354,7 +356,7 @@ export const MovieDownloadsTable = ({ items }: Omit<MovieDownloadsProps, 'mode'>
                       </Table.Cell>
                       <Table.Cell>
                         <Dropdown>
-                          <Dropdown.Trigger className="bg-default rounded-full m-0 py-1.5 px-3 text-accent font-medium">
+                          <Dropdown.Trigger className={`bg-default rounded-full m-0 py-1.5 px-3 text-accent font-medium`}>
                             Detalles
                           </Dropdown.Trigger>
                           <Dropdown.Popover>

@@ -61,12 +61,14 @@ export const MoviesScreen: React.FC = () => {
           <Input
             disabled={loading}
             placeholder="Buscar películas"
+            aria-label="Buscar peliculas"
             type="search"
             value={query}
             onChange={(e) => updateQuery(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && handleSearch()}
           />
           <Button
+            aria-label="Buscar"
             isIconOnly
             isDisabled={!query.trim()}
             onPress={handleSearch}
@@ -74,6 +76,7 @@ export const MoviesScreen: React.FC = () => {
             <SearchIcon />
           </Button>
           <Button
+            aria-label="Limpiar búsqueda"
             isIconOnly
             isDisabled={!query.trim()}
             onPress={handleClearSearch}

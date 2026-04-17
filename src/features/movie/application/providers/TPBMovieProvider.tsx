@@ -1,11 +1,11 @@
 import { createContext, useContext } from "react";
-import { TPBMovie } from "../../domain/entities/ThePirateBayMovie";
-import { TPBMovieDatasourceImp } from "../../infrastructure/datasources/MovieDatasource";
-import { TPBMovieRepositoryImp } from "../../infrastructure/repository/MovieRepository";
 import { MovieProviderProps } from "./MovieProvider";
 import { BaseState, defaultProviderState, ProviderState, useBaseProviderState, useBaseReducer } from "@/utils";
 import { generateMagnetLinks, MagnetLinkResult } from "@/types";
-import { Torrent, TPBtoTorrent } from "../../domain/entities/Torrent";
+import { Torrent } from "../../domain/entities/Torrent";
+import { MovieDatasourceImp } from "../../infrastructure/datasources/MovieDatasource";
+import { MovieRepositoryImp } from "../../infrastructure/repository/MovieRepository";
+import { toast } from "@heroui/react";
 
 // Devuelve una lista de MagnetLinkResult con el mejor torrent 1080p (más seeds) o el de mayor calidad disponible (más seeds)
 export function getBestQualityMagnets(torrents: MagnetLinkResult[]): MagnetLinkResult[] {
@@ -33,7 +33,7 @@ export function getBestQualityMagnets(torrents: MagnetLinkResult[]): MagnetLinkR
     return sorted.length > 0 ? [sorted[0]] : [];
 }
 interface TPBMovieContextType extends ProviderState {
-    searchMovies(title?: string): Promise<TPBMovie[]>
+    getMoreTorrents(title?: string): Promise<Torrent[]>
     updateQuery(query: string): void
     resetQuery(): void
     cleanMovies(): void
@@ -55,8 +55,8 @@ export const TPBMovieProvider: React.FC<MovieProviderProps> = ({ children }) => 
         modifyProviderState
     } = useBaseProviderState()
     const { state, dispatch } = useBaseReducer<MagnetLinkResult>()
-    const movieDatasource = new TPBMovieDatasourceImp()
-    const movieRepository = new TPBMovieRepositoryImp(movieDatasource)
+    const movieDatasource = new MovieDatasourceImp()
+    const movieRepository = new MovieRepositoryImp(movieDatasource)
     const addMagnetLinks = (torrents: Torrent[], movieTitle: string, initial: MagnetLinkResult[] = []) => {
         try {
             const { data, error } = generateMagnetLinks(torrents, movieTitle)
@@ -78,18 +78,25 @@ export const TPBMovieProvider: React.FC<MovieProviderProps> = ({ children }) => 
             return []
         }
     }
-    const searchMovies = async (title?: string) => {
+    const getMoreTorrents = async (title?: string) => {
         try {
             if (!title) return []
             modifyProviderState({ loading: true, error: null })
-            const movies = await movieRepository.searchMovies(title || query)
-            const torrents = movies.map(TPBtoTorrent)
-            addMagnetLinks(torrents, title, state.items)
+            const torrents = await movieRepository.getMoreTorrents(title || query)
+            const magnets = addMagnetLinks(torrents, title, state.items)
             modifyProviderState({
-                totalResults: movies.length,
+                totalResults: torrents.length,
                 loading: false,
             })
-            return movies
+            const dualMagnet = magnets.find(item => item.torrent.type.toUpperCase().includes('DUAL'))
+            if (dualMagnet) {
+                selectMagnetLink(dualMagnet)
+                toast.success('Opción en español encontrada')
+            } else {
+                autoSelectMagnetLink()
+                toast.success('Opcion seleccionada de forma automatica')
+            }
+            return torrents
         } catch (error) {
             dispatch({ type: 'RESET' })
             modifyProviderState({ error: 'Error al buscar peliculas' })
@@ -124,7 +131,7 @@ export const TPBMovieProvider: React.FC<MovieProviderProps> = ({ children }) => 
     }
     const value: TPBMovieContextType = {
         state,
-        searchMovies,
+        getMoreTorrents,
         resetQuery,
         updateQuery,
         cleanMovies,

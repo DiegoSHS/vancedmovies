@@ -1,11 +1,10 @@
 import { Movie } from "../../domain/entities/Movie";
 import { MovieListResponse } from "../../domain/entities/YTSMovieListResponse";
-import { MovieDatasource, TPBMovieDatasource } from "../../domain/datasources/MovieDatasource";
+import { MovieDatasource } from "../../domain/datasources/MovieDatasource";
 
 import { ApiResult } from "@/utils/ApiResult";
 import { ApiClient } from "@/utils/ApiClient";
-import { MovieListResult } from "../../domain/entities/1337XMovieListResult";
-import { TPBMovie } from "../../domain/entities/ThePirateBayMovie";
+import { Torrent } from "../../domain/entities/Torrent";
 
 export class MovieDatasourceImp extends MovieDatasource {
   async getMovies(
@@ -155,27 +154,13 @@ export class MovieDatasourceImp extends MovieDatasource {
       };
     }
   }
-  async getMoreTorrents(movie: Movie): Promise<MovieListResult> {
-    try {
-      const url = `${import.meta.env.VITE_FLASK_BACKEND_URL}/search?q=${encodeURIComponent(movie.title)}`;
-      const data = await ApiClient.get<MovieListResult>(url);
-      return data;
-    } catch (error: any) {
-      return {
-        movies: [],
-      };
-    }
-  }
-}
-
-export class TPBMovieDatasourceImp extends TPBMovieDatasource {
-  async searchMovies(query: string): Promise<TPBMovie[]> {
+  async getMoreTorrents(query: string): Promise<Torrent[]> {
     try {
       if (!Boolean(query)) return []
-      const url = `${import.meta.env.VITE_FLASK_BACKEND_URL}/tpb_search?q=${encodeURIComponent(query)}`
-      const data = await ApiClient.get<TPBMovie[]>(url)
+      const url = `${import.meta.env.VITE_NEST_BACKEND_URL}/tpb_search?title=${encodeURIComponent(query)}`
+      const data = await ApiClient.get<Torrent[]>(url)
       return data
-    } catch (error) {
+    } catch (error: any) {
       return []
     }
   }

@@ -3,9 +3,8 @@ import React from "react";
 
 export const MovieCardSkeleton: React.FC = () => {
   return (
-    <Card className="relative overflow-hidden w-80 h-96 flex-shrink-0">
+    <Card className="relative overflow-hidden w-[320px] h-[480px] flex-shrink-0">
       <Skeleton className="w-full h-full rounded-none" />
-
       <div
         className="absolute top-0 left-0 right-0 h-32 z-5 pointer-events-none"
         style={{

@@ -29,7 +29,7 @@ export const ThemeSwitch = () => {
       variant="ghost"
       isIconOnly
       onPress={swapTheme}
-      aria-label={item === 'dark' ? "Switch to light mode" : "Switch to dark mode"}
+      aria-label="Cambiar tema"
     >
       {item !== 'dark' ? (
         <MoonFilledIcon size={20} className="text-default-500" />

@@ -51,6 +51,7 @@ export const Navbar = () => {
               <Link
                 className="no-underline"
                 href={item.href}
+                aria-label={item.label}
               >
                 {item.label}
               </Link>
@@ -60,10 +61,20 @@ export const Navbar = () => {
 
         {/* Desktop Right Content */}
         <div className="hidden sm:flex items-center gap-4">
-          <Link target="_blank" rel="noopener noreferrer" href={siteConfig.links.twitter}>
+          <Link
+            target="_blank"
+            rel="noopener noreferrer"
+            href={siteConfig.links.twitter}
+            aria-label="Perfil de twitter (X)"
+          >
             <TwitterIcon className="w-5 h-5" />
           </Link>
-          <Link target="_blank" rel="noopener noreferrer" href={siteConfig.links.github}>
+          <Link
+            target="_blank"
+            rel="noopener noreferrer"
+            href={siteConfig.links.github}
+            aria-label="Perfil de Github"
+          >
             <GithubIcon className="w-5 h-5" />
           </Link>
           <ThemeSwitch />
@@ -71,7 +82,13 @@ export const Navbar = () => {
 
         {/* Mobile Right Content */}
         <div className="flex md:hidden items-center gap-2">
-          <Link target="_blank" rel="noopener noreferrer" href={siteConfig.links.github} className="text-default-500 hover:text-primary">
+          <Link
+            aria-label="Perfil de Github"
+            target="_blank"
+            rel="noopener noreferrer"
+            href={siteConfig.links.github}
+            className="text-default-500 hover:text-primary"
+          >
             <GithubIcon className="w-5 h-5" />
           </Link>
           <ThemeSwitch />
@@ -85,6 +102,7 @@ export const Navbar = () => {
             {siteConfig.navMenuItems.map((item, index) => (
               <li key={`${item}-${index}`}>
                 <Link
+                  aria-label={item.label}
                   className="block py-2 no-underline"
                   href={item.href || "#"}
                 >

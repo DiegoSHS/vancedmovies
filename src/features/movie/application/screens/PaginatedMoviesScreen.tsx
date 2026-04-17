@@ -73,6 +73,7 @@ export const PaginatedMoviesScreen: React.FC = () => {
                     <Input
                         disabled={loading}
                         placeholder="Buscar películas"
+                        aria-label="Buscar películas"
                         type="search"
                         value={query}
                         onChange={(e) => updateQuery(e.target.value)}
@@ -80,6 +81,7 @@ export const PaginatedMoviesScreen: React.FC = () => {
                     />
                     <Button
                         variant="ghost"
+                        aria-label="Buscar"
                         isIconOnly
                         isDisabled={!query.trim()}
                         onPress={handleSearch}
@@ -90,6 +92,7 @@ export const PaginatedMoviesScreen: React.FC = () => {
                     <Button
                         variant="ghost"
                         isIconOnly
+                        aria-label="Limpiar búsqueda"
                         isDisabled={!query.trim()}
                         onPress={handleClearSearch}
                     >

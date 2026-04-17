@@ -28,15 +28,9 @@ export const MovieCard: React.FC<MovieCardProps> = ({ movie, onClick }) => {
         if (onClick) onClick(movie);
     };
 
-    const posterUrl =
-        movie.large_cover_image ||
-        movie.medium_cover_image ||
-        movie.small_cover_image ||
-        "/placeholder-movie.jpg";
-
     return (
         <Card
-            className="relative overflow-hidden max-w-xs shadow-md cursor-pointer p-0"
+            className="relative overflow-hidden w-xs shadow-md cursor-pointer p-0"
             onClick={handleClick}
         >
             <div style={overlayStyle} />
@@ -47,17 +41,24 @@ export const MovieCard: React.FC<MovieCardProps> = ({ movie, onClick }) => {
                 <p className="text-md text-white font-bold relative z-10 drop-shadow-lg">
                     {movie.title}
                 </p>
-                <h4 className="text-white font-medium text-xl relative z-10 drop-shadow-lg">
+                <p className="text-white font-medium text-xl relative z-10 drop-shadow-lg">
                     {movie.year}
-                </h4>
+                </p>
             </Card.Header>
-            <img
-                alt={movie.title}
-                className="rounded-xl z-0 w-full h-full object-cover"
-                src={posterUrl}
-            />
+            <picture aria-label="Carátula">
+                <source media="(min-width: 650px)" srcSet={movie.large_cover_image} />
+                <source media="(min-width: 430px)" srcSet={movie.medium_cover_image} />
+                <img
+                    alt={movie.title}
+                    loading="lazy"
+                    className="rounded-xl z-0 w-full h-full object-cover"
+                    src={movie.medium_cover_image}
+                />
+            </picture>
             <Card.Footer className="absolute w-full justify-between bottom-3 flex flex-row gap-2 px-3">
-                <MovieRuntime runtime={movie.runtime} size="sm" showLabel={false} />
+                {movie.runtime !== 0 && (
+                    <MovieRuntime runtime={movie.runtime} size="sm" showLabel={false} />
+                )}
                 <MovieDownloadOptions
                     items={magnetLinks}
                     isDisabled={!Array.isArray(movie.torrents) || magnetError !== null || magnetLinks.length === 0}

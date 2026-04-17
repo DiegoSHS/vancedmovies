@@ -4,6 +4,7 @@ import { Movie } from "../../domain/entities/Movie";
 
 import { MovieCard } from "./MovieCard";
 import { MovieCardSkeleton } from "./MovieCardSkeleton";
+import { ListLayout, Virtualizer } from "@heroui/react";
 
 interface MovieListProps {
   movies: Movie[];
@@ -60,9 +61,13 @@ export const MovieList: React.FC<MovieListProps> = ({
 
   return (
     <div className="flex flex-wrap gap-2 justify-center">
-      {movies.map((movie) => (
-        <MovieCard key={movie.id} movie={movie} onClick={onMovieClick} />
-      ))}
+      <Virtualizer layout={ListLayout} layoutOptions={{
+        rowHeight: 480
+      }}>
+        {movies.map((movie) => (
+          <MovieCard key={movie.id} movie={movie} onClick={onMovieClick} />
+        ))}
+      </Virtualizer>
     </div>
   );
 };

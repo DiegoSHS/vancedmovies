@@ -3,7 +3,6 @@ import { MovieRepositoryImp } from "../../infrastructure/repository/MovieReposit
 import { MovieDatasourceImp } from "../../infrastructure/datasources/MovieDatasource";
 import { BaseState, useBaseProviderState, useBaseReducer } from "@/utils";
 import { Movie } from "../../domain/entities/Movie";
-import { Torrent, XMovieToTorrent } from "../../domain/entities/Torrent";
 export interface MovieProviderProps {
   children: ReactNode;
 }
@@ -12,7 +11,6 @@ interface MovieContextType {
   state: BaseState<Movie>;
   getMovies: (page: number) => Promise<Movie[]>;
   getMovieById: (id: number) => Promise<Movie | undefined>;
-  getMoreTorrents: (movie: Movie) => Promise<Torrent[]>;
   cleanSelectedMovie: () => void;
   searchMovies: (page: number) => Promise<Movie[]>;
   updateQuery: (newQuery: string) => void;
@@ -72,18 +70,6 @@ export const MovieProvider: React.FC<MovieProviderProps> = ({ children }) => {
       modifyProviderState({ loading: false });
     }
   };
-  const getMoreTorrents = async (movie: Movie) => {
-    try {
-      modifyProviderState({ error: null });
-      const data = await movieRepository.getMoreTorrents(movie);
-      if (!data?.movies) return []
-      const magnetLinks = data.movies.map(XMovieToTorrent)
-      return magnetLinks
-    } catch (error) {
-      modifyProviderState({ error: "Error al obtener más torrents" });
-      return []
-    }
-  }
   const searchMovies = async (page: number) => {
     try {
       if (query.trim() === '') return []
@@ -118,7 +104,6 @@ export const MovieProvider: React.FC<MovieProviderProps> = ({ children }) => {
     state,
     getMovies,
     getMovieById,
-    getMoreTorrents,
     cleanSelectedMovie,
     searchMovies,
     updateQuery,

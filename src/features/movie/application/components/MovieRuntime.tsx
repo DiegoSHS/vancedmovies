@@ -1,5 +1,5 @@
-import { Chip } from "@heroui/react";
 import { TimeIcon } from "@/components/icons";
+import { BaseMovieChip } from "./MovieLanguage";
 
 interface MovieRuntimeProps {
     runtime?: number;
@@ -25,16 +25,8 @@ export const MovieRuntime: React.FC<MovieRuntimeProps> = ({
     const iconSize = size === 'lg' ? 20 : size === 'sm' ? 14 : 16;
 
     return (
-        <div className="flex flex-col gap-1 items-center justify-center">
-            {showLabel && (
-                <h3 className="text-lg font-semibold">Duración</h3>
-            )}
-            <Chip.Root
-                className="inline-flex items-center px-2 py-1 rounded-full gap-1"
-            >
-                <TimeIcon size={iconSize} />
-                <Chip.Label>{finalDisplay}</Chip.Label>
-            </Chip.Root>
-        </div>
+        <BaseMovieChip showLabel={showLabel} content={finalDisplay} label="Duración">
+            <TimeIcon size={iconSize} />
+        </BaseMovieChip>
     );
 };
