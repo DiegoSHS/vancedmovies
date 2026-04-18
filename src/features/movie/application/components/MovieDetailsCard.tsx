@@ -43,12 +43,12 @@ export const MovieDetailsCard = ({
                         size="lg"
                     />
                 </div>
-                <div>
-                    <h3 className="text-lg font-semibold mb-2">Géneros</h3>
+                <div className="flex flex-col gap-2 items-start">
+                    <h3 className="text-lg font-semibold">Géneros</h3>
                     <MovieGenres genres={genres} />
                 </div>
-                <div>
-                    <h3 className="text-lg font-semibold mb-2">Descripción</h3>
+                <div className="flex flex-col gap-2 items-start">
+                    <h3 className="text-lg font-semibold">Descripción</h3>
                     <MovieDescription full description={description_full} />
                 </div>
             </div>

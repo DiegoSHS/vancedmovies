@@ -2,14 +2,13 @@ import { Card, CloseButton } from "@heroui/react";
 import { BackendStreamPlayer } from "@/components/BackendStreamPlayer";
 
 interface HybridVideoPlayerProps {
-    magnetLink: string;
+    magnetLink?: string;
     movieTitle: string;
     onClose?: () => void;
 }
 
 
 export const VideoPlayer: React.FC<HybridVideoPlayerProps> = ({
-    magnetLink,
     movieTitle,
     onClose,
 }) => {
@@ -34,9 +33,7 @@ export const VideoPlayer: React.FC<HybridVideoPlayerProps> = ({
                     </CloseButton>
                 )}
             </Card.Header>
-            <BackendStreamPlayer
-                magnetLink={magnetLink}
-            />
+            <BackendStreamPlayer />
         </Card>
     );
 };

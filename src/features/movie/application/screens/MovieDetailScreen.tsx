@@ -28,7 +28,7 @@ export const MovieDetailScreen: React.FC = () => {
     getMoreTorrents,
     cleanupState,
     addMagnetLinks,
-    state: { items: magnets, selectedItem: selectedMagnet }
+    state: { items: magnets }
   } = useTPBMovieContext()
 
   const cleanup = () => {
@@ -95,7 +95,6 @@ export const MovieDetailScreen: React.FC = () => {
       />
       <VideoPlayer
         movieTitle={movie.title}
-        magnetLink={selectedMagnet?.magnetLink || ''}
       />
       <div className="flex w-full items-center justify-end">
         <ViewModeSwitch

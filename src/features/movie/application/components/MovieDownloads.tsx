@@ -1,4 +1,4 @@
-import { Button, Card, Chip, Dropdown, EmptyState, Link, Switch, Table, TableLayout, toast, Virtualizer } from "@heroui/react";
+import { Button, Card, Chip, Dropdown, EmptyState, Link, Popover, Switch, Table, TableLayout, toast, Virtualizer } from "@heroui/react";
 import { useState } from "react";
 
 import { Torrent } from "../../domain/entities/Torrent";
@@ -356,18 +356,18 @@ export const MovieDownloadsTable = ({ items }: Omit<MovieDownloadsProps, 'mode'>
                           {item.torrent.quality}
                         </Table.Cell>
                         <Table.Cell>
-                          <Dropdown>
-                            <Dropdown.Trigger className={`bg-default rounded-full m-0 py-1.5 px-3 text-accent font-medium`}>
+                          <Popover>
+                            <Popover.Trigger>
                               Detalles
-                            </Dropdown.Trigger>
-                            <Dropdown.Popover>
-                              <Dropdown.Menu>
-                                <Dropdown.Item className="hover:cursor-default">
+                            </Popover.Trigger>
+                            <Popover.Content>
+                              <Popover.Dialog>
+                                <Popover.Heading>
                                   {item.torrent.type}
-                                </Dropdown.Item>
-                              </Dropdown.Menu>
-                            </Dropdown.Popover>
-                          </Dropdown>
+                                </Popover.Heading>
+                              </Popover.Dialog>
+                            </Popover.Content>
+                          </Popover>
                         </Table.Cell>
                         <Table.Cell>
                           {item.torrent.size}

@@ -81,10 +81,13 @@ export const TPBMovieProvider: React.FC<MovieProviderProps> = ({ children }) => 
             if (!title) return []
             modifyProviderState({ loading: true, error: null })
             const torrents = await movieRepository.getMoreTorrents(title || query)
+            if (!torrents.length) {
+                autoSelectMagnetLink(state.items)
+                return []
+            }
             const magnets = addMagnetLinks(torrents, title, state.items)
             modifyProviderState({
                 totalResults: torrents.length,
-                loading: false,
             })
             const dualMagnet = magnets.find(item => item.torrent.type.toUpperCase().includes('DUAL'))
             if (dualMagnet) {
