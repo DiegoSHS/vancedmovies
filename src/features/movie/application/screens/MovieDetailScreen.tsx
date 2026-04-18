@@ -20,25 +20,26 @@ export const MovieDetailScreen: React.FC = () => {
   }
   const {
     getMovieById,
-    cleanSelectedMovie,
     error,
     state: { selectedItem: movie },
   } = useMovieContext();
   const {
     getMoreTorrents,
-    cleanupState,
     addMagnetLinks,
     state: { items: magnets }
   } = useTPBMovieContext()
 
-  const cleanup = () => {
-    console.log('Cleaned')
-    cleanSelectedMovie()
-    cleanupState()
-  }
-
   const fetchMovieData = async () => {
     if (!id) return;
+    if (movie) {
+      addMagnetLinks(movie.torrents, movie.title)
+      toast.promise(getMoreTorrents(movie.title), {
+        error: 'Algo salió mal',
+        loading: 'Buscando más torrents',
+        success: 'Torrent óptimo seleccionado',
+      })
+      return
+    }
     const result = await getMovieById(parseInt(id))
     if (!result) return
     addMagnetLinks(result.torrents, result.title)
@@ -50,18 +51,9 @@ export const MovieDetailScreen: React.FC = () => {
   }
   const effect = () => {
     fetchMovieData()
-    return cleanup
   }
 
   useEffect(effect, [id]);
-
-  if (!movie) {
-    return (
-      <div className="flex justify-center items-center min-h-screen">
-        <Spinner className="w-12 h-12" />
-      </div>
-    );
-  }
 
   if (error) return (
     <div className="container mx-auto px-4 py-8">
@@ -80,6 +72,14 @@ export const MovieDetailScreen: React.FC = () => {
       </div>
     </div>
   );
+
+  if (!movie) {
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        <Spinner className="w-12 h-12" />
+      </div>
+    );
+  }
 
   const shouldBeViewModeTable = magnets.length > 10
 
