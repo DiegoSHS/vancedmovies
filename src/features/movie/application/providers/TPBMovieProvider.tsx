@@ -82,7 +82,7 @@ export const TPBMovieProvider: React.FC<MovieProviderProps> = ({ children }) => 
             modifyProviderState({ loading: true, error: null })
             const torrents = await movieRepository.getMoreTorrents(title || query)
             if (!torrents.length) {
-                autoSelectMagnetLink(state.items)
+                autoSelectMagnetLink()
                 return []
             }
             const magnets = addMagnetLinks(torrents, title, state.items)
@@ -97,10 +97,10 @@ export const TPBMovieProvider: React.FC<MovieProviderProps> = ({ children }) => 
             }
             return torrents
         } catch (error) {
-            dispatch({ type: 'RESET' })
             modifyProviderState({ error: 'Error al buscar peliculas' })
             return []
         } finally {
+            autoSelectMagnetLink()
             modifyProviderState({ loading: false })
         }
     }
@@ -111,7 +111,7 @@ export const TPBMovieProvider: React.FC<MovieProviderProps> = ({ children }) => 
         dispatch({ type: 'RESET' })
         modifyProviderState(defaultProviderState)
     }
-    const autoSelectMagnetLink = (magnets: MagnetLinkResult[]) => {
+    const autoSelectMagnetLink = (magnets?: MagnetLinkResult[]) => {
         const bestMagnets = getBestQualityMagnets(magnets || state.items)
         if (!bestMagnets.length) return
         dispatch({ type: 'SELECT', payload: bestMagnets[0] })
