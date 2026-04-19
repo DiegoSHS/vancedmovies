@@ -3,7 +3,6 @@ import { MovieListResponse } from "../../domain/entities/YTSMovieListResponse";
 import { MovieDatasource } from "../../domain/datasources/MovieDatasource";
 
 import { ApiResult } from "@/utils/ApiResult";
-import { ApiClient } from "@/utils/ApiClient";
 import { Torrent } from "../../domain/entities/Torrent";
 
 export class MovieDatasourceImp extends MovieDatasource {
@@ -12,6 +11,7 @@ export class MovieDatasourceImp extends MovieDatasource {
     limit: number = 20,
   ): Promise<ApiResult<MovieListResponse>> {
     try {
+      const { ApiClient } = await import('../../../../utils/ApiClient')
       const response = await ApiClient.get<ApiResult<MovieListResponse>>(
         `/list_movies.json?page=${page}&limit=${limit}&sort_by=year&order_by=desc`,
       );
@@ -26,6 +26,7 @@ export class MovieDatasourceImp extends MovieDatasource {
 
   async getMovieById(id: number): Promise<ApiResult<Movie>> {
     try {
+      const { ApiClient } = await import('../../../../utils/ApiClient')
       const response = await ApiClient.get<any>(
         `/movie_details.json?movie_id=${id}`,
       );
@@ -89,6 +90,7 @@ export class MovieDatasourceImp extends MovieDatasource {
     limit: number = 20,
   ): Promise<ApiResult<MovieListResponse>> {
     try {
+      const { ApiClient } = await import('../../../../utils/ApiClient')
       const response = await ApiClient.get<ApiResult<MovieListResponse>>(
         `/list_movies.json?query_term=${encodeURIComponent(query)}&page=${page}&limit=${limit}`,
       );
@@ -107,6 +109,7 @@ export class MovieDatasourceImp extends MovieDatasource {
     limit: number = 20,
   ): Promise<ApiResult<MovieListResponse>> {
     try {
+      const { ApiClient } = await import('../../../../utils/ApiClient')
       const response = await ApiClient.get<ApiResult<MovieListResponse>>(
         `/list_movies.json?genre=${encodeURIComponent(genre)}&page=${page}&limit=${limit}`,
       );
@@ -125,6 +128,7 @@ export class MovieDatasourceImp extends MovieDatasource {
     limit: number = 20,
   ): Promise<ApiResult<MovieListResponse>> {
     try {
+      const { ApiClient } = await import('../../../../utils/ApiClient')
       const response = await ApiClient.get<ApiResult<MovieListResponse>>(
         `/list_movies.json?year=${year}&page=${page}&limit=${limit}`,
       );
@@ -143,6 +147,7 @@ export class MovieDatasourceImp extends MovieDatasource {
     limit: number = 20,
   ): Promise<ApiResult<MovieListResponse>> {
     try {
+      const { ApiClient } = await import('../../../../utils/ApiClient')
       const response = await ApiClient.get<ApiResult<MovieListResponse>>(
         `/list_movies.json?minimum_rating=${minimum_rating}&page=${page}&limit=${limit}`,
       );
@@ -156,6 +161,7 @@ export class MovieDatasourceImp extends MovieDatasource {
   }
   async getMoreTorrents(query: string): Promise<Torrent[]> {
     try {
+      const { ApiClient } = await import('../../../../utils/ApiClient')
       if (!Boolean(query)) return []
       const url = `${import.meta.env.VITE_NEST_BACKEND_URL}/tpb_search?title=${encodeURIComponent(query)}`
       const data = await ApiClient.get<Torrent[]>(url)
