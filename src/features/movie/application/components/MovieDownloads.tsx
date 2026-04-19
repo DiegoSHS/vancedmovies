@@ -1,8 +1,6 @@
 import { Button, Card, Chip, Dropdown, EmptyState, Link, Popover, Switch, Table, TableLayout, toast, Virtualizer } from "@heroui/react";
 import { useState } from "react";
-
 import { Torrent } from "../../domain/entities/Torrent";
-
 import { copyMagnetToClipboard, MagnetLinkResult } from "@/types";
 import { CheckIcon, CopyIcon, DownloadIcon, ListIcon, PlayIcon, SquaresIcon } from "@/components/icons";
 import { useTPBMovieContext } from "../providers/TPBMovieProvider";
@@ -35,6 +33,10 @@ interface TorrentActionButtonProps {
 }
 
 export const CopyTorrentButton = ({ torrent, isIconOnly = false }: TorrentActionButtonProps) => {
+  const handleClick = () => {
+    handleMagnetCopy(torrent.magnetLink, setCopied)
+    toast.success('Copiado al portapapeles')
+  }
   const [copied, setCopied] = useState(false);
   return (
     <Button
@@ -43,7 +45,7 @@ export const CopyTorrentButton = ({ torrent, isIconOnly = false }: TorrentAction
       isIconOnly={isIconOnly}
       isDisabled={copied}
       className={`${copied ? "text-success" : ""}`}
-      onClick={() => handleMagnetCopy(torrent.magnetLink, setCopied)}
+      onClick={handleClick}
     >
       {
         copied ? <CheckIcon /> : <CopyIcon />
@@ -85,7 +87,6 @@ export const PlayTorrentButton = ({ torrent, isIconOnly }: TorrentActionButtonPr
   const { selectMagnetLink } = useTPBMovieContext()
   const handleClick = () => {
     selectMagnetLink(torrent)
-    toast.info('Añadido para reproducción')
   }
   return (
     <Button

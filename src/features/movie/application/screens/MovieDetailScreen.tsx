@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useParams } from "react-router-dom";
-import { Button, Link, Spinner, toast } from "@heroui/react";
+import { Button, Link, Spinner } from "@heroui/react";
 import { VideoPlayer } from "../components/VideoPlayer";
 import { MovieDownloads, ViewModeSwitch } from "../components/MovieDownloads";
 import { useMovieContext } from "../providers/MovieProvider";
@@ -30,24 +30,16 @@ export const MovieDetailScreen: React.FC = () => {
   } = useTPBMovieContext()
 
   const fetchMovieData = async () => {
-    if (!id) return;
     if (movie) {
       addMagnetLinks(movie.torrents, movie.title)
-      toast.promise(getMoreTorrents(movie.title), {
-        error: 'Algo salió mal',
-        loading: 'Buscando más torrents',
-        success: 'Torrent óptimo seleccionado',
-      })
+      getMoreTorrents(movie.title)
       return
     }
+    if (!id) return;
     const result = await getMovieById(parseInt(id))
     if (!result) return
     addMagnetLinks(result.torrents, result.title)
-    toast.promise(getMoreTorrents(result.title), {
-      error: 'Algo salió mal',
-      loading: 'Buscando más torrents',
-      success: 'Torrent óptimo seleccionado',
-    })
+    getMoreTorrents(result.title)
   }
   const effect = () => {
     fetchMovieData()

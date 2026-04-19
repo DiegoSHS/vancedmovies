@@ -5,6 +5,7 @@ import { generateMagnetLinks, MagnetLinkResult } from "@/types";
 import { Torrent } from "../../domain/entities/Torrent";
 import { MovieDatasourceImp } from "../../infrastructure/datasources/MovieDatasource";
 import { MovieRepositoryImp } from "../../infrastructure/repository/MovieRepository";
+import { toast } from "@heroui/react";
 
 // Devuelve una lista de MagnetLinkResult con el mejor torrent 1080p (más seeds) o el de mayor calidad disponible (más seeds)
 export function getBestQualityMagnets(torrents: MagnetLinkResult[]): MagnetLinkResult[] {
@@ -115,10 +116,12 @@ export const TPBMovieProvider: React.FC<MovieProviderProps> = ({ children }) => 
         const bestMagnets = getBestQualityMagnets(magnets || state.items)
         if (!bestMagnets.length) return
         dispatch({ type: 'SELECT', payload: bestMagnets[0] })
+        toast.info('Torrent óptimo seleccionado')
         return bestMagnets[0]
     }
     const selectMagnetLink = (magnet: MagnetLinkResult) => {
         dispatch({ type: 'SELECT', payload: magnet })
+        toast.info('Torrent seleccionado')
     }
     const value: TPBMovieContextType = {
         state,
