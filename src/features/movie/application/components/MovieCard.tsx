@@ -1,17 +1,13 @@
 import { Movie } from "../../domain/entities/Movie";
-import { MovieDownloadOptions } from "./MovieDownloads";
-import { generateMagnetLinks } from "@/types";
 import { Card } from "@heroui/react";
 import { MovieRuntime } from "./MovieRuntime";
 
 interface MovieCardProps {
     movie: Movie;
-    onClick?: (movie: Movie) => void;
+    onClick: (movie: Movie) => void;
 }
 
 export const MovieCard: React.FC<MovieCardProps> = ({ movie, onClick }) => {
-    const { data: magnetLinks, error: magnetError } = generateMagnetLinks(movie.torrents, movie.title);
-
     const overlayStyle = {
         position: "absolute" as const,
         top: 0,
@@ -24,14 +20,10 @@ export const MovieCard: React.FC<MovieCardProps> = ({ movie, onClick }) => {
         pointerEvents: "none" as const,
     };
 
-    const handleClick = () => {
-        if (onClick) onClick(movie);
-    };
-
     return (
         <Card
             className="relative overflow-hidden w-xs shadow-md cursor-pointer p-0"
-            onClick={handleClick}
+            onClick={() => onClick(movie)}
         >
             <div style={overlayStyle} />
             <Card.Header
@@ -56,13 +48,7 @@ export const MovieCard: React.FC<MovieCardProps> = ({ movie, onClick }) => {
                 />
             </picture>
             <Card.Footer className="absolute w-full justify-between bottom-3 flex flex-row gap-2 px-3">
-                {movie.runtime !== 0 && (
-                    <MovieRuntime runtime={movie.runtime} size="sm" showLabel={false} />
-                )}
-                <MovieDownloadOptions
-                    items={magnetLinks}
-                    isDisabled={!Array.isArray(movie.torrents) || magnetError !== null || magnetLinks.length === 0}
-                />
+                <MovieRuntime runtime={movie.runtime} size="sm" showLabel={false} />
             </Card.Footer>
         </Card >
     );

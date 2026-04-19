@@ -1,7 +1,4 @@
-import React from "react";
-
 import { Movie } from "../../domain/entities/Movie";
-
 import { MovieCard } from "./MovieCard";
 import { MovieCardSkeleton } from "./MovieCardSkeleton";
 import { ListLayout, Virtualizer } from "@heroui/react";
@@ -10,7 +7,7 @@ interface MovieListProps {
   movies: Movie[];
   loading?: boolean;
   error: string | null;
-  onMovieClick?: (movie: Movie) => void;
+  onMovieClick: (movie: Movie) => void;
 }
 
 export const MovieList: React.FC<MovieListProps> = ({

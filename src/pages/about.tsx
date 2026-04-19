@@ -1,14 +1,8 @@
-import { title } from "@/components/primitives";
 import { Button, Link } from "@heroui/react";
-import { useNavigate } from "react-router-dom";
 
 export default function About() {
-  const navigate = useNavigate();
   return (
     <section className="flex flex-col items-center justify-center gap-4 py-8 md:py-10">
-      <div className="inline-block max-w-lg text-center justify-center">
-        <h1 className={title()}>About</h1>
-      </div>
       <div className="max-w-2xl mx-auto py-12 px-4">
         <h1 className="text-3xl font-bold mb-4">Acerca de BOLIPeliculas</h1>
         <p className="mb-4">
@@ -35,19 +29,21 @@ export default function About() {
         <p>
           Desarrollado por{" "}
           <Link
-            href="https://github.com/VancedSHS"
+            href="https://github.com/DiegoSHS"
             target="_blank"
             rel="noopener noreferrer"
           >
             VancedSHS
           </Link>
         </p>
-        <Button
-          onClick={() => navigate("/movies")}
-          className={'my-2'}
+        <Link
+          href="/page/1"
+          className="no-underline my-2"
         >
-          Volver a las pelis
-        </Button>
+          <Button>
+            Volver a las pelis
+          </Button>
+        </Link>
       </div>
     </section>
   );

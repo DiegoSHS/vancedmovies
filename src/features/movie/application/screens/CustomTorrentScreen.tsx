@@ -1,7 +1,6 @@
-import { Button, Input, toast } from "@heroui/react"
+import { Button, Input } from "@heroui/react"
 import { VideoPlayer } from "../components/VideoPlayer"
 import { ChangeEvent, useState } from "react"
-import { checkMagnet, extractMagnetInfo } from "@/types"
 import { useTPBMovieContext } from "../providers/TPBMovieProvider"
 import { Torrent } from "../../domain/entities/Torrent"
 
@@ -10,7 +9,14 @@ export const CustomTorrentScreen: React.FC = () => {
     const [disabled, setDisabled] = useState(false);
     const [movieTitle, setMovieTitle] = useState("Tu propia pelicula");
 
-    const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const handleChange = async (event: ChangeEvent<HTMLInputElement>) => {
+        const {
+            checkMagnet,
+            extractMagnetInfo
+        } = await import('../../../../utils/magnetGenerator')
+        const {
+            toast
+        } = await import('@heroui/react')
         if (!checkMagnet(event.target.value)) return
         const result = extractMagnetInfo(event.target.value)
         if (result) {

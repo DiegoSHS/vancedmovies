@@ -1,11 +1,10 @@
 import { createContext, useContext } from "react";
 import { MovieProviderProps } from "./MovieProvider";
 import { BaseState, defaultProviderState, ProviderState, useBaseProviderState, useBaseReducer } from "@/utils";
-import { generateMagnetLinks, MagnetLinkResult } from "@/types";
 import { Torrent } from "../../domain/entities/Torrent";
 import { MovieDatasourceImp } from "../../infrastructure/datasources/MovieDatasource";
 import { MovieRepositoryImp } from "../../infrastructure/repository/MovieRepository";
-import { toast } from "@heroui/react";
+import { MagnetLinkResult } from "@/utils/magnetGenerator";
 
 // Devuelve una lista de MagnetLinkResult con el mejor torrent 1080p (más seeds) o el de mayor calidad disponible (más seeds)
 export function getBestQualityMagnets(torrents: MagnetLinkResult[]): MagnetLinkResult[] {
@@ -35,9 +34,9 @@ export function getBestQualityMagnets(torrents: MagnetLinkResult[]): MagnetLinkR
 interface TPBMovieContextType extends ProviderState {
     getMoreTorrents(title?: string): Promise<Torrent[]>
     cleanupState(): void
-    autoSelectMagnetLink(magnets?: MagnetLinkResult[]): MagnetLinkResult | undefined
-    selectMagnetLink(magnet: MagnetLinkResult): void
-    addMagnetLinks(torrents: Torrent[], movieTitle: string, initial?: MagnetLinkResult[]): MagnetLinkResult[]
+    autoSelectMagnetLink(magnets?: MagnetLinkResult[]): Promise<MagnetLinkResult | undefined>
+    selectMagnetLink(magnet: MagnetLinkResult): Promise<void>
+    addMagnetLinks(torrents: Torrent[], movieTitle: string, initial?: MagnetLinkResult[]): Promise<MagnetLinkResult[]>
     state: BaseState<MagnetLinkResult>
 }
 
@@ -54,8 +53,9 @@ export const TPBMovieProvider: React.FC<MovieProviderProps> = ({ children }) => 
     const { state, dispatch } = useBaseReducer<MagnetLinkResult>()
     const movieDatasource = new MovieDatasourceImp()
     const movieRepository = new MovieRepositoryImp(movieDatasource)
-    const addMagnetLinks = (torrents: Torrent[], movieTitle: string, initial: MagnetLinkResult[] = []) => {
+    const addMagnetLinks = async (torrents: Torrent[], movieTitle: string, initial: MagnetLinkResult[] = []) => {
         try {
+            const { generateMagnetLinks } = await import('../../../../utils/magnetGenerator')
             const { data, error } = generateMagnetLinks(torrents, movieTitle)
             if (error) return []
             const merged = [...data, ...initial]
@@ -83,25 +83,25 @@ export const TPBMovieProvider: React.FC<MovieProviderProps> = ({ children }) => 
             modifyProviderState({ loading: true, error: null })
             const torrents = await movieRepository.getMoreTorrents(title || query)
             if (!torrents.length) {
-                autoSelectMagnetLink()
+                await autoSelectMagnetLink()
                 return []
             }
-            const magnets = addMagnetLinks(torrents, title, state.items)
+            const magnets = await addMagnetLinks(torrents, title, state.items)
             modifyProviderState({
                 totalResults: torrents.length,
             })
             const dualMagnet = magnets.find(item => item.torrent.type.toUpperCase().includes('DUAL'))
             if (dualMagnet) {
-                selectMagnetLink(dualMagnet)
+                await selectMagnetLink(dualMagnet)
             } else {
-                autoSelectMagnetLink(magnets)
+                await autoSelectMagnetLink(magnets)
             }
             return torrents
         } catch (error) {
             modifyProviderState({ error: 'Error al buscar peliculas' })
             return []
         } finally {
-            autoSelectMagnetLink()
+            await autoSelectMagnetLink()
             modifyProviderState({ loading: false })
         }
     }
@@ -112,15 +112,17 @@ export const TPBMovieProvider: React.FC<MovieProviderProps> = ({ children }) => 
         dispatch({ type: 'RESET' })
         modifyProviderState(defaultProviderState)
     }
-    const autoSelectMagnetLink = (magnets?: MagnetLinkResult[]) => {
+    const autoSelectMagnetLink = async (magnets?: MagnetLinkResult[]) => {
         const bestMagnets = getBestQualityMagnets(magnets || state.items)
         if (!bestMagnets.length) return
         dispatch({ type: 'SELECT', payload: bestMagnets[0] })
+        const { toast } = await import('@heroui/react')
         toast.info('Torrent óptimo seleccionado')
         return bestMagnets[0]
     }
-    const selectMagnetLink = (magnet: MagnetLinkResult) => {
+    const selectMagnetLink = async (magnet: MagnetLinkResult) => {
         dispatch({ type: 'SELECT', payload: magnet })
+        const { toast } = await import('@heroui/react')
         toast.info('Torrent seleccionado')
     }
     const value: TPBMovieContextType = {

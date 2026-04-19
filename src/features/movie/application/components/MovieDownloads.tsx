@@ -1,23 +1,8 @@
-import { Button, Card, Chip, Dropdown, EmptyState, Link, Popover, Switch, Table, TableLayout, toast, Virtualizer } from "@heroui/react";
-import { useState } from "react";
-import { Torrent } from "../../domain/entities/Torrent";
-import { copyMagnetToClipboard, MagnetLinkResult } from "@/types";
+import { Button, Card, Chip, Dropdown, EmptyState, Link, Popover, Switch, Table, TableLayout, Virtualizer } from "@heroui/react";
 import { CheckIcon, CopyIcon, DownloadIcon, ListIcon, PlayIcon, SquaresIcon } from "@/components/icons";
 import { useTPBMovieContext } from "../providers/TPBMovieProvider";
-
-async function handleMagnetCopy(
-  magnetLink: string,
-  setCopied: (value: boolean) => void,
-) {
-  try {
-    await copyMagnetToClipboard(magnetLink);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  } catch {
-    setCopied(false);
-    setTimeout(() => setCopied(false), 2000);
-  }
-}
+import { useMagnetCopy } from "@/hooks/useMagnetCopy";
+import { MagnetLinkResult } from "@/utils/magnetGenerator";
 
 const NoDownloadsAvailable = ({ message = "No hay descargas disponibles" }: { message?: string }) => {
   return (
@@ -33,11 +18,12 @@ interface TorrentActionButtonProps {
 }
 
 export const CopyTorrentButton = ({ torrent, isIconOnly = false }: TorrentActionButtonProps) => {
-  const handleClick = () => {
-    handleMagnetCopy(torrent.magnetLink, setCopied)
+  const { copied, CopyToClipboard } = useMagnetCopy()
+  const handleClick = async () => {
+    const { toast } = await import('@heroui/react')
+    CopyToClipboard(torrent.magnetLink)
     toast.success('Copiado al portapapeles')
   }
-  const [copied, setCopied] = useState(false);
   return (
     <Button
       size="sm"
@@ -104,86 +90,6 @@ export const PlayTorrentButton = ({ torrent, isIconOnly }: TorrentActionButtonPr
     </Button>
   )
 }
-
-interface MovieDownloadOptionsProps {
-  items: MagnetLinkResult[];
-  isDisabled: boolean;
-}
-
-interface MovieDropdownItemProps {
-  magnetLink: string;
-  torrent: Torrent;
-}
-
-export function MovieDropdownItem({
-  magnetLink,
-  torrent,
-}: MovieDropdownItemProps) {
-  const [copied, setCopied] = useState(false);
-
-  return (
-    <div className={`flex items-center justify-between w-full`}
-      onClick={() => {
-        handleMagnetCopy(magnetLink, setCopied);
-      }}>
-      <div className="flex gap-2 items-center">
-        {copied ? <CheckIcon size={20} /> : <CopyIcon size={20} />}
-        <div className="flex gap-1 items-center">
-          <span className="font-medium text-sm">{torrent.quality}</span>
-          <span className="text-xs opacity-60">{torrent.size}</span>
-        </div>
-      </div>
-      <div className="flex items-center gap-1">
-        <Chip className="inline-flex items-center px-2 py-1">
-          <Chip.Label>{torrent.seeds}</Chip.Label>
-        </Chip>
-        <Chip className="inline-flex items-center px-2 py-1">
-          <Chip.Label>{torrent.peers}</Chip.Label>
-        </Chip>
-      </div>
-    </div>
-  );
-}
-
-export const MovieDownloadOptions = ({
-  items,
-  isDisabled,
-}: MovieDownloadOptionsProps) => {
-  if (!Array.isArray(items) || items.length === 0) {
-    return (
-      <Button isDisabled className="rounded-full px-3 py-1 text-sm">
-        No hay descargas disponibles
-      </Button>
-    );
-  }
-
-  return (
-    <Dropdown.Root>
-      <Button
-        size="sm"
-        isDisabled={isDisabled}
-      >
-        <DownloadIcon size={20} />
-        Descargar
-      </Button>
-      <Dropdown.Popover>
-
-        <Dropdown.Menu className="">
-          {items
-            .slice()
-            .sort((prev, next) => next.torrent.seeds - prev.torrent.seeds)
-            .map(({ magnetLink, torrent }) => (
-              <Dropdown.Item
-                id={torrent.hash}
-              >
-                <MovieDropdownItem magnetLink={magnetLink} torrent={torrent} />
-              </Dropdown.Item>
-            ))}
-        </Dropdown.Menu>
-      </Dropdown.Popover>
-    </Dropdown.Root>
-  );
-};
 
 const MovieDownloadCard = ({ item,
 }: { item: MagnetLinkResult }) => {
@@ -297,15 +203,13 @@ export const MovieDownloads = ({ items, mode }: MovieDownloadsProps) => {
       <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
         Descargas disponibles
       </h2>
-      <div>
-        {
-          mode === 'card' ? (
-            <MovieDownloadCards items={items} />
-          ) : (
-            <MovieDownloadsTable items={items} />
-          )
-        }
-      </div>
+      {
+        mode === 'card' ? (
+          <MovieDownloadCards items={items} />
+        ) : (
+          <MovieDownloadsTable items={items} />
+        )
+      }
     </div >
   );
 };

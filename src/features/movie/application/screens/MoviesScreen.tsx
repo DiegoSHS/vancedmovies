@@ -1,7 +1,6 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Input, Button, Chip, Spinner } from "@heroui/react";
-
 import { Movie } from "../../domain/entities/Movie";
 import { MovieList } from "../components/MovieList";
 import { MoviePagination } from "../components/MoviePagination";
@@ -9,27 +8,31 @@ import { CrossIcon, SearchIcon } from "@/components/icons";
 import { useMovieContext } from "../providers/MovieProvider";
 
 export const MoviesScreen: React.FC = () => {
-  const { state: { items: movies }, totalResults, query, loading, error, getMovies, searchMovies, resetQuery, updateQuery } =
-    useMovieContext();
+  const {
+    state: { items: movies },
+    totalResults,
+    query,
+    loading,
+    error,
+    getMovies,
+    searchMovies,
+    resetQuery,
+    updateQuery
+  } = useMovieContext();
   const navigate = useNavigate();
 
   const [currentPage, setCurrentPage] = useState<number>(1);
 
   useEffect(() => {
-    const loadInitialMovies = async () => {
-      getMovies(currentPage);
-    };
-
-    loadInitialMovies();
+    getMovies(currentPage);
   }, [currentPage]);
 
-  const handleSearch = async () => {
+  const handleSearch = () => {
     if (!query.trim()) {
       getMovies(1);
       setCurrentPage(1);
       return;
     }
-
     searchMovies(1);
     setCurrentPage(1);
   };
@@ -96,28 +99,24 @@ export const MoviesScreen: React.FC = () => {
             </Chip.Root>
           )}
         </div>
-
         <MoviePagination
           currentPage={currentPage}
           isLoading={loading}
           totalPages={totalPages}
           onPageChange={handlePageChange}
         />
-
         <MovieList
           error={error}
           loading={loading}
           movies={movies}
           onMovieClick={handleMovieClick}
         />
-        {!loading && (
-          <MoviePagination
-            currentPage={currentPage}
-            isLoading={loading}
-            totalPages={totalPages}
-            onPageChange={handlePageChange}
-          />
-        )}
+        <MoviePagination
+          currentPage={currentPage}
+          isLoading={loading}
+          totalPages={totalPages}
+          onPageChange={handlePageChange}
+        />
       </div>
     </div>
   );

@@ -1,5 +1,4 @@
 import { Card, Skeleton } from "@heroui/react";
-import React from "react";
 
 export const MovieCardSkeleton: React.FC = () => {
   return (
@@ -21,7 +20,6 @@ export const MovieCardSkeleton: React.FC = () => {
       <Card.Footer className="absolute bottom-0 z-10 p-3 flex flex-col gap-2 w-full">
         <div className="w-full flex gap-2 justify-between">
           <Skeleton className="w-24 h-8 rounded-full bg-white/10" />
-          <Skeleton className="w-28 h-8 rounded-full bg-white/10" />
         </div>
       </Card.Footer>
     </Card>

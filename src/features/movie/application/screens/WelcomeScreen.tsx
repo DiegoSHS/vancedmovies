@@ -1,4 +1,4 @@
-import { Button, Chip, Link } from "@heroui/react";
+import { Chip, Link } from "@heroui/react";
 
 export const WelcomeScreen: React.FC = () => {
     return (
@@ -44,13 +44,9 @@ export const WelcomeScreen: React.FC = () => {
             <div className="max-w-2xl text-center mx-auto">
                 <Link
                     href="/page/1"
-                    className="no-underline"
+                    className="no-underline button bg-red-600 text-white px-8 py-3 rounded-full text-lg font-semibold shadow-lg hover:shadow-red-600"
                 >
-                    <Button
-                        className="bg-red-600 text-white px-8 py-3 rounded-full text-lg font-semibold shadow-lg hover:shadow-red-600"
-                    >
-                        Explorar Películas
-                    </Button>
+                    Explorar Películas
                 </Link>
             </div>
         </div>

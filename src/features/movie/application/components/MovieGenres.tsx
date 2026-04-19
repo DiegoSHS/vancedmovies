@@ -4,7 +4,7 @@ export const MovieGenres = ({ genres, show = 0 }: { genres: string[], show?: num
     if (!genres || !Array.isArray(genres)) {
         return null
     }
-    if (Array.isArray(genres) && genres.length === 0) {
+    if (genres.length === 0) {
         return (
             <div className="text-gray-500 dark:text-gray-400">
                 No hay géneros disponibles

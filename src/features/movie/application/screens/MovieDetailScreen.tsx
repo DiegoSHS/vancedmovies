@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useParams } from "react-router-dom";
-import { Button, Link, Spinner } from "@heroui/react";
+import { Link, Spinner } from "@heroui/react";
 import { VideoPlayer } from "../components/VideoPlayer";
 import { MovieDownloads, ViewModeSwitch } from "../components/MovieDownloads";
 import { useMovieContext } from "../providers/MovieProvider";
@@ -56,10 +56,11 @@ export const MovieDetailScreen: React.FC = () => {
         <p className="text-gray-600 dark:text-gray-300 mb-6">
           {error || "No se encontró la película"}
         </p>
-        <Link href="/page/1" className='no-underline'>
-          <Button className="bg-blue-600 text-white px-4 py-2 rounded">
-            Volver al inicio
-          </Button>
+        <Link
+          href="/page/1"
+          className='no-underline button button--primary'
+        >
+          Volver al inicio
         </Link>
       </div>
     </div>
@@ -77,10 +78,8 @@ export const MovieDetailScreen: React.FC = () => {
 
   return (
     <div className="container mx-auto px-4 py-8 flex flex-col gap-2 items-center">
-      <Link href="/page/1" className="no-underline">
-        <Button size="sm" variant="ghost">
-          ← Volver
-        </Button>
+      <Link href="/page/1" className="no-underline button button--ghost button--sm">
+        ← Volver
       </Link>
       <MovieDetailsCard
         movie={movie}
