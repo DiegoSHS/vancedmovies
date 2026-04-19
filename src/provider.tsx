@@ -1,6 +1,6 @@
 import { Toast } from "@heroui/react";
-import { MovieProvider } from "./features/movie";
 import { TPBMovieProvider } from "./features/movie/application/providers/TPBMovieProvider";
+import { MovieProvider } from "./features/movie/application/providers/MovieProvider";
 
 export function Provider({ children }: { children: React.ReactNode }) {
   return (

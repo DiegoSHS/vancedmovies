@@ -1,13 +1,11 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { Input } from "@heroui/react";
-import { Button } from "@heroui/react";
 import { Movie } from "../../domain/entities/Movie";
 import { MovieList } from "../components/MovieList";
 import { MoviePagination } from "../components/MoviePagination";
 import { CrossIcon, SearchIcon } from "@/components/icons";
 import { useMovieContext } from "../providers/MovieProvider";
-import { Chip } from "@heroui/react";
+import { Button, Chip, Input } from "@heroui/react";
 
 export const PaginatedMoviesScreen: React.FC = () => {
     const {
@@ -124,21 +122,18 @@ export const PaginatedMoviesScreen: React.FC = () => {
                     totalPages={totalPages}
                     onPageChange={handlePageChange}
                 />
-
                 <MovieList
                     error={error}
                     loading={loading}
                     movies={movies}
                     onMovieClick={handleMovieClick}
                 />
-                {!loading && (
-                    <MoviePagination
-                        currentPage={currentPage}
-                        isLoading={loading}
-                        totalPages={totalPages}
-                        onPageChange={handlePageChange}
-                    />
-                )}
+                <MoviePagination
+                    currentPage={currentPage}
+                    isLoading={loading}
+                    totalPages={totalPages}
+                    onPageChange={handlePageChange}
+                />
             </div>
         </div>
     );
