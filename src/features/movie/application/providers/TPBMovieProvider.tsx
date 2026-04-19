@@ -79,6 +79,8 @@ export const TPBMovieProvider: React.FC<MovieProviderProps> = ({ children }) => 
     }
     const getMoreTorrents = async (title?: string) => {
         try {
+            const { toast } = await import('@heroui/react')
+            toast.info('Buscando más torrents')
             if (!title) return []
             modifyProviderState({ loading: true, error: null })
             const torrents = await movieRepository.getMoreTorrents(title || query)
@@ -98,10 +100,10 @@ export const TPBMovieProvider: React.FC<MovieProviderProps> = ({ children }) => 
             }
             return torrents
         } catch (error) {
-            modifyProviderState({ error: 'Error al buscar peliculas' })
+            await autoSelectMagnetLink()
+            modifyProviderState({ error: 'Error al buscar torrents' })
             return []
         } finally {
-            await autoSelectMagnetLink()
             modifyProviderState({ loading: false })
         }
     }

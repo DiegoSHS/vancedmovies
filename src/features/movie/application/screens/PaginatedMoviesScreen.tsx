@@ -6,6 +6,7 @@ import { MoviePagination } from "../components/MoviePagination";
 import { CrossIcon, SearchIcon } from "@/components/icons";
 import { useMovieContext } from "../providers/MovieProvider";
 import { Button, Chip, Input } from "@heroui/react";
+import { useTPBMovieContext } from "../providers/TPBMovieProvider";
 
 export const PaginatedMoviesScreen: React.FC = () => {
     const {
@@ -19,8 +20,8 @@ export const PaginatedMoviesScreen: React.FC = () => {
         updateQuery,
         resetQuery,
         selectMovie
-    } =
-        useMovieContext();
+    } = useMovieContext();
+    const { addMagnetLinks } = useTPBMovieContext()
     const navigate = useNavigate();
     const { id } = useParams<{ id: string }>();
 
@@ -64,6 +65,7 @@ export const PaginatedMoviesScreen: React.FC = () => {
 
     const handleMovieClick = (movie: Movie) => {
         selectMovie(movie)
+        addMagnetLinks(movie.torrents, movie.title)
         navigate(`/movie/${movie.id}`);
     };
 

@@ -31,7 +31,6 @@ export const MovieDetailScreen: React.FC = () => {
 
   const fetchMovieData = async () => {
     if (movie) {
-      addMagnetLinks(movie.torrents, movie.title)
       getMoreTorrents(movie.title)
       return
     }
@@ -46,7 +45,6 @@ export const MovieDetailScreen: React.FC = () => {
   }
 
   useEffect(effect, [id]);
-
   if (error) return (
     <div className="container mx-auto px-4 py-8">
       <div className="text-center">

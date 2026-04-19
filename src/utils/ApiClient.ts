@@ -35,6 +35,9 @@ export class FetchHttpClient implements IHttpClient {
     if (/^https?:\/\//i.test(path)) {
       return path;
     }
+    if (/^http?:\/\//i.test(path)) {
+      return path
+    }
     return `${this.baseURL}${path}`;
   }
 
