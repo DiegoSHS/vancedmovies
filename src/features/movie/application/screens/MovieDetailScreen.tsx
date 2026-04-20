@@ -31,7 +31,7 @@ export const MovieDetailScreen: React.FC = () => {
 
   const fetchMovieData = async () => {
     if (movie) {
-      const url = `${import.meta.env.VITE_FLASK_BACKEND_URL}?q=${encodeURIComponent(movie.title)}`
+      const url = `${import.meta.env.VITE_FLASK_BACKEND_URL}/tpb_search?q=${encodeURIComponent(movie.title)}`
       const res = await fetch(url)
       console.log(res)
       getMoreTorrents(movie.title)
@@ -40,7 +40,7 @@ export const MovieDetailScreen: React.FC = () => {
     if (!id) return;
     const result = await getMovieById(parseInt(id))
     if (!result) return
-    const url = `${import.meta.env.VITE_FLASK_BACKEND_URL}?q=${encodeURIComponent(result.title)}`
+    const url = `${import.meta.env.VITE_FLASK_BACKEND_URL}/tpb_search?q=${encodeURIComponent(result.title)}`
     const res = await fetch(url)
     console.log(res)
     getMoreTorrents(result.title)
