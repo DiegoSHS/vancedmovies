@@ -31,12 +31,19 @@ export const MovieDetailScreen: React.FC = () => {
 
   const fetchMovieData = async () => {
     if (movie) {
+      const url = `${import.meta.env.VITE_FLASK_BACKEND_URL}?q=${encodeURIComponent(movie.title)}`
+      const res = await fetch(url)
+      console.log(res)
       getMoreTorrents(movie.title)
       return
     }
     if (!id) return;
     const result = await getMovieById(parseInt(id))
     if (!result) return
+    const url = `${import.meta.env.VITE_FLASK_BACKEND_URL}?q=${encodeURIComponent(result.title)}`
+    const res = await fetch(url)
+    console.log(res)
+    getMoreTorrents(result.title)
     addMagnetLinks(result.torrents, result.title)
     getMoreTorrents(result.title)
   }
@@ -93,7 +100,6 @@ export const MovieDetailScreen: React.FC = () => {
         />
       </div>
       <MovieDownloads
-        items={magnets}
         mode={shouldBeViewModeTable ? 'table' : viewMode}
       />
     </div>

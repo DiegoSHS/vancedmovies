@@ -140,6 +140,7 @@ const MovieDownloadCard = ({ item,
 };
 
 const MovieDownloadCards = ({ items }: Omit<MovieDownloadsProps, 'mode'>) => {
+  if (!items) return null
   return (
     <div className="flex flex-wrap gap-2 justify-center items-center">
       {
@@ -186,34 +187,9 @@ export const ViewModeSwitch = ({ mode, isDisabled = false, swapViewMode }: ViewM
 }
 
 interface MovieDownloadsProps {
-  items: MagnetLinkResult[];
+  items?: MagnetLinkResult[];
   mode: string
 }
-
-
-export const MovieDownloads = ({ items, mode }: MovieDownloadsProps) => {
-  if (!items || items.length === 0) {
-    return (
-      <NoDownloadsAvailable />
-    );
-  }
-
-  return (
-    <div className="flex w-full flex-col gap-2 items-center justify-center">
-      <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
-        Descargas disponibles
-      </h2>
-      {
-        mode === 'card' ? (
-          <MovieDownloadCards items={items} />
-        ) : (
-          <MovieDownloadsTable items={items} />
-        )
-      }
-    </div >
-  );
-};
-
 
 export const MovieDownloadsTable = ({ items }: Omit<MovieDownloadsProps, 'mode'>) => {
   return (
@@ -300,3 +276,27 @@ export const MovieDownloadsTable = ({ items }: Omit<MovieDownloadsProps, 'mode'>
     </Virtualizer>
   )
 }
+
+export const MovieDownloads = ({ mode }: MovieDownloadsProps) => {
+  const { state: { items } } = useTPBMovieContext()
+  if (!items || items.length === 0) {
+    return (
+      <NoDownloadsAvailable />
+    );
+  }
+
+  return (
+    <div className="flex w-full flex-col gap-2 items-center justify-center">
+      <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+        Descargas disponibles
+      </h2>
+      {
+        mode === 'card' ? (
+          <MovieDownloadCards items={items} />
+        ) : (
+          <MovieDownloadsTable items={items} />
+        )
+      }
+    </div >
+  );
+};
