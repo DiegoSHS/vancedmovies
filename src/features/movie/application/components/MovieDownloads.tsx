@@ -205,22 +205,22 @@ export const MovieDownloadsTable = ({ items }: Omit<MovieDownloadsProps, 'mode'>
               className="min-w-[770px] max-h-[300px] overflow-auto"
             >
               <Table.Header className={'h-full h-full'}>
-                <Table.Column isRowHeader width={75}>
+                <Table.Column isRowHeader minWidth={75}>
                   Calidad
                 </Table.Column>
-                <Table.Column width={100}>
+                <Table.Column minWidth={100}>
                   Detalles
                 </Table.Column>
-                <Table.Column width={100}>
+                <Table.Column minWidth={100}>
                   Tamaño
                 </Table.Column>
-                <Table.Column width={75}>
+                <Table.Column minWidth={75}>
                   Seeds
                 </Table.Column>
-                <Table.Column width={75}>
+                <Table.Column minWidth={75}>
                   Peers
                 </Table.Column>
-                <Table.Column width={330}>
+                <Table.Column minWidth={330}>
                   Accciones
                 </Table.Column>
               </Table.Header>
