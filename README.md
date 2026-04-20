@@ -12,18 +12,9 @@ bun install
 bun run dev
 ```
 
-## Documentación
-Toda la documentación relevante está en la carpeta `/docs`.
-
-- [Índice de la documentación](./docs/index.md)
-
 ## Tecnologías principales
 - React + TypeScript
 - Vite
 - TailwindCSS
 - HeroUI
-- WebTorrent (browser)
-- Webtor.io (embed)
-
-## Contribución
-Ver [docs/CONTRIBUCION.md](./docs/CONTRIBUCION.md)
+- WebTorrent (backend)
