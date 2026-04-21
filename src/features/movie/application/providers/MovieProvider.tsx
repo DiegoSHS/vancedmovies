@@ -77,7 +77,13 @@ export const MovieProvider: React.FC<MovieProviderProps> = ({ children }) => {
       modifyProviderState({ loading: true, error: null });
       const { data } = await movieRepository.searchMovies(query, page);
       modifyProviderState
-      if (!data?.movies) return []
+      if (!data?.movies) {
+        const { toast } = await import('@heroui/react')
+        toast.info('A veces las peliculas tienen títulos muy raros, intenta con otro nombre')
+        dispatch({ type: "RESET" });
+        modifyProviderState({ totalResults: 0, loading: false, error: null });
+        return []
+      }
       modifyProviderState({
         totalResults: data.movie_count
       });
