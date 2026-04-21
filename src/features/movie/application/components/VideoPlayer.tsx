@@ -9,6 +9,7 @@ interface HybridVideoPlayerProps {
 
 
 export const VideoPlayer: React.FC<HybridVideoPlayerProps> = ({
+    magnetLink,
     movieTitle,
     onClose,
 }) => {
@@ -33,7 +34,7 @@ export const VideoPlayer: React.FC<HybridVideoPlayerProps> = ({
                     </CloseButton>
                 )}
             </Card.Header>
-            <BackendStreamPlayer />
+            <BackendStreamPlayer magnetLink={magnetLink} />
         </Card>
     );
 };

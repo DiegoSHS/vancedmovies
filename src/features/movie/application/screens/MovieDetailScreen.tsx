@@ -25,20 +25,20 @@ export const MovieDetailScreen: React.FC = () => {
   } = useMovieContext();
   const {
     getMoreTorrents,
-    addMagnetLinks,
+    addTorrents,
     state: { items: magnets }
   } = useTPBMovieContext()
 
   const fetchMovieData = async () => {
     if (movie) {
+      addTorrents(movie.torrents)
       getMoreTorrents(movie.title)
       return
     }
     if (!id) return;
     const result = await getMovieById(parseInt(id))
     if (!result) return
-    getMoreTorrents(result.title)
-    addMagnetLinks(result.torrents, result.title)
+    addTorrents(result.torrents)
     getMoreTorrents(result.title)
   }
   const effect = () => {

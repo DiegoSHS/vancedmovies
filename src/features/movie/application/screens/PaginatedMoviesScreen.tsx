@@ -21,7 +21,7 @@ export const PaginatedMoviesScreen: React.FC = () => {
         resetQuery,
         selectMovie
     } = useMovieContext();
-    const { addMagnetLinks } = useTPBMovieContext()
+    const { addTorrents } = useTPBMovieContext()
     const navigate = useNavigate();
     const { id } = useParams<{ id: string }>();
 
@@ -65,7 +65,7 @@ export const PaginatedMoviesScreen: React.FC = () => {
 
     const handleMovieClick = (movie: Movie) => {
         selectMovie(movie)
-        addMagnetLinks(movie.torrents, movie.title)
+        addTorrents(movie.torrents)
         navigate(`/movie/${movie.id}`);
     };
 

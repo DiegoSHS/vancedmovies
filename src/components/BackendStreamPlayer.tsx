@@ -7,9 +7,9 @@ interface BackendStreamPlayerProps {
 export const BackendStreamPlayer: React.FC<BackendStreamPlayerProps> = ({ magnetLink }) => {
     const { state: { selectedItem } } = useTPBMovieContext()
     const videoSrc =
-        selectedItem ?
-            `${import.meta.env.VITE_NEST_BACKEND_URL}?magnet=${encodeURIComponent(magnetLink || selectedItem.magnetLink)}` :
-            undefined
+        magnetLink ?
+            `${import.meta.env.VITE_NEST_BACKEND_URL}?magnet=${encodeURIComponent(magnetLink)}` :
+            selectedItem ? `${import.meta.env.VITE_NEST_BACKEND_URL}?magnet=${encodeURIComponent(selectedItem.hash)}` : undefined
     const handleError = async () => {
         const { toast } = await import('@heroui/react')
         toast.danger('Ups, no se pudo cargar el video')

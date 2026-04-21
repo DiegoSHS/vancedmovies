@@ -4,17 +4,16 @@ import { BaseState, defaultProviderState, ProviderState, useBaseProviderState, u
 import { Torrent } from "../../domain/entities/Torrent";
 import { MovieDatasourceImp } from "../../infrastructure/datasources/MovieDatasource";
 import { MovieRepositoryImp } from "../../infrastructure/repository/MovieRepository";
-import { MagnetLinkResult } from "@/utils/magnetGenerator";
 
-// Devuelve una lista de MagnetLinkResult con el mejor torrent 1080p (más seeds) o el de mayor calidad disponible (más seeds)
-export function getBestQualityMagnets(torrents: MagnetLinkResult[]): MagnetLinkResult[] {
+// Devuelve una lista de Torrent con el mejor torrent 1080p (más seeds) o el de mayor calidad disponible (más seeds)
+export function getBestQualityMagnets(torrents: Torrent[]): Torrent[] {
     if (!Array.isArray(torrents) || torrents.length === 0) return [];
 
     // Filtrar solo 1080p
-    const torrents1080 = torrents.filter(t => t.torrent.quality.includes("1080p"));
+    const torrents1080 = torrents.filter(t => t.quality.includes("1080p"));
     if (torrents1080.length > 0) {
         // Ordenar por seeds descendente y devolver el primero
-        const sorted = [...torrents1080].sort((a, b) => b.torrent.seeds - a.torrent.seeds);
+        const sorted = [...torrents1080].sort((a, b) => b.seeds - a.seeds);
         return [sorted[0]];
     }
 
@@ -22,22 +21,22 @@ export function getBestQualityMagnets(torrents: MagnetLinkResult[]): MagnetLinkR
     const qualityOrder = ["2160p", "1080p", "720p", "480p", "360p"];
     // Ordenar por calidad y seeds
     const sorted = [...torrents].sort((a, b) => {
-        const aIndex = qualityOrder.findIndex(q => a.torrent.quality.includes(q));
-        const bIndex = qualityOrder.findIndex(q => b.torrent.quality.includes(q));
+        const aIndex = qualityOrder.findIndex(q => a.quality.includes(q));
+        const bIndex = qualityOrder.findIndex(q => b.quality.includes(q));
         const aQuality = aIndex === -1 ? qualityOrder.length : aIndex;
         const bQuality = bIndex === -1 ? qualityOrder.length : bIndex;
         if (aQuality !== bQuality) return aQuality - bQuality;
-        return b.torrent.seeds - a.torrent.seeds;
+        return b.seeds - a.seeds;
     });
     return sorted.length > 0 ? [sorted[0]] : [];
 }
 interface TPBMovieContextType extends ProviderState {
     getMoreTorrents(title?: string): Promise<Torrent[]>
     cleanupState(): void
-    autoSelectMagnetLink(magnets?: MagnetLinkResult[]): Promise<MagnetLinkResult | undefined>
-    selectMagnetLink(magnet: MagnetLinkResult): Promise<void>
-    addMagnetLinks(torrents: Torrent[], movieTitle: string, initial?: MagnetLinkResult[]): Promise<MagnetLinkResult[]>
-    state: BaseState<MagnetLinkResult>
+    autoSelectTorrent(magnets?: Torrent[]): Promise<Torrent | undefined>
+    selectTorrent(magnet: Torrent): Promise<void>
+    addTorrents(torrents: Torrent[], initial?: Torrent[]): Promise<Torrent[]>
+    state: BaseState<Torrent>
 }
 
 const TPBMovieContext = createContext<TPBMovieContextType | undefined>(undefined)
@@ -50,21 +49,19 @@ export const TPBMovieProvider: React.FC<MovieProviderProps> = ({ children }) => 
         totalResults,
         modifyProviderState
     } = useBaseProviderState()
-    const { state, dispatch } = useBaseReducer<MagnetLinkResult>()
+    const { state, dispatch } = useBaseReducer<Torrent>()
     const movieDatasource = new MovieDatasourceImp()
     const movieRepository = new MovieRepositoryImp(movieDatasource)
-    const addMagnetLinks = async (torrents: Torrent[], movieTitle: string, initial: MagnetLinkResult[] = []) => {
+    const addTorrents = async (torrents: Torrent[], initial: Torrent[] = []) => {
         try {
-            const { generateMagnetLinks } = await import('../../../../utils/magnetGenerator')
-            const { data, error } = generateMagnetLinks(torrents, movieTitle)
             if (error) return []
-            const merged = [...data, ...initial]
+            const merged = [...torrents, ...initial]
             const hashes = new Set<string>()
             const filtered = merged
                 .filter((item) => {
-                    const available = (item.torrent.peers > 0 && item.torrent.seeds > 0)
-                    if (!hashes.has(item.torrent.hash)) {
-                        hashes.add(item.torrent.hash)
+                    const available = (item.peers > 0 && item.seeds > 0)
+                    if (!hashes.has(item.hash)) {
+                        hashes.add(item.hash)
                         return true && available
                     }
                     return false
@@ -85,36 +82,36 @@ export const TPBMovieProvider: React.FC<MovieProviderProps> = ({ children }) => 
             modifyProviderState({ loading: true, error: null })
             const torrents = await movieRepository.getMoreTorrents(title || query)
             if (!torrents.length) {
-                await autoSelectMagnetLink()
+                await autoSelectTorrent()
                 return []
             }
-            const magnets = await addMagnetLinks(torrents, title, state.items)
+            const magnets = await addTorrents(torrents, state.items)
             modifyProviderState({
                 totalResults: torrents.length,
             })
-            const dualMagnet = magnets.find(item => item.torrent.type.toUpperCase().includes('DUAL'))
+            const dualMagnet = magnets.find(item => item.type.toUpperCase().includes('DUAL'))
             if (dualMagnet) {
-                await selectMagnetLink(dualMagnet)
+                await selectTorrent(dualMagnet)
             } else {
-                await autoSelectMagnetLink(magnets)
+                await autoSelectTorrent(magnets)
             }
             return torrents
         } catch (error) {
-            await autoSelectMagnetLink()
+            await autoSelectTorrent()
             modifyProviderState({ error: 'Error al buscar torrents' })
             return []
         } finally {
             modifyProviderState({ loading: false })
         }
     }
-    const sortFunction = (prev: MagnetLinkResult, next: MagnetLinkResult) => {
-        return next.torrent.seeds - prev.torrent.seeds
+    const sortFunction = (prev: Torrent, next: Torrent) => {
+        return next.seeds - prev.seeds
     }
     const cleanupState = () => {
         dispatch({ type: 'RESET' })
         modifyProviderState(defaultProviderState)
     }
-    const autoSelectMagnetLink = async (magnets?: MagnetLinkResult[]) => {
+    const autoSelectTorrent = async (magnets?: Torrent[]) => {
         const bestMagnets = getBestQualityMagnets(magnets || state.items)
         if (!bestMagnets.length) return
         dispatch({ type: 'SELECT', payload: bestMagnets[0] })
@@ -122,7 +119,7 @@ export const TPBMovieProvider: React.FC<MovieProviderProps> = ({ children }) => 
         toast.info('Torrent óptimo seleccionado')
         return bestMagnets[0]
     }
-    const selectMagnetLink = async (magnet: MagnetLinkResult) => {
+    const selectTorrent = async (magnet: Torrent) => {
         dispatch({ type: 'SELECT', payload: magnet })
         const { toast } = await import('@heroui/react')
         toast.info('Torrent seleccionado')
@@ -131,9 +128,9 @@ export const TPBMovieProvider: React.FC<MovieProviderProps> = ({ children }) => 
         state,
         getMoreTorrents,
         cleanupState,
-        autoSelectMagnetLink,
-        selectMagnetLink,
-        addMagnetLinks,
+        autoSelectTorrent,
+        selectTorrent,
+        addTorrents,
         query,
         error,
         loading,

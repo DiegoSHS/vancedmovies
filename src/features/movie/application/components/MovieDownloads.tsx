@@ -1,8 +1,9 @@
-import { Button, Card, Chip, Dropdown, EmptyState, Link, Popover, Switch, Table, TableLayout, Virtualizer } from "@heroui/react";
+import { Button, Card, Chip, Dropdown, EmptyState, Popover, Switch, Table, TableLayout, Virtualizer } from "@heroui/react";
 import { CheckIcon, CopyIcon, DownloadIcon, ListIcon, PlayIcon, SquaresIcon } from "@/components/icons";
 import { useTPBMovieContext } from "../providers/TPBMovieProvider";
 import { useMagnetCopy } from "@/hooks/useMagnetCopy";
-import { MagnetLinkResult } from "@/utils/magnetGenerator";
+import { Torrent } from "../../domain/entities/Torrent";
+import { useMovieContext } from "../providers/MovieProvider";
 
 const NoDownloadsAvailable = ({ message = "No hay descargas disponibles" }: { message?: string }) => {
   return (
@@ -13,15 +14,26 @@ const NoDownloadsAvailable = ({ message = "No hay descargas disponibles" }: { me
 }
 
 interface TorrentActionButtonProps {
-  torrent: MagnetLinkResult
+  torrent: Torrent
   isIconOnly?: boolean
 }
 
 export const CopyTorrentButton = ({ torrent, isIconOnly = false }: TorrentActionButtonProps) => {
   const { copied, CopyToClipboard } = useMagnetCopy()
+  const { state: { selectedItem } } = useMovieContext()
   const handleClick = async () => {
     const { toast } = await import('@heroui/react')
-    CopyToClipboard(torrent.magnetLink)
+    const { generateMagnetLink } = await import('@/utils/magnetGenerator')
+    if (!selectedItem) {
+      toast.warning('No se ha seleccionado una película')
+      return
+    }
+    const { data, error } = generateMagnetLink(torrent, selectedItem.title)
+    if (error) {
+      toast.warning(error)
+      return
+    }
+    CopyToClipboard(data)
     toast.success('Copiado al portapapeles')
   }
   return (
@@ -46,33 +58,39 @@ export const CopyTorrentButton = ({ torrent, isIconOnly = false }: TorrentAction
 }
 
 export const OpenTorrentButton = ({ torrent, isIconOnly = false }: TorrentActionButtonProps) => {
+  const { state: { selectedItem } } = useMovieContext()
+  const handleClick = async () => {
+    const { generateMagnetLink } = await import('@/utils/magnetGenerator')
+    if (!selectedItem) return
+    const { data, error } = generateMagnetLink(torrent, selectedItem.title)
+    if (error) {
+      const { toast } = await import('@heroui/react')
+      toast.warning(error)
+      return
+    }
+    window.open(data, '_blank', 'noopener,noreferrer')
+  }
   return (
-    <Link
-      href={torrent.magnetLink}
-      target="_blank"
-      rel="noreferrer noopener"
-      className="no-underline"
+    <Button
+      size="sm"
+      variant="secondary"
+      isIconOnly={isIconOnly}
+      onPress={handleClick}
     >
-      <Button
-        size="sm"
-        variant="secondary"
-        isIconOnly={isIconOnly}
-      >
-        <DownloadIcon />
-        {
-          isIconOnly || (
-            "Abrir torrent"
-          )
-        }
-      </Button>
-    </Link>
+      <DownloadIcon />
+      {
+        isIconOnly || (
+          "Abrir torrent"
+        )
+      }
+    </Button>
   )
 }
 
 export const PlayTorrentButton = ({ torrent, isIconOnly }: TorrentActionButtonProps) => {
-  const { selectMagnetLink } = useTPBMovieContext()
+  const { selectTorrent } = useTPBMovieContext()
   const handleClick = () => {
-    selectMagnetLink(torrent)
+    selectTorrent(torrent)
   }
   return (
     <Button
@@ -92,15 +110,15 @@ export const PlayTorrentButton = ({ torrent, isIconOnly }: TorrentActionButtonPr
 }
 
 const MovieDownloadCard = ({ item,
-}: { item: MagnetLinkResult }) => {
+}: { item: Torrent }) => {
   return (
     <Card
-      key={item.torrent.hash}
+      key={item.hash}
       className="overflow-hidden hover:shadow-lg transition-shadow"
     >
       <Card.Header className="flex flex-row gap-2 justify-between">
         <Chip className="inline-flex items-center px-2 py-1">
-          <Chip.Label>{item.torrent.quality}</Chip.Label>
+          <Chip.Label>{item.quality}</Chip.Label>
         </Chip>
 
         <Dropdown>
@@ -110,7 +128,7 @@ const MovieDownloadCard = ({ item,
           <Dropdown.Popover>
             <Dropdown.Menu>
               <Dropdown.Item className="hover:cursor-default">
-                {item.torrent.type}
+                {item.type}
               </Dropdown.Item>
             </Dropdown.Menu>
           </Dropdown.Popover>
@@ -119,14 +137,14 @@ const MovieDownloadCard = ({ item,
       <Card.Content className="flex flex-col gap-2 text-sm py-0 my-0">
         <div className="flex items-center gap-1">
           <span className="text-gray-600 dark:text-gray-400">Tamaño:</span>
-          <span className="font-medium">{item.torrent.size}</span>
+          <span className="font-medium">{item.size}</span>
         </div>
         <div className="flex items-center gap-1">
           <Chip color="success" className="inline-flex items-center px-2 py-1">
-            <Chip.Label>Seeders: {item.torrent.seeds}</Chip.Label>
+            <Chip.Label>Seeders: {item.seeds}</Chip.Label>
           </Chip>
           <Chip color="success" className="inline-flex items-center px-2 py-1">
-            <Chip.Label>Peers: {item.torrent.peers}</Chip.Label>
+            <Chip.Label>Peers: {item.peers}</Chip.Label>
           </Chip>
         </div>
       </Card.Content>
@@ -146,7 +164,7 @@ const MovieDownloadCards = ({ items }: Omit<MovieDownloadsProps, 'mode'>) => {
       {
         items.map((item) => (
           <MovieDownloadCard
-            key={item.torrent.hash}
+            key={item.hash}
             item={item}
           />
         ))
@@ -192,7 +210,7 @@ export const ViewModeSwitch = ({ mode, isDisabled = false, swapViewMode }: ViewM
 }
 
 interface MovieDownloadsProps {
-  items?: MagnetLinkResult[];
+  items?: Torrent[];
   mode: string
 }
 
@@ -237,9 +255,9 @@ export const MovieDownloadsTable = ({ items }: Omit<MovieDownloadsProps, 'mode'>
                 <Table.Collection items={items}>
                   {
                     (item) => (
-                      <Table.Row id={item.torrent.hash}>
+                      <Table.Row id={item.hash}>
                         <Table.Cell>
-                          {item.torrent.quality}
+                          {item.quality}
                         </Table.Cell>
                         <Table.Cell>
                           <Popover>
@@ -249,20 +267,20 @@ export const MovieDownloadsTable = ({ items }: Omit<MovieDownloadsProps, 'mode'>
                             <Popover.Content>
                               <Popover.Dialog>
                                 <Popover.Heading>
-                                  {item.torrent.type}
+                                  {item.type}
                                 </Popover.Heading>
                               </Popover.Dialog>
                             </Popover.Content>
                           </Popover>
                         </Table.Cell>
                         <Table.Cell>
-                          {item.torrent.size}
+                          {item.size}
                         </Table.Cell>
                         <Table.Cell className={'text-success'}>
-                          {item.torrent.seeds}
+                          {item.seeds}
                         </Table.Cell>
                         <Table.Cell className={'text-success'}>
-                          {item.torrent.peers}
+                          {item.peers}
                         </Table.Cell>
                         <Table.Cell className="flex gap-1">
                           <CopyTorrentButton torrent={item} />

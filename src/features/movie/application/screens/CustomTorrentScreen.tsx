@@ -1,16 +1,17 @@
 import { Button, Input } from "@heroui/react"
 import { VideoPlayer } from "../components/VideoPlayer"
 import { useEffect, useState } from "react"
-import { useTPBMovieContext } from "../providers/TPBMovieProvider"
-import { Torrent } from "../../domain/entities/Torrent"
 import { useSearchParams } from "react-router-dom"
 
 export const CustomTorrentScreen: React.FC = () => {
-    const { selectMagnetLink, state: { selectedItem } } = useTPBMovieContext()
     const [searchParams] = useSearchParams()
-
-    const [moviePlayerState, setMoviePlayerState] = useState({
+    const [moviePlayerState, setMoviePlayerState] = useState<{
+        disabled: boolean;
+        magnetLink: string | undefined;
+        movieTitle: string;
+    }>({
         disabled: false,
+        magnetLink: undefined,
         movieTitle: "Tu propia pelicula"
     });
 
@@ -18,20 +19,19 @@ export const CustomTorrentScreen: React.FC = () => {
         const {
             checkMagnet,
             extractMagnetInfo
-        } = await import('../../../../utils/magnetGenerator')
+        } = await import('@/utils/magnetGenerator')
         if (!checkMagnet(magnet)) return
         const result = extractMagnetInfo(magnet)
         if (result) {
-            setMoviePlayerState(prev => ({ ...prev, movieTitle: result.name?.replace(/\./g, ' ') || '' }))
+            setMoviePlayerState(prev => ({
+                ...prev,
+                movieTitle: result.name?.replace(/\./g, ' ') || '',
+                disabled: true
+            }))
         }
-        selectMagnetLink({
-            magnetLink: magnet,
-            torrent: {} as Torrent
-        })
-        setMoviePlayerState(prev => ({ ...prev, disabled: true }))
     }
     const useMagnetFromUrl = async () => {
-        const { getMagnetLinkFromURL } = await import('../../../../utils/magnetGenerator')
+        const { getMagnetLinkFromURL } = await import('@/utils/magnetGenerator')
         const magnetLink = getMagnetLinkFromURL(searchParams)
         if (magnetLink) {
             await setMagnetLink(magnetLink)
@@ -49,14 +49,14 @@ export const CustomTorrentScreen: React.FC = () => {
                 <Input
                     fullWidth
                     placeholder="Escribe el link de la película que quieres ver"
-                    defaultValue={selectedItem?.magnetLink}
+                    defaultValue={moviePlayerState.magnetLink}
                     onChange={(e) => {
                         setMagnetLink(e.target.value)
                     }}
                     disabled={moviePlayerState.disabled}
                 />
                 <Button
-                    isDisabled={selectedItem?.magnetLink.trim() === ''}
+                    isDisabled={moviePlayerState.magnetLink?.trim() === ''}
                     onPress={() => {
                         setMoviePlayerState(prev => ({ ...prev, disabled: false }))
                     }}
@@ -64,7 +64,7 @@ export const CustomTorrentScreen: React.FC = () => {
                     Editar
                 </Button>
             </div>
-            <VideoPlayer movieTitle={moviePlayerState.movieTitle} />
+            <VideoPlayer magnetLink={moviePlayerState.magnetLink} movieTitle={moviePlayerState.movieTitle} />
         </div>
     )
 }
