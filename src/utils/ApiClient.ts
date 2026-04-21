@@ -1,8 +1,8 @@
 export interface IHttpClient {
-  get<T>(path: string, options?: RequestInit): Promise<T>;
-  post<T>(path: string, body?: unknown, options?: RequestInit): Promise<T>;
-  put<T>(path: string, body?: unknown, options?: RequestInit): Promise<T>;
-  delete<T>(path: string, options?: RequestInit): Promise<T>;
+  get<T>(path: string, options?: RequestInit, overrideBaseURL?: boolean): Promise<T>;
+  post<T>(path: string, body?: unknown, options?: RequestInit, overrideBaseURL?: boolean): Promise<T>;
+  put<T>(path: string, body?: unknown, options?: RequestInit, overrideBaseURL?: boolean): Promise<T>;
+  delete<T>(path: string, options?: RequestInit, overrideBaseURL?: boolean): Promise<T>;
 }
 
 export class ApiError extends Error {
@@ -31,22 +31,17 @@ export class FetchHttpClient implements IHttpClient {
     };
   }
 
-  protected resolveUrl(path: string): string {
-    if (/^https?:\/\//i.test(path)) {
-      return path;
-    }
-    if (/^http?:\/\//i.test(path)) {
-      return path
-    }
+  protected resolveUrl(path: string, overrideBaseURL: boolean): string {
+    if (overrideBaseURL) return path;
     return `${this.baseURL}${path}`;
   }
 
-  protected async request<T>(method: string, path: string, body?: unknown, options: RequestInit = {}): Promise<T> {
+  protected async request<T>(method: string, path: string, body?: unknown, options: RequestInit = {}, overrideBaseURL: boolean = false): Promise<T> {
     const controller = new AbortController();
     const timeoutId = window.setTimeout(() => controller.abort(), this.timeout);
 
     try {
-      const response = await fetch(this.resolveUrl(path), {
+      const response = await fetch(this.resolveUrl(path, overrideBaseURL), {
         method,
         headers: {
           ...this.defaultHeaders,
@@ -77,20 +72,20 @@ export class FetchHttpClient implements IHttpClient {
     }
   }
 
-  get<T>(path: string, options?: RequestInit): Promise<T> {
-    return this.request<T>("GET", path, undefined, options);
+  get<T>(path: string, options?: RequestInit, overrideBaseURL?: boolean): Promise<T> {
+    return this.request<T>("GET", path, undefined, options, overrideBaseURL);
   }
 
-  post<T>(path: string, body?: unknown, options?: RequestInit): Promise<T> {
-    return this.request<T>("POST", path, body, options);
+  post<T>(path: string, body?: unknown, options?: RequestInit, overrideBaseURL?: boolean): Promise<T> {
+    return this.request<T>("POST", path, body, options, overrideBaseURL);
   }
 
-  put<T>(path: string, body?: unknown, options?: RequestInit): Promise<T> {
-    return this.request<T>("PUT", path, body, options);
+  put<T>(path: string, body?: unknown, options?: RequestInit, overrideBaseURL?: boolean): Promise<T> {
+    return this.request<T>("PUT", path, body, options, overrideBaseURL);
   }
 
-  delete<T>(path: string, options?: RequestInit): Promise<T> {
-    return this.request<T>("DELETE", path, undefined, options);
+  delete<T>(path: string, options?: RequestInit, overrideBaseURL?: boolean): Promise<T> {
+    return this.request<T>("DELETE", path, undefined, options, overrideBaseURL);
   }
 }
 

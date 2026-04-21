@@ -164,7 +164,7 @@ export class MovieDatasourceImp extends MovieDatasource {
       const { ApiClient } = await import('../../../../utils/ApiClient')
       if (!Boolean(query)) return []
       const url = `${import.meta.env.VITE_NEST_BACKEND_URL}/tpb_search?title=${encodeURIComponent(query)}`
-      const data = await ApiClient.get<Torrent[]>(url)
+      const data = await ApiClient.get<Torrent[]>(url, {}, true)
       return data
     } catch (error: any) {
       return []
