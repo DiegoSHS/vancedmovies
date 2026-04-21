@@ -162,7 +162,12 @@ interface ViewModeSwitchProps {
 
 export const ViewModeSwitch = ({ mode, isDisabled = false, swapViewMode }: ViewModeSwitchProps) => {
   return (
-    <Switch isDisabled={isDisabled} size="lg" isSelected={mode === 'table'} onChange={swapViewMode}>
+    <Switch
+      isDisabled={isDisabled}
+      size="lg"
+      isSelected={mode === 'table'}
+      onChange={swapViewMode}
+    >
       {
         ({ isSelected }) => (
           <>

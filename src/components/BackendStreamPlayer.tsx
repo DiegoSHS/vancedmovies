@@ -10,6 +10,10 @@ export const BackendStreamPlayer: React.FC<BackendStreamPlayerProps> = ({ magnet
         selectedItem ?
             `${import.meta.env.VITE_NEST_BACKEND_URL}?magnet=${encodeURIComponent(magnetLink || selectedItem.magnetLink)}` :
             undefined
+    const handleError = async () => {
+        const { toast } = await import('@heroui/react')
+        toast.danger('Ups, no se pudo cargar el video')
+    }
     return (
         <div className="w-full">
             <video
@@ -18,6 +22,7 @@ export const BackendStreamPlayer: React.FC<BackendStreamPlayerProps> = ({ magnet
                 className="w-full rounded-md aspect-video"
                 src={videoSrc}
                 autoPlay
+                onError={handleError}
             >
                 Tu navegador no soporta el elemento de video.
             </video>
