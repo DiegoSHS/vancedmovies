@@ -29,10 +29,6 @@ export const CustomTorrentScreen: React.FC = () => {
             torrent: {} as Torrent
         })
         setMoviePlayerState(prev => ({ ...prev, disabled: true }))
-        const {
-            toast
-        } = await import('@heroui/react')
-        toast.success('Magnet añadido con éxito')
     }
     const useMagnetFromUrl = async () => {
         const { getMagnetLinkFromURL } = await import('../../../../utils/magnetGenerator')
