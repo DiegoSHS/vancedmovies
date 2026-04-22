@@ -3,6 +3,7 @@ import { MovieRepositoryImp } from "../../infrastructure/repository/MovieReposit
 import { MovieDatasourceImp } from "../../infrastructure/datasources/MovieDatasource";
 import { BaseState, useBaseProviderState, useBaseReducer } from "@/utils";
 import { Movie } from "../../domain/entities/Movie";
+import { HashResult } from "../../domain/entities/Hashes";
 export interface MovieProviderProps {
   children: ReactNode;
 }
@@ -16,6 +17,8 @@ interface MovieContextType {
   updateQuery: (newQuery: string) => void;
   resetQuery: () => void;
   selectMovie: (movie: Movie) => void
+  addCommunityHash: (id: string, hash: string) => Promise<void>
+  getCommunityHashes: () => Promise<HashResult[]>
   query: string;
   loading: boolean;
   totalResults: number;
@@ -97,6 +100,18 @@ export const MovieProvider: React.FC<MovieProviderProps> = ({ children }) => {
       modifyProviderState({ loading: false });
     }
   };
+  const addCommunityHash = async (id: string, hash: string) => {
+    const { toast } = await import('@heroui/react')
+    toast.promise(movieRepository.addCommunityHash(id, hash), {
+      error: 'Error al añadir el torrent',
+      success: (added) => added > 0 ? 'Torrent añadido' : 'El torrent ya existe',
+      loading: 'Añadiendo torrent'
+    })
+  }
+  const getCommunityHashes = async () => {
+    const hashes = await movieRepository.getCommunityHashes()
+    return hashes
+  }
   const cleanSelectedMovie = () => {
     dispatch({ type: "SELECT", payload: undefined });
   }
@@ -118,6 +133,8 @@ export const MovieProvider: React.FC<MovieProviderProps> = ({ children }) => {
     updateQuery,
     resetQuery,
     selectMovie,
+    addCommunityHash,
+    getCommunityHashes,
     query,
     loading,
     totalResults,

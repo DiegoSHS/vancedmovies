@@ -1,3 +1,4 @@
+import { HashResult } from "../entities/Hashes";
 import { Movie } from "../entities/Movie";
 import { Torrent } from "../entities/Torrent";
 import { MovieListResponse } from "../entities/YTSMovieListResponse";
@@ -10,12 +11,6 @@ export abstract class MovieRepository {
     limit?: number,
   ): Promise<ApiResult<MovieListResponse>>;
   abstract getMovieById(id: number): Promise<ApiResult<Movie>>;
-  abstract createMovie(movie: Omit<Movie, "id">): Promise<ApiResult<Movie>>;
-  abstract updateMovie(
-    id: number,
-    movie: Partial<Movie>,
-  ): Promise<ApiResult<Movie>>;
-  abstract deleteMovie(id: number): Promise<ApiResult<boolean>>;
   abstract searchMovies(
     query: string,
     page?: number,
@@ -39,4 +34,6 @@ export abstract class MovieRepository {
   abstract getMoreTorrents(
     title: string,
   ): Promise<Torrent[]>;
+  abstract addCommunityHash(id: string, hash: string): Promise<number>;
+  abstract getCommunityHashes(): Promise<HashResult[]>
 }

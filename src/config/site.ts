@@ -16,6 +16,10 @@ export const siteConfig = {
       label: "Mi torrent",
       href: "/torrent",
     },
+    {
+      label: "Peliculas de la comunidad",
+      href: "/community"
+    }
   ],
   navMenuItems: [
     {
@@ -30,6 +34,10 @@ export const siteConfig = {
       label: "Mi torrent",
       href: "/torrent",
     },
+    {
+      label: "Peliculas de la comunidad",
+      href: "/community"
+    }
   ],
   links: {
     github: "https://github.com/DiegoSHS",

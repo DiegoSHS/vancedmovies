@@ -1,55 +1,74 @@
-export interface IHttpClient {
-  get<T>(path: string, options?: RequestInit, overrideBaseURL?: boolean): Promise<T>;
-  post<T>(path: string, body?: unknown, options?: RequestInit, overrideBaseURL?: boolean): Promise<T>;
-  put<T>(path: string, body?: unknown, options?: RequestInit, overrideBaseURL?: boolean): Promise<T>;
-  delete<T>(path: string, options?: RequestInit, overrideBaseURL?: boolean): Promise<T>;
+type ClientResult<T> = {
+  data: T;
+  code: number;
+} | {
+  error: string;
+  code: number;
 }
 
-export class ApiError extends Error {
-  constructor(public status: number, message: string, public payload: unknown = null) {
-    super(message);
-    this.name = "ApiError";
-  }
-}
-
-export interface FetchHttpClientOptions {
+interface FetchHttpClientOptions {
   baseURL?: string;
   timeout?: number;
   defaultHeaders?: Record<string, string>;
 }
 
-export class FetchHttpClient implements IHttpClient {
-  private readonly baseURL: string;
-  private readonly timeout: number;
-  private readonly defaultHeaders: Record<string, string>;
+interface RequestParams {
+  path: string;
+  options?: RequestInit;
+  overrideBaseURL?: boolean;
+}
 
-  constructor(options: FetchHttpClientOptions = {}) {
-    this.baseURL = options.baseURL || import.meta.env.VITE_API_BASE_URL || "https://yts.mx/api/v2";
-    this.timeout = options.timeout ?? 10000;
-    this.defaultHeaders = {
-      ...options.defaultHeaders,
-    };
-  }
+interface RequestWithBodyParams extends RequestParams {
+  options?: Omit<RequestInit, "body">;
+  body?: unknown;
+}
 
-  protected resolveUrl(path: string, overrideBaseURL: boolean): string {
+interface GetRequestParams extends RequestParams { }
+
+interface PostRequestParams extends RequestWithBodyParams { }
+
+interface PutRequestParams extends RequestWithBodyParams { }
+
+interface DeleteRequestParams extends RequestParams { }
+
+interface InternalRequestParams extends RequestWithBodyParams {
+  method: string;
+}
+
+interface IHttpClient {
+  get<T>(params: GetRequestParams): Promise<ClientResult<T>>;
+  post<T>(params: PostRequestParams): Promise<ClientResult<T>>;
+  put<T>(params: PutRequestParams): Promise<ClientResult<T>>;
+  delete<T>(params: DeleteRequestParams): Promise<ClientResult<T>>;
+}
+
+class FetchHttpClient implements IHttpClient {
+
+  constructor(
+    private readonly options: FetchHttpClientOptions = {
+      timeout: 10000,
+      baseURL: "https://yts.mx/api/v2",
+    }
+  ) { }
+
+  private resolveUrl(path: string, overrideBaseURL: boolean): string {
     if (overrideBaseURL) return path;
-    return `${this.baseURL}${path}`;
+    return `${this.options.baseURL}${path}`;
   }
 
-  protected async request<T>(method: string, path: string, body?: unknown, options: RequestInit = {}, overrideBaseURL: boolean = false): Promise<T> {
+  private async request<T>(params: InternalRequestParams): Promise<ClientResult<T>> {
     const controller = new AbortController();
-    const timeoutId = window.setTimeout(() => controller.abort(), this.timeout);
-
+    const timeoutId = window.setTimeout(() => controller.abort(), this.options.timeout);
     try {
-      const response = await fetch(this.resolveUrl(path, overrideBaseURL), {
-        method,
+      const response = await fetch(this.resolveUrl(params.path, params.overrideBaseURL ?? false), {
+        method: params.method,
         headers: {
-          ...this.defaultHeaders,
-          ...(options.headers || {}),
+          ...this.options.defaultHeaders,
+          ...(params.options?.headers || {}),
         },
         signal: controller.signal,
-        body: body != null ? JSON.stringify(body) : undefined,
-        ...options,
+        body: params.body != null ? JSON.stringify(params.body) : undefined,
+        ...params.options,
       });
 
       clearTimeout(timeoutId);
@@ -57,36 +76,63 @@ export class FetchHttpClient implements IHttpClient {
       if (!response.ok) {
         const rawText = await response.text().catch(() => "");
         const errorPayload = rawText ? rawText : null;
-        throw new ApiError(response.status, `HTTP ${response.status} ${response.statusText}`, errorPayload);
+        return {
+          code: response.status,
+          error: `HTTP error ${response.status}: ${errorPayload || response.statusText}`,
+        }
       }
 
       const contentType = response.headers.get("content-type") || "";
       if (contentType.includes("application/json")) {
-        return (await response.json()) as T;
+        return {
+          code: response.status,
+          data: (await response.json()) as T
+        }
       }
 
-      return (await response.text()) as unknown as T;
+      return {
+        code: response.status,
+        data: (await response.text()) as unknown as T
+      }
     } catch (error) {
       clearTimeout(timeoutId);
-      throw error;
+      return {
+        code: 500,
+        error: error instanceof Error ? error.message : "Unknown error occurred"
+      }
     }
   }
 
-  get<T>(path: string, options?: RequestInit, overrideBaseURL?: boolean): Promise<T> {
-    return this.request<T>("GET", path, undefined, options, overrideBaseURL);
+  get<T>(params: GetRequestParams): Promise<ClientResult<T>> {
+    return this.request<T>({
+      ...params,
+      method: "GET",
+    });
   }
 
-  post<T>(path: string, body?: unknown, options?: RequestInit, overrideBaseURL?: boolean): Promise<T> {
-    return this.request<T>("POST", path, body, options, overrideBaseURL);
+  post<T>(params: PostRequestParams): Promise<ClientResult<T>> {
+    return this.request<T>({
+      ...params,
+      method: "POST",
+    });
   }
 
-  put<T>(path: string, body?: unknown, options?: RequestInit, overrideBaseURL?: boolean): Promise<T> {
-    return this.request<T>("PUT", path, body, options, overrideBaseURL);
+  put<T>(params: PutRequestParams): Promise<ClientResult<T>> {
+    return this.request<T>({
+      ...params,
+      method: "PUT",
+    });
   }
 
-  delete<T>(path: string, options?: RequestInit, overrideBaseURL?: boolean): Promise<T> {
-    return this.request<T>("DELETE", path, undefined, options, overrideBaseURL);
+  delete<T>(params: DeleteRequestParams): Promise<ClientResult<T>> {
+    return this.request<T>({
+      ...params,
+      method: "DELETE",
+    });
   }
 }
 
-export const ApiClient: IHttpClient = new FetchHttpClient();
+export const ApiClient: IHttpClient = new FetchHttpClient({
+  baseURL: import.meta.env.VITE_API_BASE_URL,
+  timeout: 10000,
+});

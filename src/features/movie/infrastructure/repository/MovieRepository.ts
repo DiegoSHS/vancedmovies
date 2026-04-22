@@ -5,6 +5,7 @@ import { MovieDatasource } from "../../domain/datasources/MovieDatasource";
 
 import { ApiResult } from "@/utils/ApiResult";
 import { Torrent } from "../../domain/entities/Torrent";
+import { HashResult } from "../../domain/entities/Hashes";
 
 export class MovieRepositoryImp extends MovieRepository {
   constructor(private readonly datasource: MovieDatasource) {
@@ -15,26 +16,11 @@ export class MovieRepositoryImp extends MovieRepository {
     page?: number,
     limit?: number,
   ): Promise<ApiResult<MovieListResponse>> {
-    return await this.datasource.getMovies(page, limit);
+    return this.datasource.getMovies(page, limit);
   }
 
   async getMovieById(id: number): Promise<ApiResult<Movie>> {
-    return await this.datasource.getMovieById(id);
-  }
-
-  async createMovie(movie: Omit<Movie, "id">): Promise<ApiResult<Movie>> {
-    return await this.datasource.createMovie(movie);
-  }
-
-  async updateMovie(
-    id: number,
-    movie: Partial<Movie>,
-  ): Promise<ApiResult<Movie>> {
-    return await this.datasource.updateMovie(id, movie);
-  }
-
-  async deleteMovie(id: number): Promise<ApiResult<boolean>> {
-    return await this.datasource.deleteMovie(id);
+    return this.datasource.getMovieById(id);
   }
 
   async searchMovies(
@@ -42,7 +28,7 @@ export class MovieRepositoryImp extends MovieRepository {
     page?: number,
     limit?: number,
   ): Promise<ApiResult<MovieListResponse>> {
-    return await this.datasource.searchMovies(query, page, limit);
+    return this.datasource.searchMovies(query, page, limit);
   }
 
   async getMoviesByGenre(
@@ -50,7 +36,7 @@ export class MovieRepositoryImp extends MovieRepository {
     page?: number,
     limit?: number,
   ): Promise<ApiResult<MovieListResponse>> {
-    return await this.datasource.getMoviesByGenre(genre, page, limit);
+    return this.datasource.getMoviesByGenre(genre, page, limit);
   }
 
   async getMoviesByYear(
@@ -58,7 +44,7 @@ export class MovieRepositoryImp extends MovieRepository {
     page?: number,
     limit?: number,
   ): Promise<ApiResult<MovieListResponse>> {
-    return await this.datasource.getMoviesByYear(year, page, limit);
+    return this.datasource.getMoviesByYear(year, page, limit);
   }
 
   async getMoviesByRating(
@@ -66,9 +52,15 @@ export class MovieRepositoryImp extends MovieRepository {
     page?: number,
     limit?: number,
   ): Promise<ApiResult<MovieListResponse>> {
-    return await this.datasource.getMoviesByRating(minimum_rating, page, limit);
+    return this.datasource.getMoviesByRating(minimum_rating, page, limit);
   }
   async getMoreTorrents(title: string): Promise<Torrent[]> {
-    return await this.datasource.getMoreTorrents(title);
+    return this.datasource.getMoreTorrents(title);
+  }
+  addCommunityHash(id: string, hash: string): Promise<number> {
+    return this.datasource.addCommunityHash(id, hash);
+  }
+  getCommunityHashes(): Promise<HashResult[]> {
+    return this.datasource.getCommunityHashes();
   }
 }

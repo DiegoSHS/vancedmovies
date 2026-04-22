@@ -5,6 +5,7 @@ import AboutPage from "@/pages/about";
 import MovieDetailsPage from "@/pages/movie";
 import MoviesPage from "./pages/movies";
 import Torrent from "./pages/torrent";
+import { Community } from "./pages/community";
 
 function App() {
   return (
@@ -15,6 +16,7 @@ function App() {
       <Route element={<AboutPage />} path="/about" />
       <Route element={<Torrent />} path="/torrent/:id" />
       <Route element={<Torrent />} path="/torrent" />
+      <Route element={<Community />} path="/community" />
     </Routes>
   );
 }

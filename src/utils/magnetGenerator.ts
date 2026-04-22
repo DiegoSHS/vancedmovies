@@ -25,7 +25,6 @@ export const getMagnetLinkFromURL = (params: URLSearchParams) => {
   const xl = params.get('xl')
   const tr = params.getAll('tr')
   if (!xt || !dn) return null
-  if (tr.length === 0) return null
   return `magnet:?xt=${xt}&dn=${dn}&xl=${xl}${tr.join('&tr=')}`
 }
 
@@ -141,15 +140,15 @@ export const copyMagnetToClipboard = async (
  */
 export const extractMagnetInfo = (magnetLink: string): {
   hash: string;
-  name?: string;
+  name: string;
   trackers: string[];
 } | null => {
   if (!checkMagnet(magnetLink)) return null;
   const urlParams = new URLSearchParams(magnetLink.split('?')[1]);
   const xt = urlParams.get('xt');
   const hash = xt?.replace('urn:btih:', '') || '';
-  const name = urlParams.get('dn') || undefined;
-  const trackers = urlParams.getAll('tr');
+  const name = urlParams.get('dn') || ''
+  const trackers = urlParams.getAll('tr') || [];
   return {
     hash,
     name,
