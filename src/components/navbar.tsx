@@ -100,7 +100,7 @@ export const Navbar = () => {
         <div className="border-t border-separator md:hidden">
           <ul className="flex flex-col gap-2 p-4">
             {siteConfig.navMenuItems.map((item, index) => (
-              <li key={`${item}-${index}`}>
+              <li key={`${item.label}-${index}`}>
                 <Link
                   aria-label={item.label}
                   className="block py-2 no-underline"

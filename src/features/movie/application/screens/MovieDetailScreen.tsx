@@ -59,7 +59,7 @@ export const MovieDetailScreen: React.FC = () => {
           href="/page/1"
           className='no-underline button button--primary'
         >
-          Volver al inicio
+          ← Volver al inicio
         </Link>
       </div>
     </div>

@@ -24,13 +24,11 @@ export const CustomTorrentScreen: React.FC = () => {
         const {
             toast
         } = await import('@heroui/react')
-        const splitTorrentName = result.name.toLowerCase().split(/(\d{3,4}p)/)
-        const movieName = splitTorrentName[0].replace(/\./g, ' ').slice(0, -5)
         toast.success('Enlace magnet válido, cargando película...')
         setMoviePlayerState(prev => ({
             ...prev,
             magnetLink: magnet,
-            movieTitle: movieName,
+            movieTitle: result.name,
             disabled: true,
             hash: result.hash
         }))
@@ -66,6 +64,7 @@ export const CustomTorrentScreen: React.FC = () => {
                     disabled={moviePlayerState.disabled}
                 />
                 <Button
+                    variant="secondary"
                     onPress={() => {
                         setMoviePlayerState(prev => ({ ...prev, disabled: false }))
                     }}

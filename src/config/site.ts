@@ -17,7 +17,7 @@ export const siteConfig = {
       href: "/torrent",
     },
     {
-      label: "Peliculas de la comunidad",
+      label: "Comunidad",
       href: "/community"
     }
   ],
@@ -35,7 +35,7 @@ export const siteConfig = {
       href: "/torrent",
     },
     {
-      label: "Peliculas de la comunidad",
+      label: "Comunidad",
       href: "/community"
     }
   ],

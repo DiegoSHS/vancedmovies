@@ -93,47 +93,6 @@ export const generateMagnetLink = (
 };
 
 /**
- * Copia un enlace magnet al portapapeles
- * @param magnetLink - El enlace magnet a copiar
- * @returns Promise que se resuelve cuando se copia exitosamente
- * @throws Error si el enlace magnet no es válido o no se puede copiar
- */
-export const copyMagnetToClipboard = async (
-  magnetLink: string,
-): Promise<void> => {
-  try {
-    if (!checkMagnet(magnetLink)) {
-      throw new Error("El enlace magnet no tiene un formato válido");
-    }
-    if (navigator.clipboard && window.isSecureContext) {
-      await navigator.clipboard.writeText(magnetLink);
-    } else {
-      // Fallback para navegadores que no soportan clipboard API
-      const textArea = document.createElement("textarea");
-
-      textArea.value = magnetLink;
-      textArea.style.position = "fixed";
-      textArea.style.left = "-999999px";
-      textArea.style.top = "-999999px";
-      document.body.appendChild(textArea);
-      textArea.focus();
-      textArea.select();
-
-      try {
-        const successful = document.execCommand("copy");
-        if (!successful) {
-          throw new Error("No se pudo copiar el enlace magnet usando el método fallback");
-        }
-      } finally {
-        document.body.removeChild(textArea);
-      }
-    }
-  } catch (error) {
-    throw new Error(`Error al copiar el enlace magnet: ${error instanceof Error ? error.message : 'Error desconocido'}`);
-  }
-};
-
-/**
  * Extrae información de un enlace magnet
  * @param magnetLink - El enlace magnet del que extraer información
  * @returns Objeto con información extraída o null si no es válido

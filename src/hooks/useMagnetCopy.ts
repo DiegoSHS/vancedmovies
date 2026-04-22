@@ -6,8 +6,8 @@ export const useMagnetCopy = () => {
         magnetLink: string,
     ) {
         try {
-            const { copyMagnetToClipboard } = await import('../utils/magnetGenerator')
-            await copyMagnetToClipboard(magnetLink);
+            const { copyTextToClipboard } = await import('@/utils/')
+            await copyTextToClipboard(magnetLink);
             setCopied(true);
             setTimeout(() => setCopied(false), 2000);
         } catch {

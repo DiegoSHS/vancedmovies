@@ -15,20 +15,17 @@ const NoDownloadsAvailable = ({ message = "No hay descargas disponibles" }: { me
 
 interface TorrentActionButtonProps {
   torrent: Torrent
+  title?: string
   isIconOnly?: boolean
 }
 
-export const CopyTorrentButton = ({ torrent, isIconOnly = false }: TorrentActionButtonProps) => {
+export const CopyTorrentButton = ({ torrent, title, isIconOnly = false }: TorrentActionButtonProps) => {
   const { copied, CopyToClipboard } = useMagnetCopy()
   const { state: { selectedItem } } = useMovieContext()
   const handleClick = async () => {
-    const { toast } = await import('@heroui/react')
     const { generateMagnetLink } = await import('@/utils/magnetGenerator')
-    if (!selectedItem) {
-      toast.warning('No se ha seleccionado una película')
-      return
-    }
-    const { data, error } = generateMagnetLink(torrent, selectedItem.title)
+    const { toast } = await import('@heroui/react')
+    const { data, error } = generateMagnetLink(torrent, title || selectedItem?.title || 'Movie name')
     if (error) {
       toast.warning(error)
       return
@@ -36,6 +33,7 @@ export const CopyTorrentButton = ({ torrent, isIconOnly = false }: TorrentAction
     CopyToClipboard(data)
     toast.success('Copiado al portapapeles')
   }
+
   return (
     <Button
       size="sm"
@@ -59,16 +57,19 @@ export const CopyTorrentButton = ({ torrent, isIconOnly = false }: TorrentAction
 
 export const OpenTorrentButton = ({ torrent, isIconOnly = false }: TorrentActionButtonProps) => {
   const { state: { selectedItem } } = useMovieContext()
+  const { state: { selectedItem: selectedTorrent } } = useTPBMovieContext()
   const handleClick = async () => {
-    const { generateMagnetLink } = await import('@/utils/magnetGenerator')
     if (!selectedItem) return
-    const { data, error } = generateMagnetLink(torrent, selectedItem.title)
-    if (error) {
-      const { toast } = await import('@heroui/react')
-      toast.warning(error)
-      return
+    const { generateMagnetLink } = await import('@/utils/magnetGenerator')
+    if (selectedTorrent) {
+      const { data, error } = generateMagnetLink(torrent || selectedTorrent, selectedItem.title)
+      if (error) {
+        const { toast } = await import('@heroui/react')
+        toast.warning(error)
+        return
+      }
+      window.open(data, '_blank', 'noopener,noreferrer')
     }
-    window.open(data, '_blank', 'noopener,noreferrer')
   }
   return (
     <Button
@@ -90,6 +91,7 @@ export const OpenTorrentButton = ({ torrent, isIconOnly = false }: TorrentAction
 export const PlayTorrentButton = ({ torrent, isIconOnly }: TorrentActionButtonProps) => {
   const { selectTorrent } = useTPBMovieContext()
   const handleClick = () => {
+    if (!torrent) return
     selectTorrent(torrent)
   }
   return (
