@@ -5,13 +5,9 @@ import { useSearchParams } from "react-router-dom"
 
 export const CustomTorrentScreen: React.FC = () => {
     const [searchParams] = useSearchParams()
-    const [moviePlayerState, setMoviePlayerState] = useState<{
-        disabled: boolean;
-        magnetLink: string | undefined;
-        movieTitle: string;
-    }>({
+    const [moviePlayerState, setMoviePlayerState] = useState({
         disabled: false,
-        magnetLink: undefined,
+        magnetLink: '',
         movieTitle: "Tu propia pelicula"
     });
 
@@ -25,6 +21,7 @@ export const CustomTorrentScreen: React.FC = () => {
         if (result) {
             setMoviePlayerState(prev => ({
                 ...prev,
+                magnetLink: magnet,
                 movieTitle: result.name?.replace(/\./g, ' ') || '',
                 disabled: true
             }))
@@ -56,7 +53,6 @@ export const CustomTorrentScreen: React.FC = () => {
                     disabled={moviePlayerState.disabled}
                 />
                 <Button
-                    isDisabled={moviePlayerState.magnetLink?.trim() === ''}
                     onPress={() => {
                         setMoviePlayerState(prev => ({ ...prev, disabled: false }))
                     }}
