@@ -13,7 +13,7 @@ export function getBestQualityMagnets(torrents: Torrent[]): Torrent[] {
     const torrents1080 = torrents.filter(t => t.quality.includes("1080p"));
     if (torrents1080.length > 0) {
         // Ordenar por seeds descendente y devolver el primero
-        const sorted = [...torrents1080].sort((a, b) => b.seeds - a.seeds);
+        const sorted = torrents1080.sort((a, b) => b.seeds - a.seeds);
         return [sorted[0]];
     }
 
@@ -62,7 +62,7 @@ export const TPBMovieProvider: React.FC<MovieProviderProps> = ({ children }) => 
                     const available = (item.peers > 0 && item.seeds > 0)
                     if (!hashes.has(item.hash)) {
                         hashes.add(item.hash)
-                        return true && available
+                        return available
                     }
                     return false
                 })
@@ -81,8 +81,10 @@ export const TPBMovieProvider: React.FC<MovieProviderProps> = ({ children }) => 
             if (!title) return []
             modifyProviderState({ loading: true, error: null })
             const torrents = await movieRepository.getMoreTorrents(title || query)
+            console.log(torrents)
             if (!torrents.length) {
-                await autoSelectTorrent()
+                console.log(state.items)
+                autoSelectTorrent(state.items)
                 return []
             }
             const magnets = await addTorrents(torrents, state.items)
@@ -91,13 +93,13 @@ export const TPBMovieProvider: React.FC<MovieProviderProps> = ({ children }) => 
             })
             const dualMagnet = magnets.find(item => item.type.toUpperCase().includes('DUAL'))
             if (dualMagnet) {
-                await selectTorrent(dualMagnet)
+                selectTorrent(dualMagnet)
             } else {
-                await autoSelectTorrent(magnets)
+                autoSelectTorrent(magnets)
             }
             return torrents
         } catch (error) {
-            await autoSelectTorrent()
+            autoSelectTorrent(state.items)
             modifyProviderState({ error: 'Error al buscar torrents' })
             return []
         } finally {
