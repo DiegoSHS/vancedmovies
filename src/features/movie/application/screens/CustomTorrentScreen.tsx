@@ -81,7 +81,7 @@ export const CustomTorrentScreen: React.FC = () => {
                     )
                 }
             </div>
-            <VideoPlayer magnetLink={moviePlayerState.magnetLink} movieTitle={moviePlayerState.movieTitle} />
+            <VideoPlayer magnetLink={moviePlayerState.magnetLink} movieTitle={moviePlayerState.movieTitle.replace(/\./g, ' ')} />
         </div>
     )
 }
