@@ -1,9 +1,10 @@
-import { Button, Card, Chip, Dropdown, EmptyState, Popover, Switch, Table, TableLayout, Virtualizer } from "@heroui/react";
+import { Button, Card, Chip, Dropdown, EmptyState, Link, Popover, Switch, Table, TableLayout, Virtualizer } from "@heroui/react";
 import { CheckIcon, CopyIcon, DownloadIcon, ListIcon, PlayIcon, SquaresIcon } from "@/components/icons";
 import { useTPBMovieContext } from "../providers/TPBMovieProvider";
 import { useMagnetCopy } from "@/hooks/useMagnetCopy";
 import { Torrent } from "../../domain/entities/Torrent";
 import { useMovieContext } from "../providers/MovieProvider";
+import { generateMagnetLink } from "@/utils/magnetGenerator";
 
 const NoDownloadsAvailable = ({ message = "No hay descargas disponibles" }: { message?: string }) => {
   return (
@@ -55,28 +56,15 @@ export const CopyTorrentButton = ({ torrent, title, isIconOnly = false }: Torren
   )
 }
 
-export const OpenTorrentButton = ({ torrent, isIconOnly = false }: TorrentActionButtonProps) => {
+export const OpenTorrentButton = ({ torrent, title, isIconOnly = false }: TorrentActionButtonProps) => {
   const { state: { selectedItem } } = useMovieContext()
   const { state: { selectedItem: selectedTorrent } } = useTPBMovieContext()
-  const handleClick = async () => {
-    if (!selectedItem) return
-    const { generateMagnetLink } = await import('@/utils/magnetGenerator')
-    if (selectedTorrent) {
-      const { data, error } = generateMagnetLink(torrent || selectedTorrent, selectedItem.title)
-      if (error) {
-        const { toast } = await import('@heroui/react')
-        toast.warning(error)
-        return
-      }
-      window.open(data, '_blank', 'noopener,noreferrer')
-    }
-  }
+  const { data } = generateMagnetLink(torrent || selectedTorrent, title || selectedItem?.title || '')
+
   return (
-    <Button
-      size="sm"
-      variant="secondary"
-      isIconOnly={isIconOnly}
-      onPress={handleClick}
+    <Link
+      className={`button button--secondary button--sm gap-2 no-underline ${isIconOnly && "button--icon-only"}`}
+      href={data}
     >
       <DownloadIcon />
       {
@@ -84,7 +72,7 @@ export const OpenTorrentButton = ({ torrent, isIconOnly = false }: TorrentAction
           "Abrir torrent"
         )
       }
-    </Button>
+    </Link>
   )
 }
 
