@@ -81,9 +81,7 @@ export const TPBMovieProvider: React.FC<MovieProviderProps> = ({ children }) => 
             if (!title) return []
             modifyProviderState({ loading: true, error: null })
             const torrents = await movieRepository.getMoreTorrents(title || query)
-            console.log(torrents)
             if (!torrents.length) {
-                console.log(state.items)
                 autoSelectTorrent(state.items)
                 return []
             }
