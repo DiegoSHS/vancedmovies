@@ -72,7 +72,7 @@ export const CustomTorrentScreen: React.FC = () => {
                     Editar
                 </Button>
                 {
-                    moviePlayerState.disabled && (
+                    (moviePlayerState.disabled || moviePlayerState.magnetLink) && (
                         <Button
                             onPress={saveTorrentToCommunity}
                         >
