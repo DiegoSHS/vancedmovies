@@ -10,6 +10,7 @@ import { Torrent } from "../../domain/entities/Torrent"
 import { CopyTorrentButton, OpenTorrentButton } from "../components/MovieDownloads"
 import { getQualityFromName } from "@/utils/"
 import { Movie } from "../../domain/entities/Movie"
+import { MovieCommunityModal } from "../components/MovieCommunityAdd"
 
 export const CommunityTorrentsScreen = () => {
     const {
@@ -23,6 +24,7 @@ export const CommunityTorrentsScreen = () => {
         direction: "ascending"
     });
     const [torrentHashes, setTorrentHashes] = useState<HashResult[]>([]);
+    const [open, setOpen] = useState(false);
     const sortedHashes = useMemo(() => {
         return torrentHashes.sort((a, b) => {
             let cmp = a.name.localeCompare(b.name)
@@ -31,7 +33,7 @@ export const CommunityTorrentsScreen = () => {
             }
             return cmp
         })
-    }, [sortDescriptor])
+    }, [sortDescriptor, torrentHashes])
     const effect = () => {
         const fetchHashes = async () => {
             const hashes = await getCommunityHashes()
@@ -39,7 +41,6 @@ export const CommunityTorrentsScreen = () => {
         }
         fetchHashes()
     }
-    console.log(torrentHashes)
     useEffect(effect, [])
 
     const RowItem = (item: HashResult) => {
@@ -71,7 +72,13 @@ export const CommunityTorrentsScreen = () => {
             <div className="text-2xl text-center font-bold">
                 Torrents traidos por la comunidad
             </div>
+            <MovieCommunityModal
+                isOpen={open}
+                onOpenChange={setOpen}
+                setHashes={setTorrentHashes}
+            />
             <Button
+                onPress={() => setOpen(true)}
                 className={"self-end"}
                 variant="secondary"
             >
@@ -109,7 +116,7 @@ export const CommunityTorrentsScreen = () => {
                                         <span className="text-sm text-muted">Sin hashes disponibles</span>
                                     </EmptyState>
                                 )} className={'font-bold'}>
-                                    <Table.Collection items={sortedHashes}>
+                                    <Table.Collection items={!sortedHashes.length ? torrentHashes : sortedHashes}>
                                         {RowItem}
                                     </Table.Collection>
                                 </Table.Body>

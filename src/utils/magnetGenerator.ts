@@ -71,15 +71,9 @@ export const generateMagnetLink = (
     };
   }
 
-  const normalizedHash = torrent.hash.trim().toLowerCase();
-  const normalizedTitle = movieTitle.trim();
-  const normalizedQuality = torrent.quality.trim();
-
-  const displayName = `${normalizedTitle} (${normalizedQuality}) [BoliPeliculas]`;
-  const encodedName = encodeURIComponent(displayName);
-
+  const encodedName = encodeURIComponent(movieTitle);
   const magnetParams = [
-    `xt=urn:btih:${normalizedHash}`,
+    `xt=urn:btih:${torrent.hash}`,
     `dn=${encodedName}`,
     ...TRACKERS.map((tracker) => `tr=${encodeURIComponent(tracker)}`),
   ];

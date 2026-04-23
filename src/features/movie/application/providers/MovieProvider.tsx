@@ -17,7 +17,7 @@ interface MovieContextType {
   updateQuery: (newQuery: string) => void;
   resetQuery: () => void;
   selectMovie: (movie: Movie) => void
-  addCommunityHash: (id: string, hash: string) => Promise<void>
+  addCommunityHash: (id: string, hash: string) => Promise<number>
   getCommunityHashes: () => Promise<HashResult[]>
   query: string;
   loading: boolean;
@@ -102,14 +102,18 @@ export const MovieProvider: React.FC<MovieProviderProps> = ({ children }) => {
   };
   const addCommunityHash = async (id: string, hash: string) => {
     const { toast } = await import('@heroui/react')
-    toast.promise(movieRepository.addCommunityHash(id, hash), {
-      error: 'Error al añadir el torrent',
-      success: (added) => added > 0 ? 'Torrent añadido' : 'El torrent ya existe',
-      loading: 'Añadiendo torrent'
-    })
+    const result = await movieRepository.addCommunityHash(id, hash)
+    const message =
+      result > 0 ? "Torrent añadido" :
+        result === -1 ? "Error al añadir el torrent" :
+          "El torrent ya existe"
+    toast(message)
+    return result
   }
   const getCommunityHashes = async () => {
+    modifyProviderState({ loading: true })
     const hashes = await movieRepository.getCommunityHashes()
+    modifyProviderState({ loading: false })
     return hashes
   }
   const cleanSelectedMovie = () => {
