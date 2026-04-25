@@ -4,6 +4,7 @@ import { useEffect, useState } from "react"
 import { useSearchParams } from "react-router-dom"
 import { useMovieContext } from "../providers/MovieProvider"
 import { MagnetInput } from "../components/MagnetInput"
+import { BackButton } from "@/components/BackButton"
 
 export const CustomTorrentScreen: React.FC = () => {
     const [searchParams] = useSearchParams()
@@ -60,6 +61,7 @@ export const CustomTorrentScreen: React.FC = () => {
             <div className="text-2xl text-center font-bold">
                 Reproductor para magnets
             </div>
+            <BackButton />
             <div className="flex w-full gap-2">
                 <MagnetInput magnet={moviePlayerState.magnetLink} onChange={setMagnetLink} />
                 {

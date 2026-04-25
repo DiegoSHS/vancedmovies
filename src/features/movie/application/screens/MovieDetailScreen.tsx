@@ -7,6 +7,7 @@ import { useMovieContext } from "../providers/MovieProvider";
 import { MovieDetailsCard } from "../components/MovieDetailsCard";
 import { useTPBMovieContext } from "../providers/TPBMovieProvider";
 import { useLocalStorage } from "@/hooks/useLocalStorage";
+import { BackButton } from "@/components/BackButton";
 
 export const MovieDetailScreen: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -77,9 +78,7 @@ export const MovieDetailScreen: React.FC = () => {
 
   return (
     <div className="container mx-auto px-4 py-8 flex flex-col gap-2 items-center">
-      <Link href="/page/1" className="no-underline button button--ghost button--sm">
-        ← Volver
-      </Link>
+      <BackButton />
       <MovieDetailsCard
         movie={movie}
       />
