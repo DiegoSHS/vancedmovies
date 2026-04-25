@@ -31,6 +31,9 @@ export abstract class MovieRepository {
     page?: number,
     limit?: number,
   ): Promise<ApiResult<MovieListResponse>>;
+  abstract getMovieSuggestions(
+    id: string
+  ): Promise<ApiResult<MovieListResponse>>
   abstract getMoreTorrents(
     title: string,
   ): Promise<Torrent[]>;

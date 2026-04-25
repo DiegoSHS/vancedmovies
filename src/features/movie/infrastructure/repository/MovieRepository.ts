@@ -30,7 +30,9 @@ export class MovieRepositoryImp extends MovieRepository {
   ): Promise<ApiResult<MovieListResponse>> {
     return this.datasource.searchMovies(query, page, limit);
   }
-
+  getMovieSuggestions(id: string): Promise<ApiResult<MovieListResponse>> {
+    return this.datasource.getMovieSuggestions(id)
+  }
   async getMoviesByGenre(
     genre: string,
     page?: number,
