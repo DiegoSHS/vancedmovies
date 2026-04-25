@@ -6,7 +6,6 @@ import MovieDetailsPage from "@/pages/movie";
 import MoviesPage from "./pages/movies";
 import Torrent from "./pages/torrent";
 import Community from "./pages/community";
-import CommunityMovie from "./pages/communityMovie";
 
 function App() {
   return (
@@ -18,7 +17,6 @@ function App() {
       <Route element={<Torrent />} path="/torrent/:id" />
       <Route element={<Torrent />} path="/torrent" />
       <Route element={<Community />} path="/community" />
-      <Route element={<CommunityMovie />} path="/community/movies" />
     </Routes>
   );
 }

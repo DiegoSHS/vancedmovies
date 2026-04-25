@@ -5,19 +5,15 @@ import { HashResult } from "../../domain/entities/Hashes"
 import { useMovieContext } from "../providers/MovieProvider"
 import { PlayIcon } from "@/components/icons"
 import { useNavigate } from "react-router-dom"
-import { useTPBMovieContext } from "../providers/TPBMovieProvider"
 import { Torrent } from "../../domain/entities/Torrent"
 import { CopyTorrentButton, OpenTorrentButton } from "../components/MovieDownloads"
 import { getQualityFromName } from "@/utils/"
-import { Movie } from "../../domain/entities/Movie"
 import { MovieCommunityModal } from "../components/MovieCommunityAdd"
 
 export const CommunityTorrentsScreen = () => {
     const {
         getCommunityHashes,
-        selectMovie
     } = useMovieContext()
-    const { selectTorrent } = useTPBMovieContext()
     const navigate = useNavigate()
     const [sortDescriptor, setSortDescriptor] = useState<SortDescriptor>({
         column: "name",
@@ -46,18 +42,18 @@ export const CommunityTorrentsScreen = () => {
     const RowItem = (item: HashResult) => {
         const quality = getQualityFromName(item.name.toLowerCase())
         const torrent = { hash: item.hash, quality } as Torrent
-        const movie = { title: item.name } as any as Movie
+        const handleClick = async () => {
+            const { generateMagnetLink } = await import('@/utils/magnetGenerator')
+            const { data } = generateMagnetLink(torrent, item.name)
+            navigate(`/torrent/${data}`)
+        }
         return (
             <Table.Row key={item.hash} id={item.hash}>
                 <Table.Cell>
                     {item.name}
                 </Table.Cell>
                 <Table.Cell className="flex items-center gap-2">
-                    <Button onClick={() => {
-                        selectTorrent(torrent)
-                        selectMovie(movie)
-                        navigate('/community/movies')
-                    }}>
+                    <Button onClick={handleClick}>
                         <PlayIcon />
                         Ver
                     </Button>
