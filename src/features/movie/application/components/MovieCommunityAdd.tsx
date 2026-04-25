@@ -1,8 +1,9 @@
 import { checkMagnet } from "@/utils/magnetGenerator";
-import { Button, Description, FieldError, Input, Label, Modal, Surface, TextField } from "@heroui/react"
+import { Button, Modal, Surface } from "@heroui/react"
 import { useState } from "react";
 import { useMovieContext } from "../providers/MovieProvider";
 import { HashResult } from "../../domain/entities/Hashes";
+import { MagnetInput } from "./MagnetInput";
 
 interface MovieModalProps {
     isOpen: boolean,
@@ -23,7 +24,6 @@ export const MovieCommunityModal: React.FC<MovieModalProps> = ({ isOpen, onOpenC
             setHashes((prev) => [...prev, { hash, name }])
         }
     }
-    const isInvalid = magnet ? !checkMagnet(magnet) : false
     const isDisabled = !checkMagnet(magnet)
     return (
         <Modal.Backdrop
@@ -40,27 +40,7 @@ export const MovieCommunityModal: React.FC<MovieModalProps> = ({ isOpen, onOpenC
                     </Modal.Header>
                     <Modal.Body>
                         <Surface className="p-1 w-full">
-                            <TextField
-                                isRequired
-                                name="magnet"
-                                onChange={setMagnet}
-                                isInvalid={isInvalid}
-                            >
-                                <Label>Magnet Link</Label>
-                                <Input
-                                    fullWidth
-                                    variant="secondary"
-                                    aria-label="magnet-link"
-                                    placeholder="magnet:?xt=urn"
-                                />
-                                {
-                                    isInvalid ? (
-                                        <FieldError>El link no es un magnet válido</FieldError>
-                                    ) : (
-                                        <Description>Escribe o pega el magnet link del torrent</Description>
-                                    )
-                                }
-                            </TextField>
+                            <MagnetInput magnet={magnet} onChange={setMagnet} />
                         </Surface>
                     </Modal.Body>
                     <Modal.Footer>

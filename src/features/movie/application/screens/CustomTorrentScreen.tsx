@@ -1,13 +1,14 @@
-import { Button, Input } from "@heroui/react"
+import { Button, IconPlus } from "@heroui/react"
 import { VideoPlayer } from "../components/VideoPlayer"
 import { useEffect, useState } from "react"
 import { useSearchParams } from "react-router-dom"
 import { useMovieContext } from "../providers/MovieProvider"
+import { MagnetInput } from "../components/MagnetInput"
 
 export const CustomTorrentScreen: React.FC = () => {
     const [searchParams] = useSearchParams()
     const [moviePlayerState, setMoviePlayerState] = useState({
-        disabled: false,
+        isInvalid: true,
         magnetLink: '',
         movieTitle: "Disfruta de tu pelicula",
         hash: ''
@@ -20,7 +21,13 @@ export const CustomTorrentScreen: React.FC = () => {
             extractMagnetInfo
         } = await import('@/utils/magnetGenerator')
         const result = extractMagnetInfo(magnet)
-        if (!result) return
+        if (!result) {
+            setMoviePlayerState(prev => ({
+                ...prev,
+                isInvalid: true
+            }))
+            return
+        }
         const {
             toast
         } = await import('@heroui/react')
@@ -29,7 +36,7 @@ export const CustomTorrentScreen: React.FC = () => {
             ...prev,
             magnetLink: magnet,
             movieTitle: result.name,
-            disabled: true,
+            isInvalid: false,
             hash: result.hash
         }))
     }
@@ -54,34 +61,23 @@ export const CustomTorrentScreen: React.FC = () => {
                 Reproductor para magnets
             </div>
             <div className="flex w-full gap-2">
-                <Input
-                    fullWidth
-                    placeholder="Escribe el link de la película que quieres ver"
-                    defaultValue={moviePlayerState.magnetLink}
-                    onChange={(e) => {
-                        setMagnetLink(e.target.value)
-                    }}
-                    disabled={moviePlayerState.disabled}
-                />
-                <Button
-                    variant="secondary"
-                    onPress={() => {
-                        setMoviePlayerState(prev => ({ ...prev, disabled: false }))
-                    }}
-                >
-                    Editar
-                </Button>
+                <MagnetInput magnet={moviePlayerState.magnetLink} onChange={setMagnetLink} />
                 {
-                    (moviePlayerState.disabled || moviePlayerState.magnetLink) && (
+                    (!moviePlayerState.isInvalid) && (
                         <Button
+                            className="self-center"
                             onPress={saveTorrentToCommunity}
                         >
+                            <IconPlus />
                             Añadir a la comunidad
                         </Button>
                     )
                 }
             </div>
-            <VideoPlayer magnetLink={moviePlayerState.magnetLink} movieTitle={moviePlayerState.movieTitle.replace(/\./g, ' ')} />
+            <VideoPlayer
+                magnetLink={moviePlayerState.magnetLink}
+                movieTitle={moviePlayerState.movieTitle.replace(/\./g, ' ')}
+            />
         </div>
     )
 }
