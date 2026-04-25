@@ -51,7 +51,7 @@ export const CustomTorrentScreen: React.FC = () => {
     return (
         <div className="flex flex-col gap-2">
             <div className="text-2xl text-center font-bold">
-                Reproductor para videos externos
+                Reproductor para magnets
             </div>
             <div className="flex w-full gap-2">
                 <Input

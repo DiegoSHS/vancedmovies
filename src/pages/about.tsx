@@ -1,10 +1,20 @@
-import { Button, Link } from "@heroui/react";
+import { PlayIcon } from "@/components/icons";
+import { Link } from "@heroui/react";
 
 export default function About() {
   return (
-    <section className="flex flex-col items-center justify-center gap-4 py-8 md:py-10">
-      <div className="max-w-2xl mx-auto py-12 px-4">
-        <h1 className="text-3xl font-bold mb-4">Acerca de BOLIPeliculas</h1>
+    <section className="flex flex-col items-center justify-center gap-4 py-8 md:py-10 bg-[url(/preview.jpg)] bg-cover rounded-xl">
+      <div
+        className="backdrop-brightness-50 backdrop-blur-sm rounded-xl max-w-2xl mx-auto py-12 px-4"
+      >
+        <div className="text-3xl font-bold mb-4 flex">
+          <h1>
+            Acerca de BOLI
+          </h1>
+          <h1 className="font-bold text-red-600">
+            Peliculas
+          </h1>
+        </div>
         <p className="mb-4">
           <strong>BOLIPeliculas</strong> es una plataforma web para explorar, buscar
           y reproducir películas vía streaming torrent directamente desde tu
@@ -17,10 +27,18 @@ export default function About() {
           <li>
             Reproductor de video integrado con soporte para torrents.
           </li>
-          <li>Búsqueda avanzada de películas por nombre, año, género y más.</li>
+          <li>
+            Búsqueda avanzada de películas por nombre, año, género y más.
+          </li>
           <li>
             Visualización de detalles, calificaciones, idiomas y descargas
             disponibles.
+          </li>
+          <li>
+            Puedes guardar cualquier pelicula en el apartado <Link href="/community">Comunidad</Link> con solo el magnet link.
+          </li>
+          <li>
+            Puedes ver cualquier pelicula en <Link href="/torrent">Mi torrent</Link> con solo el magnet link
           </li>
           <li>Interfaz moderna, responsiva y modo oscuro.</li>
           <li>Sin anuncios, sin registros y totalmente gratuito.</li>
@@ -38,11 +56,10 @@ export default function About() {
         </p>
         <Link
           href="/page/1"
-          className="no-underline my-2"
+          className="no-underline my-2 button button--tertiary gap-1"
         >
-          <Button>
-            Volver a las pelis
-          </Button>
+          <PlayIcon />
+          Volver a las pelis
         </Link>
       </div>
     </section>
