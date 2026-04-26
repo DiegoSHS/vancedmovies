@@ -104,3 +104,11 @@ export const copyTextToClipboard = async (
         throw new Error(`Error al copiar el enlace magnet: ${error instanceof Error ? error.message : 'Error desconocido'}`);
     }
 };
+
+
+export const HorizontalScroll = (element: HTMLDivElement, amount: number) => {
+    element.scrollTo({
+        left: element.scrollLeft + amount,
+        behavior: 'smooth'
+    })
+}

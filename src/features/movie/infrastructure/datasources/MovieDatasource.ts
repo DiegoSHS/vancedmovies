@@ -31,7 +31,7 @@ export class MovieDatasourceImp extends MovieDatasource {
     try {
       const { ApiClient } = await import('@/utils/ApiClient')
       const result = await ApiClient.get<ApiResult<MovieListResponse>>({
-        path: `/list_movies.json?movie_id=${id}`
+        path: `/movie_suggestions.json?movie_id=${id}`
       })
       if ('error' in result) return {
         status: "error",

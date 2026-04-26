@@ -105,6 +105,7 @@ export const MovieProvider: React.FC<MovieProviderProps> = ({ children }) => {
       modifyProviderState({ loading: true, error: null })
       const { data } = await movieRepository.getMovieSuggestions(id)
       if (!data?.movies) return []
+      console.log(data)
       modifyProviderState({ totalResults: data.movie_count })
       dispatch({ type: "SET", payload: data.movies })
       return data.movies

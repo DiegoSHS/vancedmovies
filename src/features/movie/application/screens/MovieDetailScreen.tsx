@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Link, ScrollShadow, Spinner } from "@heroui/react";
 import { VideoPlayer } from "../components/VideoPlayer";
@@ -22,11 +22,13 @@ export const MovieDetailScreen: React.FC = () => {
     }
   }
   const navigate = useNavigate()
+  const containerRef = useRef<HTMLDivElement>(null)
   const {
     getMovieById,
     selectMovie,
     getMovieSuggestions,
     error,
+    loading,
     state: { selectedItem: movie, items },
   } = useMovieContext();
   const {
@@ -58,6 +60,7 @@ export const MovieDetailScreen: React.FC = () => {
   }
 
   useEffect(effect, [id]);
+
   if (error) return (
     <div className="container mx-auto px-4 py-8">
       <div className="text-center">
@@ -87,6 +90,17 @@ export const MovieDetailScreen: React.FC = () => {
 
   const shouldBeViewModeTable = magnets.length > 10
 
+  const handleScroll = async (event: WheelEvent) => {
+    event.preventDefault()
+    const container = containerRef.current;
+    if (!container) return
+    const { HorizontalScroll } = await import('@/utils/')
+    const scrollAmount = event.deltaY;
+    HorizontalScroll(container, scrollAmount / 4)
+  };
+
+  containerRef.current?.addEventListener('wheel', handleScroll, { passive: false })
+
   return (
     <div className="container mx-auto px-4 py-8 flex flex-col gap-2 items-center">
       <BackButton />
@@ -109,8 +123,9 @@ export const MovieDetailScreen: React.FC = () => {
       <h1 className="pt-10 text-2xl font-bold">
         Tambien podria gustarte
       </h1>
-      <ScrollShadow hideScrollBar className="w-full flex overflow-auto" orientation="horizontal">
+      <ScrollShadow ref={containerRef} hideScrollBar className="w-full flex overflow-auto" orientation="horizontal">
         <MovieList
+          loading={loading}
           className="flex gap-2"
           error={error}
           movies={items}
