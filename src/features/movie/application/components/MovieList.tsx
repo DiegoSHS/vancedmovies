@@ -7,6 +7,7 @@ interface MovieListProps {
   movies: Movie[];
   loading?: boolean;
   error: string | null;
+  className?: string
   onMovieClick: (movie: Movie) => void;
 }
 
@@ -15,6 +16,7 @@ export const MovieList: React.FC<MovieListProps> = ({
   loading = false,
   error,
   onMovieClick,
+  className = "flex flex-wrap gap-2 justify-center"
 }) => {
   if (loading) {
     return (
@@ -57,7 +59,7 @@ export const MovieList: React.FC<MovieListProps> = ({
   }
 
   return (
-    <div className="flex flex-wrap gap-2 justify-center">
+    <div className={className}>
       <Virtualizer layout={ListLayout} layoutOptions={{
         rowHeight: 480
       }}>

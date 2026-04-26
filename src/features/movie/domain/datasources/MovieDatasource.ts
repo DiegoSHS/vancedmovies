@@ -16,7 +16,7 @@ export abstract class MovieDatasource {
     page?: number,
     limit?: number,
   ): Promise<ApiResult<MovieListResponse>>;
-  abstract getMovieSuggestions(id: string): Promise<ApiResult<MovieListResponse>>
+  abstract getMovieSuggestions(id: number): Promise<ApiResult<MovieListResponse>>
   abstract getMoviesByGenre(
     genre: string,
     page?: number,

@@ -19,6 +19,7 @@ interface MovieContextType {
   selectMovie: (movie: Movie) => void
   addCommunityHash: (id: string, hash: string) => Promise<number>
   getCommunityHashes: () => Promise<HashResult[]>
+  getMovieSuggestions: (id: number) => Promise<Movie[]>
   query: string;
   loading: boolean;
   totalResults: number;
@@ -47,7 +48,6 @@ export const MovieProvider: React.FC<MovieProviderProps> = ({ children }) => {
       if (!data?.movies) return []
       modifyProviderState({
         totalResults: data.movie_count,
-        loading: false,
         error: null,
       })
       dispatch({ type: "SET", payload: data.movies });
@@ -84,7 +84,7 @@ export const MovieProvider: React.FC<MovieProviderProps> = ({ children }) => {
         const { toast } = await import('@heroui/react')
         toast.info('A veces las peliculas tienen títulos muy raros, intenta con otro nombre')
         dispatch({ type: "RESET" });
-        modifyProviderState({ totalResults: 0, loading: false, error: null });
+        modifyProviderState({ totalResults: 0, error: null })
         return []
       }
       modifyProviderState({
@@ -100,6 +100,22 @@ export const MovieProvider: React.FC<MovieProviderProps> = ({ children }) => {
       modifyProviderState({ loading: false });
     }
   };
+  const getMovieSuggestions = async (id: number) => {
+    try {
+      modifyProviderState({ loading: true, error: null })
+      const { data } = await movieRepository.getMovieSuggestions(id)
+      if (!data?.movies) return []
+      modifyProviderState({ totalResults: data.movie_count })
+      dispatch({ type: "SET", payload: data.movies })
+      return data.movies
+    } catch (error) {
+      modifyProviderState({ error: "Error al conseguir recomendaciones" })
+      dispatch({ type: "SET", payload: [] })
+      return []
+    } finally {
+      modifyProviderState({ loading: false })
+    }
+  }
   const addCommunityHash = async (id: string, hash: string) => {
     const { toast } = await import('@heroui/react')
     const result = await movieRepository.addCommunityHash(id, hash)
@@ -139,6 +155,7 @@ export const MovieProvider: React.FC<MovieProviderProps> = ({ children }) => {
     selectMovie,
     addCommunityHash,
     getCommunityHashes,
+    getMovieSuggestions,
     query,
     loading,
     totalResults,

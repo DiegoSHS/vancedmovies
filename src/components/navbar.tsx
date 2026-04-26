@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Button, Link } from "@heroui/react";
+import { Button, InfoIcon, Link } from "@heroui/react";
 
 import { siteConfig } from "@/config/site";
 import { ThemeSwitch } from "@/components/theme-switch";
@@ -61,6 +61,12 @@ export const Navbar = () => {
 
         {/* Desktop Right Content */}
         <div className="hidden sm:flex items-center gap-4">
+          <Link
+            href="/about"
+            aria-label="Acerca de"
+          >
+            <InfoIcon />
+          </Link>
           <Link
             target="_blank"
             rel="noopener noreferrer"

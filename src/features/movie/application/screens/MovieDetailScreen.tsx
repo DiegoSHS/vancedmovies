@@ -1,6 +1,6 @@
 import { useEffect } from "react";
-import { useParams } from "react-router-dom";
-import { Link, Spinner } from "@heroui/react";
+import { useNavigate, useParams } from "react-router-dom";
+import { Link, ScrollShadow, Spinner } from "@heroui/react";
 import { VideoPlayer } from "../components/VideoPlayer";
 import { MovieDownloads, ViewModeSwitch } from "../components/MovieDownloads";
 import { useMovieContext } from "../providers/MovieProvider";
@@ -8,6 +8,8 @@ import { MovieDetailsCard } from "../components/MovieDetailsCard";
 import { useTPBMovieContext } from "../providers/TPBMovieProvider";
 import { useLocalStorage } from "@/hooks/useLocalStorage";
 import { BackButton } from "@/components/BackButton";
+import { Movie } from "../../domain/entities/Movie";
+import { MovieList } from "../components/MovieList";
 
 export const MovieDetailScreen: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -19,21 +21,29 @@ export const MovieDetailScreen: React.FC = () => {
       setItem('table')
     }
   }
+  const navigate = useNavigate()
   const {
     getMovieById,
+    selectMovie,
+    getMovieSuggestions,
     error,
-    state: { selectedItem: movie },
+    state: { selectedItem: movie, items },
   } = useMovieContext();
   const {
     getMoreTorrents,
     addTorrents,
     state: { items: magnets }
   } = useTPBMovieContext()
-
+  const handleMovieClick = (movie: Movie) => {
+    selectMovie(movie)
+    addTorrents(movie.torrents)
+    navigate(`/movie/${movie.id}`);
+  };
   const fetchMovieData = async () => {
     if (movie) {
       addTorrents(movie.torrents)
       getMoreTorrents(movie.title)
+      getMovieSuggestions(movie.id)
       return
     }
     if (!id) return;
@@ -41,6 +51,7 @@ export const MovieDetailScreen: React.FC = () => {
     if (!result) return
     addTorrents(result.torrents)
     getMoreTorrents(result.title)
+    getMovieSuggestions(result.id)
   }
   const effect = () => {
     fetchMovieData()
@@ -95,6 +106,17 @@ export const MovieDetailScreen: React.FC = () => {
       <MovieDownloads
         mode={shouldBeViewModeTable ? 'table' : viewMode}
       />
+      <h1 className="pt-10 text-2xl font-bold">
+        Tambien podria gustarte
+      </h1>
+      <ScrollShadow hideScrollBar className="w-full flex overflow-auto" orientation="horizontal">
+        <MovieList
+          className="flex gap-2"
+          error={error}
+          movies={items}
+          onMovieClick={handleMovieClick}
+        />
+      </ScrollShadow>
     </div>
   );
 };

@@ -32,7 +32,7 @@ export abstract class MovieRepository {
     limit?: number,
   ): Promise<ApiResult<MovieListResponse>>;
   abstract getMovieSuggestions(
-    id: string
+    id: number
   ): Promise<ApiResult<MovieListResponse>>
   abstract getMoreTorrents(
     title: string,

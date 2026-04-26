@@ -27,7 +27,24 @@ export class MovieDatasourceImp extends MovieDatasource {
       };
     }
   }
-
+  async getMovieSuggestions(id: number): Promise<ApiResult<MovieListResponse>> {
+    try {
+      const { ApiClient } = await import('@/utils/ApiClient')
+      const result = await ApiClient.get<ApiResult<MovieListResponse>>({
+        path: `/list_movies.json?movie_id=${id}`
+      })
+      if ('error' in result) return {
+        status: "error",
+        status_message: result.error || "Error fetching movies",
+      }
+      return result.data
+    } catch (error: any) {
+      return {
+        status: "error",
+        status_message: error.message || "Error fetching movies",
+      };
+    }
+  }
   async getMovieById(id: number): Promise<ApiResult<Movie>> {
     try {
       const { ApiClient } = await import('@/utils/ApiClient')
