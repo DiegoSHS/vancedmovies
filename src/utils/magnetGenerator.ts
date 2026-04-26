@@ -25,7 +25,7 @@ export const getMagnetLinkFromURL = (params: URLSearchParams) => {
   const xl = params.get('xl')
   const tr = params.getAll('tr')
   if (!xt || !dn) return null
-  return `magnet:?xt=${xt}&dn=${dn}&xl=${xl}${tr.join('&tr=')}`
+  return `magnet:?xt=${xt}&dn=${encodeURIComponent(dn)}${xl ? "&xl=" + encodeURIComponent(xl) : ""}&tr=${tr.map(t => encodeURIComponent(t)).join('&tr=')}`
 }
 
 const hashRegex = /^[a-fA-F0-9]{40}$/;

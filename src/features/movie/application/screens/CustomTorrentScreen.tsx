@@ -22,6 +22,10 @@ export const CustomTorrentScreen: React.FC = () => {
             extractMagnetInfo
         } = await import('@/utils/magnetGenerator')
         const result = extractMagnetInfo(magnet)
+        setMoviePlayerState(prev => ({
+            ...prev,
+            magnetLink: magnet
+        }))
         if (!result) {
             setMoviePlayerState(prev => ({
                 ...prev,
@@ -62,22 +66,19 @@ export const CustomTorrentScreen: React.FC = () => {
                 Reproductor para magnets
             </div>
             <BackButton />
-            <div className="flex w-full gap-2">
+            <div className="flex flex-col w-full gap-2">
                 <MagnetInput magnet={moviePlayerState.magnetLink} onChange={setMagnetLink} />
-                {
-                    (!moviePlayerState.isInvalid) && (
-                        <Button
-                            className="self-center"
-                            onPress={saveTorrentToCommunity}
-                        >
-                            <IconPlus />
-                            Añadir a la comunidad
-                        </Button>
-                    )
-                }
+                <Button
+                    className="self-end"
+                    isDisabled={moviePlayerState.isInvalid}
+                    onPress={saveTorrentToCommunity}
+                >
+                    <IconPlus />
+                    Añadir a la comunidad
+                </Button>
             </div>
             <VideoPlayer
-                magnetLink={moviePlayerState.magnetLink}
+                magnetLink={moviePlayerState.isInvalid ? '' : moviePlayerState.magnetLink}
                 movieTitle={moviePlayerState.movieTitle.replace(/\./g, ' ')}
             />
         </div>

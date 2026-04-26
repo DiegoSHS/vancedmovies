@@ -38,10 +38,13 @@ export const CommunityTorrentsTable: React.FC<CommunityTorrentTableProps> = ({ i
         return (
             <Table.Row key={item.hash} id={item.hash}>
                 <Table.Cell>
-                    {item.name}
+                    {item.name.replace(/\./g, ' ')}
                 </Table.Cell>
                 <Table.Cell className="flex items-center gap-2">
-                    <Button onClick={handleClick}>
+                    <Button
+                        variant="secondary"
+                        onClick={handleClick}
+                    >
                         <PlayIcon />
                         Ver
                     </Button>

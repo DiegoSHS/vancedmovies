@@ -1,5 +1,5 @@
 import { checkMagnet } from "@/utils/magnetGenerator";
-import { Button, Modal, Surface } from "@heroui/react"
+import { Button, IconPlus, Modal, Surface } from "@heroui/react"
 import { useState } from "react";
 import { useMovieContext } from "../providers/MovieProvider";
 import { HashResult } from "../../domain/entities/Hashes";
@@ -46,9 +46,9 @@ export const MovieCommunityModal: React.FC<MovieModalProps> = ({ isOpen, onOpenC
                     <Modal.Footer>
                         <Button
                             onPress={handleSubmit}
-                            className={isDisabled ? "" : "bg-success"}
                             isDisabled={isDisabled || loading}
                         >
+                            <IconPlus />
                             Añadir
                         </Button>
                     </Modal.Footer>

@@ -36,7 +36,6 @@ export const CommunityTorrentsScreen = () => {
                 />
                 <Button
                     onPress={() => setOpen(true)}
-                    variant="secondary"
                 >
                     <IconPlus />
                     Añadir nuevo

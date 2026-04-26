@@ -10,6 +10,7 @@ export const MagnetInput: React.FC<MagnetInputProps> = ({
     onChange,
     magnet
 }) => {
+    console.log(magnet)
     const isInvalid = magnet ? !checkMagnet(magnet) : false
     return (
         <TextField
@@ -17,6 +18,7 @@ export const MagnetInput: React.FC<MagnetInputProps> = ({
             name="magnet"
             onChange={onChange}
             isInvalid={isInvalid}
+            value={magnet}
             fullWidth
         >
             <Label>Magnet Link</Label>
