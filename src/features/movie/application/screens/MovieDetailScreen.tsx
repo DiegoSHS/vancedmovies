@@ -1,6 +1,6 @@
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { Link, ScrollShadow, Spinner } from "@heroui/react";
+import { Link, Spinner } from "@heroui/react";
 import { VideoPlayer } from "../components/VideoPlayer";
 import { MovieDownloads, ViewModeSwitch } from "../components/MovieDownloads";
 import { useMovieContext } from "../providers/MovieProvider";
@@ -10,6 +10,7 @@ import { useLocalStorage } from "@/hooks/useLocalStorage";
 import { BackButton } from "@/components/BackButton";
 import { Movie } from "../../domain/entities/Movie";
 import { MovieList } from "../components/MovieList";
+import { HorizontalScrollShadow } from "@/components/HorizontalScrollShadow";
 
 export const MovieDetailScreen: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -22,7 +23,6 @@ export const MovieDetailScreen: React.FC = () => {
     }
   }
   const navigate = useNavigate()
-  const containerRef = useRef<HTMLDivElement>(null)
   const {
     getMovieById,
     selectMovie,
@@ -90,16 +90,6 @@ export const MovieDetailScreen: React.FC = () => {
 
   const shouldBeViewModeTable = magnets.length > 10
 
-  const handleScroll = async (event: WheelEvent) => {
-    event.preventDefault()
-    const container = containerRef.current;
-    if (!container) return
-    const { HorizontalScroll } = await import('@/utils/')
-    const scrollAmount = event.deltaY;
-    HorizontalScroll(container, scrollAmount / 4)
-  };
-
-  containerRef.current?.addEventListener('wheel', handleScroll, { passive: false })
 
   return (
     <div className="container mx-auto px-4 py-8 flex flex-col gap-2 items-center">
@@ -123,7 +113,7 @@ export const MovieDetailScreen: React.FC = () => {
       <h1 className="pt-10 text-2xl font-bold">
         Tambien podria gustarte
       </h1>
-      <ScrollShadow ref={containerRef} hideScrollBar className="w-full flex overflow-auto" orientation="horizontal">
+      <HorizontalScrollShadow>
         <MovieList
           loading={loading}
           className="flex gap-2"
@@ -131,7 +121,7 @@ export const MovieDetailScreen: React.FC = () => {
           movies={items}
           onMovieClick={handleMovieClick}
         />
-      </ScrollShadow>
+      </HorizontalScrollShadow>
     </div>
   );
 };

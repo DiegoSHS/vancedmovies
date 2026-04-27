@@ -48,8 +48,14 @@ export const CommunityTorrentsTable: React.FC<CommunityTorrentTableProps> = ({ i
                         <PlayIcon />
                         Ver
                     </Button>
-                    <CopyTorrentButton torrent={torrent} title={item.name} />
-                    <OpenTorrentButton torrent={torrent} title={item.name} />
+                    <CopyTorrentButton
+                        torrent={torrent}
+                        title={item.name}
+                    />
+                    <OpenTorrentButton
+                        torrent={torrent}
+                        title={item.name}
+                    />
                 </Table.Cell>
             </Table.Row>
         )
