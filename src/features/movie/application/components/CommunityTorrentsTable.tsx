@@ -5,8 +5,8 @@ import { Torrent } from '../../domain/entities/Torrent'
 import { Button, EmptyState, Table, TableLayout, Virtualizer } from '@heroui/react'
 import type { SortDescriptor } from "@heroui/react"
 import { PlayIcon } from '@/components/icons'
-import { CopyTorrentButton, OpenTorrentButton } from './MovieDownloads'
 import { useMemo, useState } from 'react'
+import { CopyTorrentButton, OpenTorrentButton } from './MovieActions'
 
 interface CommunityTorrentTableProps {
     items: HashResult[]

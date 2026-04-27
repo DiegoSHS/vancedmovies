@@ -1,10 +1,7 @@
-import { Button, Card, Chip, Dropdown, EmptyState, Link, Popover, Switch, Table, TableLayout, Virtualizer } from "@heroui/react";
-import { CheckIcon, CopyIcon, DownloadIcon, ListIcon, PlayIcon, SquaresIcon } from "@/components/icons";
+import { Card, Chip, Dropdown, EmptyState, Popover, Table, TableLayout, Virtualizer } from "@heroui/react";
 import { useTPBMovieContext } from "../providers/TPBMovieProvider";
-import { useMagnetCopy } from "@/hooks/useMagnetCopy";
 import { Torrent } from "../../domain/entities/Torrent";
-import { useMovieContext } from "../providers/MovieProvider";
-import { generateMagnetLink } from "@/utils/magnetGenerator";
+import { CopyTorrentButton, OpenTorrentButton, PlayTorrentButton } from "./MovieActions";
 
 const NoDownloadsAvailable = ({ message = "No hay descargas disponibles" }: { message?: string }) => {
   return (
@@ -14,90 +11,7 @@ const NoDownloadsAvailable = ({ message = "No hay descargas disponibles" }: { me
   )
 }
 
-interface TorrentActionButtonProps {
-  torrent: Torrent
-  title?: string
-  isIconOnly?: boolean
-}
 
-export const CopyTorrentButton = ({ torrent, title, isIconOnly = false }: TorrentActionButtonProps) => {
-  const { copied, CopyToClipboard } = useMagnetCopy()
-  const { state: { selectedItem } } = useMovieContext()
-  const handleClick = async () => {
-    const { generateMagnetLink } = await import('@/utils/magnetGenerator')
-    const { toast } = await import('@heroui/react')
-    const { data, error } = generateMagnetLink(torrent, title || selectedItem?.title || 'Movie name')
-    if (error) {
-      toast.warning(error)
-      return
-    }
-    CopyToClipboard(data)
-    toast.success('Copiado al portapapeles')
-  }
-
-  return (
-    <Button
-      size="sm"
-      variant="secondary"
-      isIconOnly={isIconOnly}
-      isDisabled={copied}
-      className={`${copied ? "text-success" : ""}`}
-      onClick={handleClick}
-    >
-      {
-        copied ? <CheckIcon /> : <CopyIcon />
-      }
-      {
-        isIconOnly || (
-          "Copiar"
-        )
-      }
-    </Button>
-  )
-}
-
-export const OpenTorrentButton = ({ torrent, title, isIconOnly = false }: TorrentActionButtonProps) => {
-  const { state: { selectedItem } } = useMovieContext()
-  const { state: { selectedItem: selectedTorrent } } = useTPBMovieContext()
-  const { data } = generateMagnetLink(torrent || selectedTorrent, title || selectedItem?.title || '')
-
-  return (
-    <Link
-      className={`button button--secondary button--sm gap-2 no-underline ${isIconOnly && "button--icon-only"}`}
-      href={data}
-    >
-      <DownloadIcon />
-      {
-        isIconOnly || (
-          "Abrir torrent"
-        )
-      }
-    </Link>
-  )
-}
-
-export const PlayTorrentButton = ({ torrent, isIconOnly }: TorrentActionButtonProps) => {
-  const { selectTorrent } = useTPBMovieContext()
-  const handleClick = () => {
-    if (!torrent) return
-    selectTorrent(torrent)
-  }
-  return (
-    <Button
-      size="sm"
-      variant="secondary"
-      isIconOnly={isIconOnly}
-      onPress={handleClick}
-    >
-      <PlayIcon />
-      {
-        isIconOnly || (
-          "Ver"
-        )
-      }
-    </Button>
-  )
-}
 
 const MovieDownloadCard = ({ item,
 }: { item: Torrent }) => {
@@ -172,40 +86,6 @@ const MovieDownloadCards = ({ items }: Omit<MovieDownloadsProps, 'mode'>) => {
         {Item}
       </Repeater>
     </div>
-  )
-}
-interface ViewModeSwitchProps {
-  mode: string
-  isDisabled?: boolean
-  swapViewMode: () => void
-}
-
-export const ViewModeSwitch = ({ mode, isDisabled = false, swapViewMode }: ViewModeSwitchProps) => {
-  const SwitchControl = ({ isSelected }: { isSelected: boolean }) => (
-    <Switch.Control className="bg-default">
-      <Switch.Thumb>
-        <Switch.Icon className="text-default">
-          {
-            isSelected ? (
-              <ListIcon className="size-5" />
-            ) : (
-              <SquaresIcon className="size-5" />
-            )
-          }
-        </Switch.Icon>
-      </Switch.Thumb>
-    </Switch.Control>
-  )
-  return (
-    <Switch
-      isDisabled={isDisabled}
-      size="lg"
-      className="self-end"
-      isSelected={mode === 'table'}
-      onChange={swapViewMode}
-    >
-      {SwitchControl}
-    </Switch>
   )
 }
 

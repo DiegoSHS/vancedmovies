@@ -1,14 +1,15 @@
 import { useEffect } from "react";
 import { useParams } from "react-router-dom";
-import { Link, Spinner } from "@heroui/react";
+import { Spinner } from "@heroui/react";
 import { VideoPlayer } from "../components/VideoPlayer";
-import { MovieDownloads, ViewModeSwitch } from "../components/MovieDownloads";
+import { MovieDownloads } from "../components/MovieDownloads";
 import { useMovieContext } from "../providers/MovieProvider";
 import { MovieDetailsCard } from "../components/MovieDetailsCard";
 import { useTPBMovieContext } from "../providers/TPBMovieProvider";
 import { useLocalStorage } from "@/hooks/useLocalStorage";
 import { BackButton } from "@/components/BackButton";
 import { MovieSuggestions } from "../components/MovieSuggestions";
+import { ViewModeSwitch } from "@/components/ViewModeSwitch";
 
 export const MovieDetailScreen: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -61,12 +62,7 @@ export const MovieDetailScreen: React.FC = () => {
         <p className="text-gray-600 dark:text-gray-300 mb-6">
           {error || "No se encontró la película"}
         </p>
-        <Link
-          href="/page/1"
-          className='no-underline button button--primary'
-        >
-          ← Volver al inicio
-        </Link>
+        <BackButton />
       </div>
     </div>
   );
@@ -80,7 +76,6 @@ export const MovieDetailScreen: React.FC = () => {
   }
 
   const shouldBeViewModeTable = magnets.length > 10
-
 
   return (
     <div className="container mx-auto px-4 py-8 flex flex-col gap-2 items-center">
