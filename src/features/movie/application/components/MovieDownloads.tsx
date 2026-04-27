@@ -147,18 +147,30 @@ const MovieDownloadCard = ({ item,
   );
 };
 
+export interface RepeaterProps<T> {
+  items: T[];
+  children: ((item: T) => React.ReactNode);
+}
+
+const Repeater = <T extends object>(props: RepeaterProps<T>) => {
+  return props.items.map(props.children)
+}
+
 const MovieDownloadCards = ({ items }: Omit<MovieDownloadsProps, 'mode'>) => {
   if (!items) return null
+  const Item = (item: Torrent) => {
+    return (
+      <MovieDownloadCard
+        key={item.hash}
+        item={item}
+      />
+    )
+  }
   return (
     <div className="flex flex-wrap gap-2 justify-center items-center">
-      {
-        items.map((item) => (
-          <MovieDownloadCard
-            key={item.hash}
-            item={item}
-          />
-        ))
-      }
+      <Repeater items={items}>
+        {Item}
+      </Repeater>
     </div>
   )
 }
@@ -169,32 +181,30 @@ interface ViewModeSwitchProps {
 }
 
 export const ViewModeSwitch = ({ mode, isDisabled = false, swapViewMode }: ViewModeSwitchProps) => {
+  const SwitchControl = ({ isSelected }: { isSelected: boolean }) => (
+    <Switch.Control className="bg-default">
+      <Switch.Thumb>
+        <Switch.Icon className="text-default">
+          {
+            isSelected ? (
+              <ListIcon className="size-5" />
+            ) : (
+              <SquaresIcon className="size-5" />
+            )
+          }
+        </Switch.Icon>
+      </Switch.Thumb>
+    </Switch.Control>
+  )
   return (
     <Switch
       isDisabled={isDisabled}
       size="lg"
+      className="self-end"
       isSelected={mode === 'table'}
       onChange={swapViewMode}
     >
-      {
-        ({ isSelected }) => (
-          <>
-            <Switch.Control className="bg-default">
-              <Switch.Thumb>
-                <Switch.Icon className="text-default">
-                  {
-                    isSelected ? (
-                      <ListIcon className="size-5" />
-                    ) : (
-                      <SquaresIcon className="size-5" />
-                    )
-                  }
-                </Switch.Icon>
-              </Switch.Thumb>
-            </Switch.Control>
-          </>
-        )
-      }
+      {SwitchControl}
     </Switch>
   )
 }
@@ -205,6 +215,43 @@ interface MovieDownloadsProps {
 }
 
 export const MovieDownloadsTable = ({ items }: Omit<MovieDownloadsProps, 'mode'>) => {
+
+  const RowItem = (item: Torrent) => (
+    <Table.Row id={item.hash}>
+      <Table.Cell>
+        {item.quality}
+      </Table.Cell>
+      <Table.Cell>
+        <Popover>
+          <Popover.Trigger>
+            Detalles
+          </Popover.Trigger>
+          <Popover.Content>
+            <Popover.Dialog>
+              <Popover.Heading>
+                {item.type}
+              </Popover.Heading>
+            </Popover.Dialog>
+          </Popover.Content>
+        </Popover>
+      </Table.Cell>
+      <Table.Cell>
+        {item.size}
+      </Table.Cell>
+      <Table.Cell className={'text-success'}>
+        {item.seeds}
+      </Table.Cell>
+      <Table.Cell className={'text-success'}>
+        {item.peers}
+      </Table.Cell>
+      <Table.Cell className="flex gap-1">
+        <CopyTorrentButton torrent={item} />
+        <OpenTorrentButton torrent={item} />
+        <PlayTorrentButton torrent={item} />
+      </Table.Cell>
+    </Table.Row>
+  )
+
   return (
     <Virtualizer layout={TableLayout} layoutOptions={{
       headingHeight: 42,
@@ -243,43 +290,7 @@ export const MovieDownloadsTable = ({ items }: Omit<MovieDownloadsProps, 'mode'>
                 </EmptyState>
               )} className={'font-bold'}>
                 <Table.Collection items={items}>
-                  {
-                    (item) => (
-                      <Table.Row id={item.hash}>
-                        <Table.Cell>
-                          {item.quality}
-                        </Table.Cell>
-                        <Table.Cell>
-                          <Popover>
-                            <Popover.Trigger>
-                              Detalles
-                            </Popover.Trigger>
-                            <Popover.Content>
-                              <Popover.Dialog>
-                                <Popover.Heading>
-                                  {item.type}
-                                </Popover.Heading>
-                              </Popover.Dialog>
-                            </Popover.Content>
-                          </Popover>
-                        </Table.Cell>
-                        <Table.Cell>
-                          {item.size}
-                        </Table.Cell>
-                        <Table.Cell className={'text-success'}>
-                          {item.seeds}
-                        </Table.Cell>
-                        <Table.Cell className={'text-success'}>
-                          {item.peers}
-                        </Table.Cell>
-                        <Table.Cell className="flex gap-1">
-                          <CopyTorrentButton torrent={item} />
-                          <OpenTorrentButton torrent={item} />
-                          <PlayTorrentButton torrent={item} />
-                        </Table.Cell>
-                      </Table.Row>
-                    )
-                  }
+                  {RowItem}
                 </Table.Collection>
               </Table.Body>
             </Table.Content>

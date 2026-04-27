@@ -1,14 +1,22 @@
 import { Button } from "@heroui/react"
 import { useNavigate } from "react-router-dom"
+import { ArrowLeftIcon } from "./icons"
 
-export const BackButton: React.FC = () => {
+interface BackButtonProps {
+    message?: string
+}
+
+export const BackButton: React.FC<BackButtonProps> = ({
+    message = "Volver"
+}) => {
     const navigate = useNavigate()
     return (
         <Button
             variant="ghost"
             onClick={() => navigate(-1)}
         >
-            ← Volver
+            <ArrowLeftIcon />
+            {message}
         </Button>
     )
 }

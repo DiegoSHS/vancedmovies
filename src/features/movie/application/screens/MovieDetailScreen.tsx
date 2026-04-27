@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { Link, Spinner } from "@heroui/react";
 import { VideoPlayer } from "../components/VideoPlayer";
 import { MovieDownloads, ViewModeSwitch } from "../components/MovieDownloads";
@@ -8,9 +8,7 @@ import { MovieDetailsCard } from "../components/MovieDetailsCard";
 import { useTPBMovieContext } from "../providers/TPBMovieProvider";
 import { useLocalStorage } from "@/hooks/useLocalStorage";
 import { BackButton } from "@/components/BackButton";
-import { Movie } from "../../domain/entities/Movie";
-import { MovieList } from "../components/MovieList";
-import { HorizontalScrollShadow } from "@/components/HorizontalScrollShadow";
+import { MovieSuggestions } from "../components/MovieSuggestions";
 
 export const MovieDetailScreen: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -22,13 +20,10 @@ export const MovieDetailScreen: React.FC = () => {
       setItem('table')
     }
   }
-  const navigate = useNavigate()
   const {
     getMovieById,
-    selectMovie,
     getMovieSuggestions,
     error,
-    loading,
     state: { selectedItem: movie, items },
   } = useMovieContext();
   const {
@@ -36,11 +31,7 @@ export const MovieDetailScreen: React.FC = () => {
     addTorrents,
     state: { items: magnets }
   } = useTPBMovieContext()
-  const handleMovieClick = (movie: Movie) => {
-    selectMovie(movie)
-    addTorrents(movie.torrents)
-    navigate(`/movie/${movie.id}`);
-  };
+
   const fetchMovieData = async () => {
     if (movie) {
       addTorrents(movie.torrents)
@@ -100,28 +91,17 @@ export const MovieDetailScreen: React.FC = () => {
       <VideoPlayer
         movieTitle={movie.title}
       />
-      <div className="flex w-full items-center justify-end">
-        <ViewModeSwitch
-          isDisabled={shouldBeViewModeTable}
-          mode={shouldBeViewModeTable ? 'table' : viewMode}
-          swapViewMode={swapViewMode}
-        />
-      </div>
+      <ViewModeSwitch
+        isDisabled={shouldBeViewModeTable}
+        mode={shouldBeViewModeTable ? 'table' : viewMode}
+        swapViewMode={swapViewMode}
+      />
       <MovieDownloads
         mode={shouldBeViewModeTable ? 'table' : viewMode}
       />
-      <h1 className="pt-10 text-2xl font-bold">
-        Tambien podria gustarte
-      </h1>
-      <HorizontalScrollShadow>
-        <MovieList
-          loading={loading}
-          className="flex gap-2"
-          error={error}
-          movies={items}
-          onMovieClick={handleMovieClick}
-        />
-      </HorizontalScrollShadow>
+      <MovieSuggestions
+        items={items}
+      />
     </div>
   );
 };
