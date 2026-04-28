@@ -42,7 +42,7 @@ export const CommunityTorrentsTable: React.FC<CommunityTorrentTableProps> = ({ i
                 </Table.Cell>
                 <Table.Cell className="flex items-center gap-2">
                     <Button
-                        variant="secondary"
+                        variant="ghost"
                         onClick={handleClick}
                     >
                         <PlayIcon />

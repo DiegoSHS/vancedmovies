@@ -35,6 +35,7 @@ export const CommunityTorrentsScreen = () => {
                     setHashes={setTorrentHashes}
                 />
                 <Button
+                    variant="tertiary"
                     onPress={() => setOpen(true)}
                 >
                     <IconPlus />

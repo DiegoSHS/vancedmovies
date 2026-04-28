@@ -15,20 +15,15 @@ export const BackendStreamPlayer: React.FC<BackendStreamPlayerProps> = ({ magnet
         toast.danger('Ups, no se pudo cargar el video')
     }
     return (
-        <div className="w-full">
-            <video
-                poster="/preview.jpg"
-                controls
-                className="w-full rounded-md aspect-video"
-                src={videoSrc}
-                autoPlay
-                onError={handleError}
-            >
-                Tu navegador no soporta el elemento de video.
-            </video>
-            <div className="text-xs text-gray-500 mt-2 text-center">
-                Gracias por escogernos
-            </div>
-        </div>
+        <video
+            controls
+            className="w-full rounded-md aspect-video"
+            src={videoSrc}
+            autoPlay
+            onError={handleError}
+        >
+            <track kind="captions" srcLang="es" />
+            Tu navegador no soporta el elemento de video.
+        </video>
     );
 };

@@ -75,68 +75,65 @@ export const PaginatedMoviesScreen: React.FC = () => {
     };
 
     return (
-        <div className="container mx-auto px-4 py-8">
-            <div className="flex flex-col gap-2">
-                <h1 className="text-4xl text-center font-bold text-gray-900 dark:text-white mb-6">
-                    BOLIPeliculas
-                </h1>
-
-                <div className="flex gap-2">
-                    <Input
-                        disabled={loading}
-                        placeholder="Buscar películas"
-                        aria-label="Buscar películas"
-                        type="search"
-                        value={query}
-                        onChange={(e) => updateQuery(e.target.value)}
-                        onKeyDown={(e) => e.key === "Enter" && handleSearch()}
-                    />
-                    <Button
-                        variant="ghost"
-                        aria-label="Buscar"
-                        isIconOnly
-                        isDisabled={!query.trim()}
-                        onPress={handleSearch}
-                        className="px-3 py-1"
-                    >
-                        <SearchIcon />
-                    </Button>
-                    <Button
-                        variant="ghost"
-                        isIconOnly
-                        aria-label="Limpiar búsqueda"
-                        isDisabled={!query.trim()}
-                        onPress={handleClearSearch}
-                    >
-                        <CrossIcon />
-                    </Button>
-                </div>
-
-                <div className="flex gap-2 items-center justify-center">
-                    <Chip.Root>
-                        <Chip.Label>Mostrando {movies.length} de {totalResults} películas</Chip.Label>
-                    </Chip.Root>
-                </div>
-
-                <MoviePagination
-                    currentPage={currentPage}
-                    isLoading={loading}
-                    totalPages={totalPages}
-                    onPageChange={handlePageChange}
+        <div className="container mx-auto px-4 py-8 flex flex-col gap-2 rounded-xl">
+            <h1 className="text-4xl text-center font-bold text-gray-900 dark:text-white mb-6">
+                BOLIPeliculas
+            </h1>
+            <div className="flex gap-2">
+                <Input
+                    disabled={loading}
+                    placeholder="Buscar películas"
+                    aria-label="Buscar películas"
+                    type="search"
+                    value={query}
+                    onChange={(e) => updateQuery(e.target.value)}
+                    onKeyDown={(e) => e.key === "Enter" && handleSearch()}
                 />
-                <MovieList
-                    error={error}
-                    loading={loading}
-                    movies={movies}
-                    onMovieClick={handleMovieClick}
-                />
-                <MoviePagination
-                    currentPage={currentPage}
-                    isLoading={loading}
-                    totalPages={totalPages}
-                    onPageChange={handlePageChange}
-                />
+                <Button
+                    variant="ghost"
+                    aria-label="Buscar"
+                    isIconOnly
+                    isDisabled={!query.trim()}
+                    onPress={handleSearch}
+                    className="px-3 py-1"
+                >
+                    <SearchIcon />
+                </Button>
+                <Button
+                    variant="ghost"
+                    isIconOnly
+                    aria-label="Limpiar búsqueda"
+                    isDisabled={!query.trim()}
+                    onPress={handleClearSearch}
+                >
+                    <CrossIcon />
+                </Button>
             </div>
+
+            <div className="flex gap-2 items-center justify-center">
+                <Chip.Root>
+                    <Chip.Label>Mostrando {movies.length} de {totalResults} películas</Chip.Label>
+                </Chip.Root>
+            </div>
+
+            <MoviePagination
+                currentPage={currentPage}
+                isLoading={loading}
+                totalPages={totalPages}
+                onPageChange={handlePageChange}
+            />
+            <MovieList
+                error={error}
+                loading={loading}
+                movies={movies}
+                onMovieClick={handleMovieClick}
+            />
+            <MoviePagination
+                currentPage={currentPage}
+                isLoading={loading}
+                totalPages={totalPages}
+                onPageChange={handlePageChange}
+            />
         </div>
     );
 };

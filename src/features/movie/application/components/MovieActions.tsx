@@ -30,7 +30,7 @@ export const CopyTorrentButton = ({ torrent, title, isIconOnly = false }: Torren
     return (
         <Button
             size="sm"
-            variant="secondary"
+            variant="ghost"
             isIconOnly={isIconOnly}
             isDisabled={copied}
             className={`${copied ? "text-success" : ""}`}
@@ -55,7 +55,7 @@ export const OpenTorrentButton = ({ torrent, title, isIconOnly = false }: Torren
 
     return (
         <Link
-            className={`button button--secondary button--sm gap-2 no-underline ${isIconOnly && "button--icon-only"}`}
+            className={`button button--ghost button--sm gap-2 no-underline ${isIconOnly && "button--icon-only"}`}
             href={data}
         >
             <DownloadIcon />
@@ -77,7 +77,7 @@ export const PlayTorrentButton = ({ torrent, isIconOnly }: TorrentActionButtonPr
     return (
         <Button
             size="sm"
-            variant="secondary"
+            variant="ghost"
             isIconOnly={isIconOnly}
             onPress={handleClick}
         >

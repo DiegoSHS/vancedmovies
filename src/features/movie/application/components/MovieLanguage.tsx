@@ -33,7 +33,7 @@ export const BaseMovieChip = ({ children, label, content, showLabel }: BaseChipP
     return (
         <div className="flex flex-col gap-1 items-center justify-center">
             {showLabel && (
-                <h3 className="text-lg font-semibold">{label}</h3>
+                <h2 className="text-lg font-semibold">{label}</h2>
             )}
             <Chip.Root
                 className="inline-flex items-center px-2 py-1 rounded-full gap-1"

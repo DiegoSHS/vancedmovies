@@ -18,7 +18,7 @@ export const MovieList: React.FC<MovieListProps> = ({
   onMovieClick,
   className = "flex flex-wrap gap-2 justify-center"
 }) => {
-  if (loading) {
+  if (loading || movies.length === 0) {
     return (
       <div className={className}>
         {Array.from({ length: 20 }).map((_, index) => (
@@ -37,22 +37,6 @@ export const MovieList: React.FC<MovieListProps> = ({
             Error al cargar las películas
           </h3>
           <p className="text-gray-600 dark:text-gray-300">{error}</p>
-        </div>
-      </div>
-    );
-  }
-
-  if (movies.length === 0) {
-    return (
-      <div className="flex justify-center items-center h-64">
-        <div className="text-center">
-          <div className="text-gray-400 text-6xl mb-4">🎬</div>
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
-            No se encontraron películas
-          </h3>
-          <p className="text-gray-600 dark:text-gray-300">
-            Intenta con una búsqueda diferente
-          </p>
         </div>
       </div>
     );

@@ -1,11 +1,11 @@
-import { Card, Chip, Dropdown, EmptyState, Popover, Table, TableLayout, Virtualizer } from "@heroui/react";
+import { Card, Chip, EmptyState, Popover, Table, TableLayout, Virtualizer } from "@heroui/react";
 import { useTPBMovieContext } from "../providers/TPBMovieProvider";
 import { Torrent } from "../../domain/entities/Torrent";
 import { CopyTorrentButton, OpenTorrentButton, PlayTorrentButton } from "./MovieActions";
 
 const NoDownloadsAvailable = ({ message = "No hay descargas disponibles" }: { message?: string }) => {
   return (
-    <div className="text-center text-gray-500 dark:text-gray-400">
+    <div className="text-center">
       {message}
     </div>
   )
@@ -25,18 +25,16 @@ const MovieDownloadCard = ({ item,
           <Chip.Label>{item.quality}</Chip.Label>
         </Chip>
 
-        <Dropdown>
-          <Dropdown.Trigger className="bg-default rounded-full m-0 py-1.5 px-3 text-accent font-medium text-sm">
+        <Popover>
+          <Popover.Trigger className="bg-default rounded-full m-0 py-1.5 px-3 font-medium text-sm">
             Detalles
-          </Dropdown.Trigger>
-          <Dropdown.Popover>
-            <Dropdown.Menu>
-              <Dropdown.Item className="hover:cursor-default">
-                {item.type || "Sin detalles"}
-              </Dropdown.Item>
-            </Dropdown.Menu>
-          </Dropdown.Popover>
-        </Dropdown>
+          </Popover.Trigger>
+          <Popover.Content>
+            <Popover.Dialog>
+              {item.type || "Sin detalles"}
+            </Popover.Dialog>
+          </Popover.Content>
+        </Popover>
       </Card.Header>
       <Card.Content className="flex flex-col gap-2 text-sm py-0 my-0">
         <div className="flex items-center gap-1">

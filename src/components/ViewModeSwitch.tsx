@@ -25,6 +25,7 @@ export const ViewModeSwitch = ({ mode, isDisabled = false, swapViewMode }: ViewM
     )
     return (
         <Switch
+            aria-label="Modo de visualización"
             isDisabled={isDisabled}
             size="lg"
             className="self-end"

@@ -5,12 +5,14 @@ import { MovieLanguage } from "./MovieLanguage"
 import { MovieGenres } from "./MovieGenres"
 import { MovieDescription } from "./MovieDescription"
 import { Movie } from "../../domain/entities/Movie"
+import { MovieDetailsCardSkeleton } from "./MovieDetailsCardSkeleton"
 
 export const MovieDetailsCard = ({
-    movie }: { movie: Movie }) => {
+    movie }: { movie?: Movie }) => {
+    if (!movie) return <MovieDetailsCardSkeleton />
     return (
         <div className="flex flex-col sm:flex-row sm:items-start gap-8 justify-evenly items-center gap-2">
-            <picture className="relative w-xs aspect-[9/16] inset-0 w-full object-cover rounded-xl" aria-label="Carátula">
+            <picture aria-label="Carátula">
                 <source
                     media="(min-width: 650px)"
                     srcSet={movie.large_cover_image}
@@ -20,14 +22,14 @@ export const MovieDetailsCard = ({
                     srcSet={movie.medium_cover_image}
                 />
                 <img
-                    className="relative w-xs aspect-[9/16] inset-0 w-full object-cover rounded-xl"
+                    className="relative min-w-xs aspect-[9/16] inset-0 object-cover rounded-xl"
                     alt={movie.title}
                     loading="lazy"
                     fetchPriority="high"
                     src={movie.medium_cover_image}
                 />
             </picture>
-            <div className="flex flex-col gap-2">
+            <div className="flex flex-col gap-2 h-[350px]">
                 <h1 className="text-4xl font-bold mb-2">
                     {movie.title}
                 </h1>

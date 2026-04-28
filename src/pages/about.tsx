@@ -3,9 +3,9 @@ import { Link } from "@heroui/react";
 
 export default function About() {
   return (
-    <section className="flex flex-col items-center justify-center gap-4 py-8 md:py-10 bg-[url(/preview.jpg)] bg-cover rounded-xl">
+    <section className="flex flex-col items-center justify-center gap-4 py-8 md:py-10 rounded-xl">
       <div
-        className="backdrop-brightness-50 backdrop-blur-sm rounded-xl max-w-2xl mx-auto py-12 px-4"
+        className="max-w-2xl mx-auto py-12 px-4"
       >
         <div className="text-3xl font-bold mb-4 flex">
           <h1>

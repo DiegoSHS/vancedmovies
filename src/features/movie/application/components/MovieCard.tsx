@@ -41,6 +41,7 @@ export const MovieCard: React.FC<MovieCardProps> = ({ movie, onClick }) => {
                 <source media="(min-width: 650px)" srcSet={movie.large_cover_image} />
                 <source media="(min-width: 430px)" srcSet={movie.medium_cover_image} />
                 <img
+                    fetchPriority="high"
                     alt={movie.title}
                     loading="lazy"
                     className="rounded-xl z-0 w-full h-full object-cover aspect-[9/16]"

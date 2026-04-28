@@ -1,6 +1,5 @@
 import { useEffect } from "react";
 import { useParams } from "react-router-dom";
-import { Spinner } from "@heroui/react";
 import { VideoPlayer } from "../components/VideoPlayer";
 import { MovieDownloads } from "../components/MovieDownloads";
 import { useMovieContext } from "../providers/MovieProvider";
@@ -67,14 +66,6 @@ export const MovieDetailScreen: React.FC = () => {
     </div>
   );
 
-  if (!movie) {
-    return (
-      <div className="flex justify-center items-center min-h-screen">
-        <Spinner className="w-12 h-12" />
-      </div>
-    );
-  }
-
   const shouldBeViewModeTable = magnets.length > 10
 
   return (
@@ -84,7 +75,7 @@ export const MovieDetailScreen: React.FC = () => {
         movie={movie}
       />
       <VideoPlayer
-        movieTitle={movie.title}
+        movieTitle={movie?.title || 'Disfruta tu película'}
       />
       <ViewModeSwitch
         isDisabled={shouldBeViewModeTable}

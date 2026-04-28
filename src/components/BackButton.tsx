@@ -12,7 +12,7 @@ export const BackButton: React.FC<BackButtonProps> = ({
     const navigate = useNavigate()
     return (
         <Button
-            variant="ghost"
+            variant="tertiary"
             onClick={() => navigate(-1)}
         >
             <ArrowLeftIcon />
