@@ -1,4 +1,6 @@
+import { useEffect, useState } from "react";
 import { Movie } from "../../domain/entities/Movie";
+import { useMovieContext } from "../providers/MovieProvider";
 import { MovieCard } from "./MovieCard";
 import { MovieCardSkeleton } from "./MovieCardSkeleton";
 import { ListLayout, Virtualizer } from "@heroui/react";
@@ -21,7 +23,7 @@ export const MovieList: React.FC<MovieListProps> = ({
   if (loading || movies.length === 0) {
     return (
       <div className={className}>
-        {Array.from({ length: 20 }).map((_, index) => (
+        {Array.from({ length: 24 }).map((_, index) => (
           <MovieCardSkeleton key={index} />
         ))}
       </div>
@@ -44,9 +46,12 @@ export const MovieList: React.FC<MovieListProps> = ({
 
   return (
     <div className={className}>
-      <Virtualizer layout={ListLayout} layoutOptions={{
-        rowHeight: 480
-      }}>
+      <Virtualizer
+        layout={ListLayout}
+        layoutOptions={{
+          rowHeight: 480
+        }}
+      >
         {movies.map((movie) => (
           <MovieCard key={movie.id} movie={movie} onClick={onMovieClick} />
         ))}
@@ -54,3 +59,49 @@ export const MovieList: React.FC<MovieListProps> = ({
     </div>
   );
 };
+
+export const MovieListInfiniteScroll = () => {
+  const { state: { items: movies }, getMoreMovies, getMovies } = useMovieContext()
+  const [page, setPage] = useState(0);
+  const debounce = (func: (args: any) => void, delay: number) => {
+    let timeoutId: ReturnType<typeof setTimeout>;
+    return function (...args: any) {
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+      }
+      timeoutId = setTimeout(() => {
+        func(args);
+      }, delay);
+    };
+  };
+  const handleScroll = debounce(() => {
+    const bottom =
+      Math.ceil(window.innerHeight + window.scrollY) >=
+      document.documentElement.scrollHeight - 1000
+    console.log(bottom)
+    if (bottom) {
+      getMoreMovies(page + 1)
+      setPage(page => page + 1)
+    }
+  }, 300)
+  useEffect(() => {
+    getMovies(0)
+    return () => {
+
+    };
+  }, []);
+  return (
+    <div onWheel={handleScroll} className="flex flex-wrap gap-2 justify-center">
+      <Virtualizer
+        layout={ListLayout}
+        layoutOptions={{
+          rowHeight: 480
+        }}
+      >
+        {movies.map((movie) => (
+          <MovieCard key={movie.id} movie={movie} onClick={() => { }} />
+        ))}
+      </Virtualizer>
+    </div>
+  )
+}

@@ -8,7 +8,7 @@ import { HashResult } from "../../domain/entities/Hashes";
 export class MovieDatasourceImp extends MovieDatasource {
   async getMovies(
     page: number = 1,
-    limit: number = 20,
+    limit: number = 24,
   ): Promise<ApiResult<MovieListResponse>> {
     try {
       const { ApiClient } = await import('@/utils/ApiClient')
@@ -70,7 +70,7 @@ export class MovieDatasourceImp extends MovieDatasource {
   async searchMovies(
     query: string,
     page: number = 1,
-    limit: number = 20,
+    limit: number = 24,
   ): Promise<ApiResult<MovieListResponse>> {
     try {
       const { ApiClient } = await import('@/utils/ApiClient')
@@ -93,7 +93,7 @@ export class MovieDatasourceImp extends MovieDatasource {
   async getMoviesByGenre(
     genre: string,
     page: number = 1,
-    limit: number = 20,
+    limit: number = 24,
   ): Promise<ApiResult<MovieListResponse>> {
     try {
       const { ApiClient } = await import('@/utils/ApiClient')
@@ -116,7 +116,7 @@ export class MovieDatasourceImp extends MovieDatasource {
   async getMoviesByYear(
     year: number,
     page: number = 1,
-    limit: number = 20,
+    limit: number = 24,
   ): Promise<ApiResult<MovieListResponse>> {
     try {
       const { ApiClient } = await import('@/utils/ApiClient')
@@ -139,7 +139,7 @@ export class MovieDatasourceImp extends MovieDatasource {
   async getMoviesByRating(
     minimum_rating: number,
     page: number = 1,
-    limit: number = 20,
+    limit: number = 24,
   ): Promise<ApiResult<MovieListResponse>> {
     try {
       const { ApiClient } = await import('@/utils/ApiClient')

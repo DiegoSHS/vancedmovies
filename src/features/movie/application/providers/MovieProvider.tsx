@@ -11,6 +11,7 @@ export interface MovieProviderProps {
 interface MovieContextType {
   state: BaseState<Movie>;
   getMovies: (page: number) => Promise<Movie[]>;
+  getMoreMovies: (page: number) => Promise<Movie[]>
   getMovieById: (id: number) => Promise<Movie | undefined>;
   cleanSelectedMovie: () => void;
   searchMovies: (page: number) => Promise<Movie[]>;
@@ -60,6 +61,35 @@ export const MovieProvider: React.FC<MovieProviderProps> = ({ children }) => {
       modifyProviderState({ loading: false });
     }
   };
+  const getMoreMovies = async (page: number) => {
+    try {
+      modifyProviderState({ loading: true, error: null });
+      const { data } = await movieRepository.getMovies(page);
+      if (!data?.movies) return []
+      modifyProviderState({
+        totalResults: data.movie_count,
+        error: null,
+      })
+      const merged = [...state.items, ...data.movies]
+      const hashes = new Set<string>()
+      const filtered = merged
+        .filter((item) => {
+          if (!hashes.has(item.imdb_code)) {
+            hashes.add(item.imdb_code)
+            return true
+          }
+          return false
+        })
+      dispatch({ type: "SET", payload: filtered });
+      return data.movies
+    } catch (error) {
+      dispatch({ type: "RESET" });
+      modifyProviderState({ error: "Error al obtener las películas" });
+      return []
+    } finally {
+      modifyProviderState({ loading: false });
+    }
+  }
   const getMovieById = async (id: number) => {
     try {
       modifyProviderState({ loading: true, error: null });
@@ -147,6 +177,7 @@ export const MovieProvider: React.FC<MovieProviderProps> = ({ children }) => {
   const value: MovieContextType = {
     state,
     getMovies,
+    getMoreMovies,
     getMovieById,
     cleanSelectedMovie,
     searchMovies,

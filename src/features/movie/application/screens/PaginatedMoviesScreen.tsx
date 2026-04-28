@@ -29,7 +29,7 @@ export const PaginatedMoviesScreen: React.FC = () => {
     const validPage = !isNaN(pageFromUrl) && pageFromUrl > 0;
     const [currentPage, setCurrentPage] = useState<number>(validPage ? pageFromUrl : 1);
 
-    const totalPages = Math.ceil(totalResults / 20);
+    const totalPages = Math.ceil(totalResults / 24);
 
     useEffect(() => {
         setCurrentPage(validPage ? pageFromUrl : 1)
