@@ -7,8 +7,8 @@ import {
   TwitterIcon,
   GithubIcon,
   CrossIcon,
+  FilmIcon,
 } from "@/components/icons";
-import { Logo } from "@/components/icons";
 
 export const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -36,11 +36,11 @@ export const Navbar = () => {
           </Button>
 
           <Link
-            className="flex items-center gap-1 text-red-600 no-underline"
+            className="flex items-center gap-1 no-underline"
             href="/"
           >
-            <Logo />
-            <p className="font-bold text-red-600">BOLI</p>
+            <FilmIcon />
+            <p className="font-bold">BOLI</p>
           </Link>
         </div>
 
@@ -87,15 +87,12 @@ export const Navbar = () => {
         </div>
 
         {/* Mobile Right Content */}
-        <div className="flex md:hidden items-center gap-2">
+        <div className="flex sm:hidden items-center gap-2">
           <Link
-            aria-label="Perfil de Github"
-            target="_blank"
-            rel="noopener noreferrer"
-            href={siteConfig.links.github}
-            className="text-default-500 hover:text-primary"
+            href="/about"
+            aria-label="Acerca de"
           >
-            <GithubIcon className="w-5 h-5" />
+            <InfoIcon />
           </Link>
           <ThemeSwitch />
         </div>

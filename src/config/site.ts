@@ -5,10 +5,6 @@ export const siteConfig = {
   description: "Tu plataforma de streaming favorita.",
   navItems: [
     {
-      label: "Inicio",
-      href: "/",
-    },
-    {
       label: "Películas",
       href: "/page/1",
     },
@@ -22,10 +18,6 @@ export const siteConfig = {
     }
   ],
   navMenuItems: [
-    {
-      label: "Inicio",
-      href: "/",
-    },
     {
       label: "Películas",
       href: "/page/1",

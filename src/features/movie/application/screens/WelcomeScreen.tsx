@@ -12,7 +12,7 @@ export const WelcomeScreen: React.FC = () => {
                         Peliculas
                     </h1>
                 </div>
-                <p className="text-xl md:text-2xl text-gray-600 dark:text-gray-300 mb-6">
+                <p className="text-xl md:text-2xl mb-6">
                     Tu plataforma de streaming favorita
                 </p>
                 <Chip size="lg" color="default" variant="primary" className="inline-flex items-center">
@@ -27,16 +27,16 @@ export const WelcomeScreen: React.FC = () => {
 
                 <div className="flex flex-col gap-2 items-center justify-center">
                     <div>
-                        <p className="text-gray-600 dark:text-gray-400">Películas Disponibles</p>
+                        <p>Películas Disponibles</p>
                         <div className="text-4xl font-bold text-cyan-500 mb-2">∞</div>
                     </div>
                     <div>
-                        <p className="text-gray-600 dark:text-gray-400">Calidad de Video</p>
+                        <p>Calidad de Video</p>
                         <div className="text-4xl font-bold text-purple-500 mb-2">4K</div>
                     </div>
                     <div>
-                        <p className="text-gray-600 dark:text-gray-400">Disponibilidad</p>
-                        <div className="text-4xl font-bold text-green-500 mb-2">24/7</div>
+                        <p>Disponibilidad</p>
+                        <div className="text-4xl font-bold text-pink-500 mb-2">24/7</div>
                     </div>
                 </div>
             </div>
