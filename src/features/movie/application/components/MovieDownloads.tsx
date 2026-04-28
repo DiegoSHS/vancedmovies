@@ -32,7 +32,7 @@ const MovieDownloadCard = ({ item,
           <Dropdown.Popover>
             <Dropdown.Menu>
               <Dropdown.Item className="hover:cursor-default">
-                {item.type}
+                {item.type || "Sin detalles"}
               </Dropdown.Item>
             </Dropdown.Menu>
           </Dropdown.Popover>

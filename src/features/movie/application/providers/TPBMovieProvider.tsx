@@ -54,15 +54,15 @@ export const TPBMovieProvider: React.FC<MovieProviderProps> = ({ children }) => 
     const movieRepository = new MovieRepositoryImp(movieDatasource)
     const addTorrents = async (torrents: Torrent[], initial: Torrent[] = []) => {
         try {
+            if (!torrents.length) return []
             if (error) return []
             const merged = [...torrents, ...initial]
             const hashes = new Set<string>()
             const filtered = merged
                 .filter((item) => {
-                    const available = (item.peers > 0 && item.seeds > 0)
                     if (!hashes.has(item.hash)) {
                         hashes.add(item.hash)
-                        return available
+                        return true
                     }
                     return false
                 })
