@@ -4,11 +4,12 @@ import { useMovieContext } from "../providers/MovieProvider";
 import { MovieCard } from "./MovieCard";
 import { MovieCardSkeleton } from "./MovieCardSkeleton";
 import { ListLayout, Virtualizer } from "@heroui/react";
+import { Repeater } from "@/utils/clipboard";
 
 interface MovieListProps {
   movies: Movie[];
   loading?: boolean;
-  error: string | null;
+  error: boolean;
   className?: string
   onMovieClick: (movie: Movie) => void;
 }
@@ -20,7 +21,7 @@ export const MovieList: React.FC<MovieListProps> = ({
   onMovieClick,
   className = "flex flex-wrap gap-2 justify-center"
 }) => {
-  if (loading || movies.length === 0) {
+  if (loading) {
     return (
       <div className={className}>
         {Array.from({ length: 24 }).map((_, index) => (
@@ -44,6 +45,7 @@ export const MovieList: React.FC<MovieListProps> = ({
     );
   }
 
+  const Item = (movie: Movie) => <MovieCard key={movie.id} movie={movie} onClick={onMovieClick} />
   return (
     <div className={className}>
       <Virtualizer
@@ -52,9 +54,9 @@ export const MovieList: React.FC<MovieListProps> = ({
           rowHeight: 480
         }}
       >
-        {movies.map((movie) => (
-          <MovieCard key={movie.id} movie={movie} onClick={onMovieClick} />
-        ))}
+        <Repeater items={movies}>
+          {Item}
+        </Repeater>
       </Virtualizer>
     </div>
   );
@@ -90,6 +92,7 @@ export const MovieListInfiniteScroll = () => {
 
     };
   }, []);
+  const Item = (movie: Movie) => <MovieCard key={movie.id} movie={movie} onClick={() => { }} />
   return (
     <div onWheel={handleScroll} className="flex flex-wrap gap-2 justify-center">
       <Virtualizer
@@ -98,9 +101,9 @@ export const MovieListInfiniteScroll = () => {
           rowHeight: 480
         }}
       >
-        {movies.map((movie) => (
-          <MovieCard key={movie.id} movie={movie} onClick={() => { }} />
-        ))}
+        <Repeater items={movies}>
+          {Item}
+        </Repeater>
       </Virtualizer>
     </div>
   )

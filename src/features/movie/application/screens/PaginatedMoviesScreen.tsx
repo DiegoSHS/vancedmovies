@@ -12,8 +12,7 @@ export const PaginatedMoviesScreen: React.FC = () => {
     const {
         state: { items: movies },
         totalResults,
-        loading,
-        error,
+        status,
         query,
         getMovies,
         searchMovies,
@@ -73,7 +72,8 @@ export const PaginatedMoviesScreen: React.FC = () => {
         setCurrentPage(page);
         navigate(`/page/${page}`);
     };
-
+    const error = status === "error"
+    const loading = status === "loading"
     return (
         <div className="container mx-auto px-4 py-8 flex flex-col gap-2 rounded-xl">
             <h1 className="text-4xl text-center font-bold text-gray-900 dark:text-white mb-6">

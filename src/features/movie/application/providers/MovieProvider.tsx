@@ -1,14 +1,15 @@
-import { createContext, useContext, ReactNode } from "react";
+import { createContext, useContext, ReactNode, useMemo } from "react";
 import { MovieRepositoryImp } from "../../infrastructure/repository/MovieRepository";
 import { MovieDatasourceImp } from "../../infrastructure/datasources/MovieDatasource";
-import { BaseState, useBaseProviderState, useBaseReducer } from "@/utils";
 import { Movie } from "../../domain/entities/Movie";
 import { HashResult } from "../../domain/entities/Hashes";
+import { BaseState, ProviderState, useBaseProviderState, useBaseReducer } from "@/utils/baseProvider";
+import { MovieStateHandler } from "../../infrastructure/repository/MovieStateHandler";
 export interface MovieProviderProps {
   children: ReactNode;
 }
 
-interface MovieContextType {
+interface MovieContextType extends ProviderState {
   state: BaseState<Movie>;
   getMovies: (page: number) => Promise<Movie[]>;
   getMoreMovies: (page: number) => Promise<Movie[]>
@@ -21,20 +22,13 @@ interface MovieContextType {
   addCommunityHash: (id: string, hash: string) => Promise<number>
   getCommunityHashes: () => Promise<HashResult[]>
   getMovieSuggestions: (id: number) => Promise<Movie[]>
-  query: string;
-  loading: boolean;
-  totalResults: number;
-  error: string | null;
 }
 
 const MovieContext = createContext<MovieContextType | undefined>(undefined);
 
-
-
 export const MovieProvider: React.FC<MovieProviderProps> = ({ children }) => {
   const {
-    error,
-    loading,
+    status,
     query,
     totalResults,
     modifyProviderState
@@ -42,109 +36,38 @@ export const MovieProvider: React.FC<MovieProviderProps> = ({ children }) => {
   const { state, dispatch } = useBaseReducer<Movie>()
   const movieDatasource = new MovieDatasourceImp();
   const movieRepository = new MovieRepositoryImp(movieDatasource);
+  const handler = new MovieStateHandler(modifyProviderState, dispatch)
   const getMovies = async (page: number) => {
-    try {
-      modifyProviderState({ loading: true, error: null });
-      const { data } = await movieRepository.getMovies(page);
-      if (!data?.movies) return []
-      modifyProviderState({
-        totalResults: data.movie_count,
-        error: null,
-      })
-      dispatch({ type: "SET", payload: data.movies });
-      return data.movies
-    } catch (error) {
-      dispatch({ type: "RESET" });
-      modifyProviderState({ error: "Error al obtener las películas" });
-      return []
-    } finally {
-      modifyProviderState({ loading: false });
-    }
+    return handler.mhandler(movieRepository.getMovies(page))
   };
   const getMoreMovies = async (page: number) => {
-    try {
-      modifyProviderState({ loading: true, error: null });
-      const { data } = await movieRepository.getMovies(page);
-      if (!data?.movies) return []
-      modifyProviderState({
-        totalResults: data.movie_count,
-        error: null,
-      })
-      const merged = [...state.items, ...data.movies]
-      const hashes = new Set<string>()
-      const filtered = merged
-        .filter((item) => {
-          if (!hashes.has(item.imdb_code)) {
-            hashes.add(item.imdb_code)
-            return true
-          }
-          return false
-        })
-      dispatch({ type: "SET", payload: filtered });
-      return data.movies
-    } catch (error) {
-      dispatch({ type: "RESET" });
-      modifyProviderState({ error: "Error al obtener las películas" });
-      return []
-    } finally {
-      modifyProviderState({ loading: false });
-    }
+    const data = await handler.mhandler(movieRepository.getMovies(page))
+    const merged = [...state.items, ...data]
+    const hashes = new Set<string>()
+    const filtered = merged.filter((item) => {
+      if (!hashes.has(item.imdb_code)) {
+        hashes.add(item.imdb_code)
+        return true
+      }
+      return false
+    })
+    return filtered
   }
   const getMovieById = async (id: number) => {
-    try {
-      modifyProviderState({ loading: true, error: null });
-      const { data } = await movieRepository.getMovieById(id);
-      if (!data) return
-      dispatch({ type: "SELECT", payload: data });
-      return data
-    } catch (error) {
-      dispatch({ type: "RESET" });
-      modifyProviderState({ error: "Error al obtener la película" });
-    } finally {
-      modifyProviderState({ loading: false });
-    }
-  };
+    return handler.shandler(movieRepository.getMovieById(id))
+  }
   const searchMovies = async (page: number) => {
-    try {
-      if (query.trim() === '') return []
-      modifyProviderState({ loading: true, error: null });
-      const { data } = await movieRepository.searchMovies(query, page);
-      modifyProviderState
-      if (!data?.movies) {
-        const { toast } = await import('@heroui/react')
-        toast.info('A veces las peliculas tienen títulos muy raros, intenta con otro nombre')
-        dispatch({ type: "RESET" });
-        modifyProviderState({ totalResults: 0, error: null })
-        return []
-      }
-      modifyProviderState({
-        totalResults: data.movie_count
-      });
-      dispatch({ type: "SET", payload: data.movies });
-      return data.movies
-    } catch (error) {
-      modifyProviderState({ error: "Error al buscar películas" });
-      dispatch({ type: "RESET" });
+    if (query.trim() === '') return []
+    const data = await handler.mhandler(movieRepository.searchMovies(query, page))
+    if (!data.length) {
+      const { toast } = await import('@heroui/react')
+      toast.info('A veces las peliculas tienen títulos muy raros, intenta con otro nombre')
       return []
-    } finally {
-      modifyProviderState({ loading: false });
     }
-  };
+    return data
+  }
   const getMovieSuggestions = async (id: number) => {
-    try {
-      modifyProviderState({ loading: true, error: null })
-      const { data } = await movieRepository.getMovieSuggestions(id)
-      if (!data?.movies) return []
-      modifyProviderState({ totalResults: data.movie_count })
-      dispatch({ type: "SET", payload: data.movies })
-      return data.movies
-    } catch (error) {
-      modifyProviderState({ error: "Error al conseguir recomendaciones" })
-      dispatch({ type: "SET", payload: [] })
-      return []
-    } finally {
-      modifyProviderState({ loading: false })
-    }
+    return handler.mhandler(movieRepository.getMovieSuggestions(id))
   }
   const addCommunityHash = async (id: string, hash: string) => {
     const { toast } = await import('@heroui/react')
@@ -157,10 +80,7 @@ export const MovieProvider: React.FC<MovieProviderProps> = ({ children }) => {
     return result
   }
   const getCommunityHashes = async () => {
-    modifyProviderState({ loading: true })
-    const hashes = await movieRepository.getCommunityHashes()
-    modifyProviderState({ loading: false })
-    return hashes
+    return movieRepository.getCommunityHashes()
   }
   const cleanSelectedMovie = () => {
     dispatch({ type: "SELECT", payload: undefined });
@@ -174,7 +94,7 @@ export const MovieProvider: React.FC<MovieProviderProps> = ({ children }) => {
   const resetQuery = () => {
     modifyProviderState({ query: '' });
   };
-  const value: MovieContextType = {
+  const value: MovieContextType = useMemo(() => ({
     state,
     getMovies,
     getMoreMovies,
@@ -188,10 +108,9 @@ export const MovieProvider: React.FC<MovieProviderProps> = ({ children }) => {
     getCommunityHashes,
     getMovieSuggestions,
     query,
-    loading,
     totalResults,
-    error
-  };
+    status
+  }), [state])
 
   return (
     <MovieContext.Provider value={value}>{children}</MovieContext.Provider>

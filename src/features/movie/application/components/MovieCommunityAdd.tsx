@@ -13,7 +13,7 @@ interface MovieModalProps {
 
 export const MovieCommunityModal: React.FC<MovieModalProps> = ({ isOpen, onOpenChange, setHashes }) => {
     const [magnet, setMagnet] = useState<string>('')
-    const { addCommunityHash, loading } = useMovieContext()
+    const { addCommunityHash, status } = useMovieContext()
     const handleSubmit = async () => {
         const { extractMagnetInfo } = await import("@/utils/magnetGenerator")
         const info = extractMagnetInfo(magnet)
@@ -46,7 +46,7 @@ export const MovieCommunityModal: React.FC<MovieModalProps> = ({ isOpen, onOpenC
                     <Modal.Footer>
                         <Button
                             onPress={handleSubmit}
-                            isDisabled={isDisabled || loading}
+                            isDisabled={isDisabled || status === "loading"}
                         >
                             <IconPlus />
                             Añadir

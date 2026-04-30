@@ -1,9 +1,9 @@
 import { createContext, useContext } from "react";
 import { MovieProviderProps } from "./MovieProvider";
-import { BaseState, defaultProviderState, ProviderState, useBaseProviderState, useBaseReducer } from "@/utils";
 import { Torrent } from "../../domain/entities/Torrent";
 import { MovieDatasourceImp } from "../../infrastructure/datasources/MovieDatasource";
 import { MovieRepositoryImp } from "../../infrastructure/repository/MovieRepository";
+import { BaseState, defaultProviderState, ProviderState, useBaseProviderState, useBaseReducer } from "@/utils/baseProvider";
 
 // Devuelve una lista de Torrent con el mejor torrent 1080p (más seeds) o el de mayor calidad disponible (más seeds)
 export function getBestQualityMagnets(torrents: Torrent[]): Torrent[] {
@@ -43,8 +43,7 @@ const TPBMovieContext = createContext<TPBMovieContextType | undefined>(undefined
 
 export const TPBMovieProvider: React.FC<MovieProviderProps> = ({ children }) => {
     const {
-        error,
-        loading,
+        status,
         query,
         totalResults,
         modifyProviderState
@@ -55,7 +54,7 @@ export const TPBMovieProvider: React.FC<MovieProviderProps> = ({ children }) => 
     const addTorrents = async (torrents: Torrent[], initial: Torrent[] = []) => {
         try {
             if (!torrents.length) return []
-            if (error) return []
+            if (status === "error") return []
             const merged = [...torrents, ...initial]
             const hashes = new Set<string>()
             const filtered = merged
@@ -79,7 +78,7 @@ export const TPBMovieProvider: React.FC<MovieProviderProps> = ({ children }) => 
             const { toast } = await import('@heroui/react')
             toast.info('Buscando más torrents')
             if (!title) return []
-            modifyProviderState({ loading: true, error: null })
+            modifyProviderState({ status: "loading" })
             const torrents = await movieRepository.getMoreTorrents(title || query)
             if (!torrents.length) {
                 autoSelectTorrent(state.items)
@@ -98,10 +97,10 @@ export const TPBMovieProvider: React.FC<MovieProviderProps> = ({ children }) => 
             return torrents
         } catch (error) {
             autoSelectTorrent(state.items)
-            modifyProviderState({ error: 'Error al buscar torrents' })
+            modifyProviderState({ status: "error" })
             return []
         } finally {
-            modifyProviderState({ loading: false })
+            modifyProviderState({ status: "idle" })
         }
     }
     const sortFunction = (prev: Torrent, next: Torrent) => {
@@ -132,8 +131,7 @@ export const TPBMovieProvider: React.FC<MovieProviderProps> = ({ children }) => 
         selectTorrent,
         addTorrents,
         query,
-        error,
-        loading,
+        status,
         totalResults
     }
     return (

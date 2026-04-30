@@ -13,7 +13,7 @@ interface MovieSuggestionsProps {
 export const MovieSuggestions: React.FC<MovieSuggestionsProps> = ({
     items, message = "Tambien podria gustarte"
 }) => {
-    const { selectMovie, loading, error } = useMovieContext()
+    const { selectMovie, status } = useMovieContext()
     const { addTorrents } = useTPBMovieContext()
     const navigate = useNavigate()
     const handleMovieClick = (movie: Movie) => {
@@ -27,9 +27,9 @@ export const MovieSuggestions: React.FC<MovieSuggestionsProps> = ({
             </h1>
             <HorizontalScrollShadow>
                 <MovieList
-                    loading={loading}
+                    loading={status === "loading"}
                     className="flex gap-2"
-                    error={error}
+                    error={status === "error"}
                     movies={items}
                     onMovieClick={handleMovieClick}
                 />

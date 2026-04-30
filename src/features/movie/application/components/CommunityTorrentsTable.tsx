@@ -1,4 +1,4 @@
-import { getQualityFromName } from '@/utils'
+import { getQualityFromName } from '@/utils/clipboard'
 import { useNavigate } from 'react-router-dom'
 import { HashResult } from '../../domain/entities/Hashes'
 import { Torrent } from '../../domain/entities/Torrent'

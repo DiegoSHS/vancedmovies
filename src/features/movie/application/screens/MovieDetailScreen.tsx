@@ -23,7 +23,7 @@ export const MovieDetailScreen: React.FC = () => {
   const {
     getMovieById,
     getMovieSuggestions,
-    error,
+    status,
     state: { selectedItem: movie, items },
   } = useMovieContext();
   const {
@@ -52,15 +52,12 @@ export const MovieDetailScreen: React.FC = () => {
 
   useEffect(effect, [id]);
 
-  if (error) return (
+  if (status === "error") return (
     <div className="container mx-auto px-4 py-8">
       <div className="text-center">
         <h1 className="text-2xl font-bold text-red-500 mb-4">
           Error al cargar la película
         </h1>
-        <p className="text-gray-600 dark:text-gray-300 mb-6">
-          {error || "No se encontró la película"}
-        </p>
         <BackButton />
       </div>
     </div>

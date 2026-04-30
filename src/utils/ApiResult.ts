@@ -1,5 +1,5 @@
 export interface ApiResult<T> {
-  status: string;
+  status: string
   status_message: string;
   data?: T;
   "@meta"?: {

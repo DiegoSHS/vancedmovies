@@ -2,16 +2,15 @@ import { Card, Chip, EmptyState, Popover, Table, TableLayout, Virtualizer } from
 import { useTPBMovieContext } from "../providers/TPBMovieProvider";
 import { Torrent } from "../../domain/entities/Torrent";
 import { CopyTorrentButton, OpenTorrentButton, PlayTorrentButton } from "./MovieActions";
+import { Repeater } from "@/utils/clipboard";
 
-const NoDownloadsAvailable = ({ message = "No hay descargas disponibles" }: { message?: string }) => {
+const NoDownloadsAvailable = ({ message = "Sin descargas disponibles" }: { message?: string }) => {
   return (
-    <div className="text-center">
-      {message}
-    </div>
+    <EmptyState className="flex h-full w-full flex-col items-center justify-center gap-4 text-center">
+      <span className="text-sm text-muted">{message}</span>
+    </EmptyState>
   )
 }
-
-
 
 const MovieDownloadCard = ({ item,
 }: { item: Torrent }) => {
@@ -59,14 +58,7 @@ const MovieDownloadCard = ({ item,
   );
 };
 
-export interface RepeaterProps<T> {
-  items: T[];
-  children: ((item: T) => React.ReactNode);
-}
 
-const Repeater = <T extends object>(props: RepeaterProps<T>) => {
-  return props.items.map(props.children)
-}
 
 const MovieDownloadCards = ({ items }: Omit<MovieDownloadsProps, 'mode'>) => {
   if (!items) return null
@@ -163,9 +155,7 @@ export const MovieDownloadsTable = ({ items }: Omit<MovieDownloadsProps, 'mode'>
                 </Table.Column>
               </Table.Header>
               <Table.Body renderEmptyState={() => (
-                <EmptyState className="flex h-full w-full flex-col items-center justify-center gap-4 text-center">
-                  <span className="text-sm text-muted">Sin descargas disponibles</span>
-                </EmptyState>
+                <NoDownloadsAvailable />
               )} className={'font-bold'}>
                 <Table.Collection items={items}>
                   {RowItem}
