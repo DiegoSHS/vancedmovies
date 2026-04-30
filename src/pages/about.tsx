@@ -1,5 +1,5 @@
 import { PlayIcon } from "@/components/icons";
-import { Link } from "@heroui/react";
+import { Link } from "@heroui/react/link";
 
 export default function About() {
   return (

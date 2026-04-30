@@ -21,14 +21,17 @@ export class MovieStateHandler {
         }
         return false
     }
-    async shandler(promise: Promise<ApiResult<Movie>>) {
+    async base<T>(promise: Promise<T>) {
+        return this.updateLoadState(promise)
+    }
+    async unique(promise: Promise<ApiResult<Movie>>) {
         const { status, data } = await this.updateLoadState(promise)
         const err = this.checkError(status)
         if (err) return
         this.dispatch({ type: "SELECT", payload: data })
         return data
     }
-    async mhandler(promise: Promise<ApiResult<MovieListResponse>>) {
+    async many(promise: Promise<ApiResult<MovieListResponse>>) {
         const { status, data } = await this.updateLoadState(promise)
         const err = this.checkError(status)
         if (err || !data) return []

@@ -1,4 +1,4 @@
-import { ScrollShadow } from "@heroui/react"
+import { ScrollShadow } from "@heroui/react/scroll-shadow"
 import { useRef } from "react";
 
 interface HorizontalScrollProps {

@@ -1,6 +1,7 @@
 import { useState } from "react";
-import { Button, InfoIcon, Link, Tooltip } from "@heroui/react";
-
+import { Tooltip } from "@heroui/react/tooltip";
+import { Link } from "@heroui/react/link";
+import { Button } from "@heroui/react/button";
 import { siteConfig } from "@/config/site";
 import { ThemeSwitch } from "@/components/theme-switch";
 import {
@@ -8,6 +9,7 @@ import {
   GithubIcon,
   CrossIcon,
   FilmIcon,
+  InfoIcon,
 } from "@/components/icons";
 
 export const Navbar = () => {

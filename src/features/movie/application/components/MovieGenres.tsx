@@ -1,4 +1,4 @@
-import { Chip } from "@heroui/react"
+import { Chip } from "@heroui/react/chip"
 
 export const MovieGenres = ({ genres, show = 0 }: { genres: string[], show?: number }) => {
     if (!genres || !Array.isArray(genres)) {

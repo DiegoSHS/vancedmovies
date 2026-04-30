@@ -1,12 +1,12 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, lazy } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { Movie } from "../../domain/entities/Movie";
-import { MovieList } from "../components/MovieList";
-import { MoviePagination } from "../components/MoviePagination";
 import { CrossIcon, SearchIcon } from "@/components/icons";
 import { useMovieContext } from "../providers/MovieProvider";
-import { Button, Chip, Input } from "@heroui/react";
-import { useTPBMovieContext } from "../providers/TPBMovieProvider";
+import { Button } from "@heroui/react/button";
+import { Chip } from "@heroui/react/chip";
+import { Input } from "@heroui/react/input";
+const MoviePagination = lazy(() => import("../components/MoviePagination"))
+const MovieList = lazy(() => import("../components/MovieList"))
 
 export const PaginatedMoviesScreen: React.FC = () => {
     const {
@@ -18,9 +18,9 @@ export const PaginatedMoviesScreen: React.FC = () => {
         searchMovies,
         updateQuery,
         resetQuery,
-        selectMovie
+        selectMovie,
+        addTorrents
     } = useMovieContext();
-    const { addTorrents } = useTPBMovieContext()
     const navigate = useNavigate();
     const { id } = useParams<{ id: string }>();
 
@@ -62,7 +62,7 @@ export const PaginatedMoviesScreen: React.FC = () => {
         navigate("/page/1");
     };
 
-    const handleMovieClick = (movie: Movie) => {
+    const handleMovieClick = (movie: import("../../domain/entities/Movie").Movie) => {
         selectMovie(movie)
         addTorrents(movie.torrents)
         navigate(`/movie/${movie.id}`);

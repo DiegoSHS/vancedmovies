@@ -1,7 +1,6 @@
 import { SunFilledIcon, MoonFilledIcon } from "@/components/icons";
 import { useLocalStorage } from "@/hooks/useLocalStorage";
-import { Button } from "@heroui/react";
-
+import { Button } from "@heroui/react/button";
 
 export const ThemeSwitch = () => {
   const html = document.documentElement
@@ -39,3 +38,5 @@ export const ThemeSwitch = () => {
     </Button>
   );
 };
+
+export default ThemeSwitch

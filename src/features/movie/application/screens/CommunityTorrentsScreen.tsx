@@ -1,16 +1,17 @@
-import { Button, IconPlus } from "@heroui/react"
-import { useEffect, useState } from "react"
-import { HashResult } from "../../domain/entities/Hashes"
+import { Button } from "@heroui/react/button"
+import { lazy, useEffect, useState } from "react"
 import { useMovieContext } from "../providers/MovieProvider"
-import { MovieCommunityModal } from "../components/MovieCommunityAdd"
-import { BackButton } from "@/components/BackButton"
-import { CommunityTorrentsTable } from "../components/CommunityTorrentsTable"
+import { PlusIcon } from "@/components/icons"
+const MovieCommunityModal = lazy(() => import("../components/MovieCommunityAdd"))
+const BackButton = lazy(() => import("@/components/BackButton"))
+const CommunityTorrentsTable = lazy(() => import("../components/CommunityTorrentsTable"))
 
 export const CommunityTorrentsScreen = () => {
     const {
         getCommunityHashes,
+        status
     } = useMovieContext()
-    const [torrentHashes, setTorrentHashes] = useState<HashResult[]>([]);
+    const [torrentHashes, setTorrentHashes] = useState<import("../../domain/entities/Hashes").HashResult[]>([]);
     const [open, setOpen] = useState(false);
 
     const effect = () => {
@@ -38,11 +39,11 @@ export const CommunityTorrentsScreen = () => {
                     variant="tertiary"
                     onPress={() => setOpen(true)}
                 >
-                    <IconPlus />
+                    <PlusIcon />
                     Añadir nuevo
                 </Button>
             </div>
-            <CommunityTorrentsTable items={torrentHashes} />
+            <CommunityTorrentsTable loading={status === "loading"} items={torrentHashes} />
         </div>
     )
 }

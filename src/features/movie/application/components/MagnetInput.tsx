@@ -1,6 +1,10 @@
-import { Description, FieldError, Input, Label, TextField } from "@heroui/react"
-import { useEffect, useState } from "react"
-
+import { Description } from "@heroui/react/description"
+import { FieldError } from "@heroui/react/field-error"
+import { TextField } from "@heroui/react/textfield"
+import { Input } from "@heroui/react/input"
+import { Label } from "@heroui/react/label"
+import { lazy } from "react"
+const checkMagnet = lazy(() => import('@/utils/magnet/regexp'))
 interface MagnetInputProps {
     onChange: React.Dispatch<React.SetStateAction<string>> | ((magnet: string) => {})
     magnet: string
@@ -10,15 +14,7 @@ export const MagnetInput: React.FC<MagnetInputProps> = ({
     onChange,
     magnet
 }) => {
-    const [isInvalid, setIsInvalid] = useState(false);
-    useEffect(() => {
-        const checkInvalid = async () => {
-            const { checkMagnet } = await import('@/utils/magnetGenerator')
-            const isInvalid = magnet ? !checkMagnet(magnet) : false
-            setIsInvalid(isInvalid)
-        }
-        checkInvalid()
-    }, []);
+    const isInvalid = magnet ? !checkMagnet(magnet) : false
     return (
         <TextField
             isRequired
@@ -44,3 +40,5 @@ export const MagnetInput: React.FC<MagnetInputProps> = ({
         </TextField>
     )
 }
+
+export default MagnetInput

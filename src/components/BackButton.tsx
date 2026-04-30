@@ -1,4 +1,4 @@
-import { Button } from "@heroui/react"
+import { Button } from "@heroui/react/button"
 import { useNavigate } from "react-router-dom"
 import { ArrowLeftIcon } from "./icons"
 
@@ -20,3 +20,5 @@ export const BackButton: React.FC<BackButtonProps> = ({
         </Button>
     )
 }
+
+export default BackButton

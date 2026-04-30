@@ -1,6 +1,7 @@
 import { Movie } from "../../domain/entities/Movie";
-import { Card } from "@heroui/react";
+import { Card } from "@heroui/react/card";
 import { MovieRuntime } from "./MovieRuntime";
+import { MovieCardSkeleton } from "./MovieCardSkeleton";
 
 interface MovieCardProps {
     movie: Movie;
@@ -8,6 +9,7 @@ interface MovieCardProps {
 }
 
 export const MovieCard: React.FC<MovieCardProps> = ({ movie, onClick }) => {
+    if (movie.id === 0) return <MovieCardSkeleton />
     const overlayStyle = {
         position: "absolute" as const,
         top: 0,

@@ -1,10 +1,17 @@
-import { Card, Chip, EmptyState, Popover, Table, TableLayout, Virtualizer } from "@heroui/react";
-import { useTPBMovieContext } from "../providers/TPBMovieProvider";
-import { Torrent } from "../../domain/entities/Torrent";
-import { CopyTorrentButton, OpenTorrentButton, PlayTorrentButton } from "./MovieActions";
+import { Card } from "@heroui/react/card";
+import { Chip } from "@heroui/react/chip";
+import { EmptyState } from "@heroui/react/empty-state";
+import { Popover } from "@heroui/react/popover";
+import { Table } from "@heroui/react/table";
+import { TableLayout, Virtualizer } from "@heroui/react";
 import { Repeater } from "@/components/Repeater";
+import { lazy } from "react";
+import { useMovieContext } from "../providers/MovieProvider";
+const CopyTorrentButton = lazy(() => import("@/components/torrent/CopyTorrentButton"))
+const OpenTorrentButton = lazy(() => import("@/components/torrent/OpenTorrentButton"))
+const PlayTorrentButton = lazy(() => import("@/components/torrent/PlayTorrentButton"))
 
-const NoDownloadsAvailable = ({ message = "Sin descargas disponibles" }: { message?: string }) => {
+export const NoDownloadsAvailable = ({ message = "Sin descargas disponibles" }: { message?: string }) => {
   return (
     <EmptyState className="flex h-full w-full flex-col items-center justify-center gap-4 text-center">
       <span className="text-sm text-muted">{message}</span>
@@ -13,7 +20,7 @@ const NoDownloadsAvailable = ({ message = "Sin descargas disponibles" }: { messa
 }
 
 const MovieDownloadCard = ({ item,
-}: { item: Torrent }) => {
+}: { item: import("../../domain/entities/Torrent").Torrent }) => {
   return (
     <Card
       key={item.hash}
@@ -61,8 +68,8 @@ const MovieDownloadCard = ({ item,
 
 
 const MovieDownloadCards = ({ items }: Omit<MovieDownloadsProps, 'mode'>) => {
-  if (!items) return null
-  const Item = (item: Torrent) => {
+  if (!items.length) return <NoDownloadsAvailable />
+  const Item = (item: import("../../domain/entities/Torrent").Torrent) => {
     return (
       <MovieDownloadCard
         key={item.hash}
@@ -80,13 +87,13 @@ const MovieDownloadCards = ({ items }: Omit<MovieDownloadsProps, 'mode'>) => {
 }
 
 interface MovieDownloadsProps {
-  items?: Torrent[];
+  items: import("../../domain/entities/Torrent").Torrent[];
   mode: string
 }
 
 export const MovieDownloadsTable = ({ items }: Omit<MovieDownloadsProps, 'mode'>) => {
 
-  const RowItem = (item: Torrent) => (
+  const RowItem = (item: import("../../domain/entities/Torrent").Torrent) => (
     <Table.Row id={item.hash}>
       <Table.Cell>
         {item.quality}
@@ -169,14 +176,8 @@ export const MovieDownloadsTable = ({ items }: Omit<MovieDownloadsProps, 'mode'>
   )
 }
 
-export const MovieDownloads = ({ mode }: MovieDownloadsProps) => {
-  const { state: { items } } = useTPBMovieContext()
-  if (!items || items.length === 0) {
-    return (
-      <NoDownloadsAvailable />
-    );
-  }
-
+export const MovieDownloads = ({ mode }: Omit<MovieDownloadsProps, 'items'>) => {
+  const { torrentState: { items } } = useMovieContext()
   return (
     <div className="flex w-full flex-col gap-2 items-center justify-center">
       <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
@@ -191,4 +192,6 @@ export const MovieDownloads = ({ mode }: MovieDownloadsProps) => {
       }
     </div >
   );
-};
+}
+
+export default MovieDownloads

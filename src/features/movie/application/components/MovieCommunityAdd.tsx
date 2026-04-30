@@ -1,13 +1,15 @@
-import { Button, IconPlus, Modal, Surface } from "@heroui/react"
-import { useEffect, useState } from "react";
+import { Surface } from "@heroui/react/surface"
+import { Modal } from "@heroui/react/modal"
+import { Button } from "@heroui/react/button"
+import { lazy, useEffect, useState } from "react";
 import { useMovieContext } from "../providers/MovieProvider";
-import { HashResult } from "../../domain/entities/Hashes";
-import { MagnetInput } from "./MagnetInput";
+import { PlusIcon } from "@/components/icons";
+const MagnetInput = lazy(() => import("./MagnetInput"))
 
 interface MovieModalProps {
     isOpen: boolean,
     onOpenChange: (isOpen: boolean) => void,
-    setHashes: React.Dispatch<React.SetStateAction<HashResult[]>>
+    setHashes: React.Dispatch<React.SetStateAction<import("../../domain/entities/Hashes").HashResult[]>>
 }
 
 export const MovieCommunityModal: React.FC<MovieModalProps> = ({ isOpen, onOpenChange, setHashes }) => {
@@ -16,7 +18,7 @@ export const MovieCommunityModal: React.FC<MovieModalProps> = ({ isOpen, onOpenC
     const { addCommunityHash, status } = useMovieContext()
     const handleSubmit = async () => {
         const { extractMagnetInfo } = await import("@/utils/magnetGenerator")
-        const info = extractMagnetInfo(magnet)
+        const info = await extractMagnetInfo(magnet)
         if (!info) return
         const result = await addCommunityHash(info.name, info.hash)
         if (result > 0) {
@@ -26,7 +28,7 @@ export const MovieCommunityModal: React.FC<MovieModalProps> = ({ isOpen, onOpenC
     }
     useEffect(() => {
         const check = async () => {
-            const { checkMagnet } = await import("@/utils/magnetGenerator")
+            const { checkMagnet } = await import("@/utils/magnet/regexp")
             const isDisabled = !checkMagnet(magnet)
             setIsDisabled(isDisabled)
         }
@@ -55,7 +57,7 @@ export const MovieCommunityModal: React.FC<MovieModalProps> = ({ isOpen, onOpenC
                             onPress={handleSubmit}
                             isDisabled={isDisabled || status === "loading"}
                         >
-                            <IconPlus />
+                            <PlusIcon />
                             Añadir
                         </Button>
                     </Modal.Footer>
@@ -64,3 +66,5 @@ export const MovieCommunityModal: React.FC<MovieModalProps> = ({ isOpen, onOpenC
         </Modal.Backdrop>
     )
 }
+
+export default MovieCommunityModal

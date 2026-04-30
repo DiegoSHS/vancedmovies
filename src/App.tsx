@@ -1,19 +1,20 @@
 import { Route, Routes } from "react-router-dom";
+import { lazy } from "react";
 
-import IndexPage from "@/pages/index";
-import AboutPage from "@/pages/about";
-import MovieDetailsPage from "@/pages/movie";
-import MoviesPage from "./pages/movies";
-import Torrent from "./pages/torrent";
-import Community from "./pages/community";
+const Index = lazy(() => import("@/pages/index"))
+const Movies = lazy(() => import("@/pages/movies"))
+const Details = lazy(() => import("@/pages/movie"))
+const About = lazy(() => import("@/pages/about"))
+const Torrent = lazy(() => import("@/pages/torrent"))
+const Community = lazy(() => import("@/pages/community"))
 
 function App() {
   return (
     <Routes>
-      <Route element={<IndexPage />} path="/" />
-      <Route element={<MoviesPage />} path="/page/:id" />
-      <Route element={<MovieDetailsPage />} path="/movie/:id" />
-      <Route element={<AboutPage />} path="/about" />
+      <Route element={<Index />} path="/" />
+      <Route element={<Movies />} path="/page/:id" />
+      <Route element={<Details />} path="/movie/:id" />
+      <Route element={<About />} path="/about" />
       <Route element={<Torrent />} path="/torrent/:id" />
       <Route element={<Torrent />} path="/torrent" />
       <Route element={<Community />} path="/community" />

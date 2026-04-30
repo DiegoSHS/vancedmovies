@@ -2,7 +2,6 @@ import { HashResult } from "../entities/Hashes";
 import { Movie } from "../entities/Movie";
 import { Torrent } from "../entities/Torrent";
 import { MovieListResponse } from "../entities/YTSMovieListResponse";
-
 import { ApiResult } from "@/utils/apiResult";
 
 export abstract class MovieDatasource {

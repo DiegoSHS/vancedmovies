@@ -10,3 +10,15 @@ export const formatBytes = (bytes: number, decimals = 2) => {
 
     return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`
 }
+
+export const filterUniqueTorrents = (torrents: import("@/features/movie/domain/entities/Torrent").Torrent[]) => {
+    const hashes = new Set<string>()
+    return torrents
+        .filter((item) => {
+            if (!hashes.has(item.hash)) {
+                hashes.add(item.hash)
+                return true
+            }
+            return false
+        })
+}

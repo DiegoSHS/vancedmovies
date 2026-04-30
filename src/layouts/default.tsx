@@ -1,4 +1,4 @@
-import { Link } from "@heroui/react";
+import { Link } from "@heroui/react/link";
 import { Navbar } from "@/components/navbar";
 
 export default function DefaultLayout({

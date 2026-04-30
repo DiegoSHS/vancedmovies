@@ -1,6 +1,6 @@
-import { Card } from "@heroui/react";
-import { BackendStreamPlayer } from "@/components/BackendStreamPlayer";
-
+import { Card } from "@heroui/react/card";
+import { lazy } from "react";
+const BackendStreamPlayer = lazy(() => import("@/components/BackendStreamPlayer"))
 interface HybridVideoPlayerProps {
     magnetLink?: string;
     movieTitle: string;
@@ -8,11 +8,10 @@ interface HybridVideoPlayerProps {
 }
 
 
-export const VideoPlayer: React.FC<HybridVideoPlayerProps> = ({
+const VideoPlayer: React.FC<HybridVideoPlayerProps> = ({
     magnetLink,
     movieTitle,
 }) => {
-
     return (
         <Card className="w-full rounded-xl">
             <Card.Header className="flex flex-row items-center justify-between">
@@ -25,3 +24,5 @@ export const VideoPlayer: React.FC<HybridVideoPlayerProps> = ({
         </Card>
     );
 };
+
+export default VideoPlayer

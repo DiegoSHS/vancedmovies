@@ -1,5 +1,6 @@
 import { StarIcon } from "@/components/icons";
-import { BaseMovieChip } from "./MovieLanguage";
+import { lazy } from "react";
+const BaseMovieChip = lazy(() => import("@/components/BaseMovieChip"))
 
 export const MovieRating = ({ rating, size = 'md', showLabel = false }: { rating: number, size?: 'md' | 'lg' | 'sm', showLabel?: boolean }) => {
     const ratingContent = rating ? rating.toFixed(1) : "N/A";

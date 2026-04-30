@@ -1,8 +1,9 @@
-import { Card, Skeleton } from "@heroui/react";
+import { Card } from "@heroui/react/card";
+import { Skeleton } from "@heroui/react/skeleton";
 
 export const MovieCardSkeleton: React.FC = () => {
   return (
-    <Card className="relative overflow-hidden w-[320px] h-[568px] flex-shrink-0 p-0 m-0">
+    <Card className="relative overflow-hidden w-xs aspect-[9/16] flex-shrink-0 p-0 m-0">
       <Skeleton className="w-full h-full rounded-none" />
       <div
         className="absolute top-0 left-0 right-0 h-32 z-5 pointer-events-none"

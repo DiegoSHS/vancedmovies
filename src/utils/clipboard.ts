@@ -8,7 +8,7 @@ export const copyTextToClipboard = async (
     text: string,
 ): Promise<void> => {
     try {
-        const { checkMagnet } = await import('@/utils/magnetGenerator')
+        const { checkMagnet } = await import('@/utils/magnet/regexp')
         if (!checkMagnet(text)) {
             throw new Error("El enlace magnet no tiene un formato válido");
         }

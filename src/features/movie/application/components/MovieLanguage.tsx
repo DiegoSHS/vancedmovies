@@ -1,6 +1,6 @@
-import { Chip } from "@heroui/react";
 import { LanguageIcon } from "@/components/icons";
-
+import { lazy } from "react";
+const BaseMovieChip = lazy(() => import("@/components/BaseMovieChip"))
 interface MovieLanguageProps {
     language?: string;
     size?: 'sm' | 'md' | 'lg';
@@ -22,27 +22,3 @@ export const MovieLanguage: React.FC<MovieLanguageProps> = ({
     );
 };
 
-interface BaseChipProps {
-    children: React.ReactNode,
-    label: string,
-    content: string | number,
-    showLabel: boolean
-}
-
-export const BaseMovieChip = ({ children, label, content, showLabel }: BaseChipProps) => {
-    return (
-        <div className="flex flex-col gap-1 items-center justify-center">
-            {showLabel && (
-                <h2 className="text-lg font-semibold">{label}</h2>
-            )}
-            <Chip.Root
-                className="inline-flex items-center px-2 py-1 rounded-full gap-1"
-            >
-                {children}
-                <Chip.Label>
-                    {content}
-                </Chip.Label>
-            </Chip.Root>
-        </div>
-    )
-}

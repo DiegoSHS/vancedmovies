@@ -1,22 +1,19 @@
 import { HorizontalScrollShadow } from "@/components/HorizontalScrollShadow"
 import { MovieList } from "./MovieList"
-import { Movie } from "../../domain/entities/Movie"
 import { useNavigate } from "react-router-dom"
 import { useMovieContext } from "../providers/MovieProvider"
-import { useTPBMovieContext } from "../providers/TPBMovieProvider"
 
 interface MovieSuggestionsProps {
-    items: Movie[]
+    items: import("../../domain/entities/Movie").Movie[]
     message?: string
 }
 
 export const MovieSuggestions: React.FC<MovieSuggestionsProps> = ({
     items, message = "Tambien podria gustarte"
 }) => {
-    const { selectMovie, status } = useMovieContext()
-    const { addTorrents } = useTPBMovieContext()
+    const { selectMovie, status, addTorrents } = useMovieContext()
     const navigate = useNavigate()
-    const handleMovieClick = (movie: Movie) => {
+    const handleMovieClick = (movie: import("../../domain/entities/Movie").Movie) => {
         selectMovie(movie)
         addTorrents(movie.torrents)
         navigate(`/movie/${movie.id}`);
@@ -37,3 +34,5 @@ export const MovieSuggestions: React.FC<MovieSuggestionsProps> = ({
         </>
     )
 }
+
+export default MovieSuggestions

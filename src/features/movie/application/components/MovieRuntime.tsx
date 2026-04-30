@@ -1,5 +1,6 @@
 import { TimeIcon } from "@/components/icons";
-import { BaseMovieChip } from "./MovieLanguage";
+import { lazy } from "react";
+const BaseMovieChip = lazy(() => import("@/components/BaseMovieChip"))
 
 interface MovieRuntimeProps {
     runtime?: number;

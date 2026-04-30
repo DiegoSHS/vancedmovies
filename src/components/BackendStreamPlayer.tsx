@@ -1,17 +1,17 @@
-import { useTPBMovieContext } from "@/features/movie/application/providers/TPBMovieProvider";
+import { useMovieContext } from '@/features/movie/application/providers/MovieProvider';
 
 interface BackendStreamPlayerProps {
     magnetLink?: string;
 }
 
-export const BackendStreamPlayer: React.FC<BackendStreamPlayerProps> = ({ magnetLink }) => {
-    const { state: { selectedItem } } = useTPBMovieContext()
+const BackendStreamPlayer: React.FC<BackendStreamPlayerProps> = ({ magnetLink }) => {
+    const { torrentState: { selectedItem } } = useMovieContext()
     const videoSrc =
         magnetLink ?
             `${import.meta.env.VITE_NEST_BACKEND_URL}?magnet=${encodeURIComponent(magnetLink)}` :
             selectedItem ? `${import.meta.env.VITE_NEST_BACKEND_URL}?magnet=${encodeURIComponent(selectedItem.hash)}` : undefined
     const handleError = async () => {
-        const { toast } = await import('@heroui/react')
+        const { toast } = await import('@heroui/react/toast')
         toast.danger('Ups, no se pudo cargar el video')
     }
     return (
@@ -27,3 +27,5 @@ export const BackendStreamPlayer: React.FC<BackendStreamPlayerProps> = ({ magnet
         </video>
     );
 };
+
+export default BackendStreamPlayer

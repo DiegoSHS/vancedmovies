@@ -6,19 +6,6 @@ const TRACKERS = [
   "wss://tracker.openwebtorrent.com",
 ];
 
-
-/**
- * Source - https://stackoverflow.com/a/19707059
- * Posted by Jimbo, modified by community.
- * See post 'Timeline' for change history
- * Retrieved 2026-04-02, License - CC BY-SA 4.0
- */
-const magnetRegExp = /magnet:\?xt=urn:[a-z0-9]+:[a-z0-9]{32}/i
-
-export const checkMagnet = (magnet: string) => {
-  return magnet.match(magnetRegExp)
-}
-
 export const getMagnetLinkFromURL = (params: URLSearchParams) => {
   const xt = params.get('xt')
   const dn = params.get('dn')
@@ -91,11 +78,8 @@ export const generateMagnetLink = (
  * @param magnetLink - El enlace magnet del que extraer información
  * @returns Objeto con información extraída o null si no es válido
  */
-export const extractMagnetInfo = (magnetLink: string): {
-  hash: string;
-  name: string;
-  trackers: string[];
-} | null => {
+export const extractMagnetInfo = async (magnetLink: string) => {
+  const { checkMagnet } = await import("@/utils/magnet/regexp")
   if (!checkMagnet(magnetLink)) return null;
   const urlParams = new URLSearchParams(magnetLink.split('?')[1]);
   const xt = urlParams.get('xt');

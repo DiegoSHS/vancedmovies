@@ -1,4 +1,4 @@
-import { Pagination } from "@heroui/react";
+import { Pagination } from "@heroui/react/pagination";
 
 interface MoviePaginationProps {
   currentPage: number;
@@ -44,3 +44,5 @@ export const MoviePagination: React.FC<MoviePaginationProps> = ({
 
   );
 };
+
+export default MoviePagination

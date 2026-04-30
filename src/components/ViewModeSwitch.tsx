@@ -1,4 +1,4 @@
-import { Switch } from "@heroui/react"
+import { Switch } from "@heroui/react/switch"
 import { ListIcon, SquaresIcon } from "./icons"
 
 interface ViewModeSwitchProps {
@@ -36,3 +36,5 @@ export const ViewModeSwitch = ({ mode, isDisabled = false, swapViewMode }: ViewM
         </Switch>
     )
 }
+
+export default ViewModeSwitch

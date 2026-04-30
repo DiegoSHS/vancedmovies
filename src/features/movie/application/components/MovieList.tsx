@@ -3,8 +3,8 @@ import { Movie } from "../../domain/entities/Movie";
 import { useMovieContext } from "../providers/MovieProvider";
 import { MovieCard } from "./MovieCard";
 import { MovieCardSkeleton } from "./MovieCardSkeleton";
-import { ListLayout, Virtualizer } from "@heroui/react";
 import { Repeater } from "@/components/Repeater";
+import { NoDownloadsAvailable } from "./MovieDownloads";
 
 interface MovieListProps {
   movies: Movie[];
@@ -22,11 +22,14 @@ export const MovieList: React.FC<MovieListProps> = ({
   className = "flex flex-wrap gap-2 justify-center"
 }) => {
   if (loading) {
+    const Item = (item: { id: number }) => <MovieCardSkeleton key={item.id} />
     return (
       <div className={className}>
-        {Array.from({ length: 24 }).map((_, index) => (
-          <MovieCardSkeleton key={index} />
-        ))}
+        <Repeater
+          items={Array.from({ length: 24 }, (_, k) => ({ id: k }))}
+        >
+          {Item}
+        </Repeater>
       </div>
     );
   }
@@ -44,20 +47,13 @@ export const MovieList: React.FC<MovieListProps> = ({
       </div>
     );
   }
-
+  if (!movies.length) return <NoDownloadsAvailable message="Sin contenido para mostrar" />
   const Item = (movie: Movie) => <MovieCard key={movie.id} movie={movie} onClick={onMovieClick} />
   return (
     <div className={className}>
-      <Virtualizer
-        layout={ListLayout}
-        layoutOptions={{
-          rowHeight: 480
-        }}
-      >
-        <Repeater items={movies}>
-          {Item}
-        </Repeater>
-      </Virtualizer>
+      <Repeater items={movies}>
+        {Item}
+      </Repeater>
     </div>
   );
 };
@@ -95,16 +91,11 @@ export const MovieListInfiniteScroll = () => {
   const Item = (movie: Movie) => <MovieCard key={movie.id} movie={movie} onClick={() => { }} />
   return (
     <div onWheel={handleScroll} className="flex flex-wrap gap-2 justify-center">
-      <Virtualizer
-        layout={ListLayout}
-        layoutOptions={{
-          rowHeight: 480
-        }}
-      >
-        <Repeater items={movies}>
-          {Item}
-        </Repeater>
-      </Virtualizer>
+      <Repeater items={movies}>
+        {Item}
+      </Repeater>
     </div>
   )
 }
+
+export default MovieList

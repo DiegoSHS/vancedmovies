@@ -1,14 +1,13 @@
-import { useEffect } from "react";
+import { lazy, useEffect } from "react";
 import { useParams } from "react-router-dom";
-import { VideoPlayer } from "../components/VideoPlayer";
-import { MovieDownloads } from "../components/MovieDownloads";
 import { useMovieContext } from "../providers/MovieProvider";
-import { MovieDetailsCard } from "../components/MovieDetailsCard";
-import { useTPBMovieContext } from "../providers/TPBMovieProvider";
 import { useLocalStorage } from "@/hooks/useLocalStorage";
 import { BackButton } from "@/components/BackButton";
-import { MovieSuggestions } from "../components/MovieSuggestions";
-import { ViewModeSwitch } from "@/components/ViewModeSwitch";
+const ViewModeSwitch = lazy(() => import("@/components/ViewModeSwitch"))
+const VideoPlayer = lazy(() => import("../components/VideoPlayer"))
+const MovieDetailsCard = lazy(() => import("../components/MovieDetailsCard"))
+const MovieSuggestions = lazy(() => import("../components/MovieSuggestions"))
+const MovieDownloads = lazy(() => import("../components/MovieDownloads"))
 
 export const MovieDetailScreen: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -23,29 +22,32 @@ export const MovieDetailScreen: React.FC = () => {
   const {
     getMovieById,
     getMovieSuggestions,
-    status,
-    state: { selectedItem: movie, items },
-  } = useMovieContext();
-  const {
     getMoreTorrents,
     addTorrents,
-    state: { items: magnets }
-  } = useTPBMovieContext()
+    status,
+    state: { selectedItem: movie, items },
+    torrentState: { items: magnets }
+  } = useMovieContext();
 
   const fetchMovieData = async () => {
     if (movie) {
       addTorrents(movie.torrents)
-      getMoreTorrents(movie.title)
-      getMovieSuggestions(movie.id)
+      await Promise.all([
+        getMoreTorrents(movie.title),
+        getMovieSuggestions(movie.id)
+      ])
       return
     }
     if (!id) return;
     const result = await getMovieById(parseInt(id))
     if (!result) return
     addTorrents(result.torrents)
-    getMoreTorrents(result.title)
-    getMovieSuggestions(result.id)
+    await Promise.all([
+      getMoreTorrents(result.title),
+      getMovieSuggestions(result.id)
+    ])
   }
+
   const effect = () => {
     fetchMovieData()
   }

@@ -7,9 +7,9 @@ import { MovieDescription } from "./MovieDescription"
 import { Movie } from "../../domain/entities/Movie"
 import { MovieDetailsCardSkeleton } from "./MovieDetailsCardSkeleton"
 
-export const MovieDetailsCard = ({
+const MovieDetailsCard = ({
     movie }: { movie?: Movie }) => {
-    if (!movie) return <MovieDetailsCardSkeleton />
+    if (!movie?.id) return <MovieDetailsCardSkeleton />
     return (
         <div className="flex flex-col sm:flex-row sm:items-start gap-8 justify-evenly items-center gap-2">
             <picture aria-label="Carátula">
@@ -70,3 +70,5 @@ export const MovieDetailsCard = ({
         </div>
     )
 }
+
+export default MovieDetailsCard

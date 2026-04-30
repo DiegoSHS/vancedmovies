@@ -1,18 +1,20 @@
 import { useNavigate } from 'react-router-dom'
-import { HashResult } from '../../domain/entities/Hashes'
-import { Torrent } from '../../domain/entities/Torrent'
-import { Button, EmptyState, Table, TableLayout, Virtualizer } from '@heroui/react'
-import type { SortDescriptor } from "@heroui/react"
+import { Button } from '@heroui/react/button'
+import { Table } from '@heroui/react/table'
+import { TableLayout, Virtualizer, type SortDescriptor } from "@heroui/react"
 import { PlayIcon } from '@/components/icons'
-import { useMemo, useState } from 'react'
-import { CopyTorrentButton, OpenTorrentButton } from './MovieActions'
-import { getQualityFromName } from '@/utils/magnetName'
+import { lazy, useMemo, useState } from 'react'
+import { NoDownloadsAvailable } from './MovieDownloads'
+const CopyTorrentButton = lazy(() => import("@/components/torrent/CopyTorrentButton"))
+const OpenTorrentButton = lazy(() => import("@/components/torrent/OpenTorrentButton"))
+const getQualityFromName = lazy(() => import("@/utils/magnetName"))
 
 interface CommunityTorrentTableProps {
-    items: HashResult[]
+    items: import("../../domain/entities/Hashes").HashResult[],
+    loading: boolean
 }
 
-export const CommunityTorrentsTable: React.FC<CommunityTorrentTableProps> = ({ items }) => {
+export const CommunityTorrentsTable: React.FC<CommunityTorrentTableProps> = ({ items, loading }) => {
     const navigate = useNavigate()
     const [sortDescriptor, setSortDescriptor] = useState<SortDescriptor>({
         column: "name",
@@ -27,9 +29,9 @@ export const CommunityTorrentsTable: React.FC<CommunityTorrentTableProps> = ({ i
             return cmp
         })
     }, [sortDescriptor, items])
-    const RowItem = (item: HashResult) => {
+    const RowItem = (item: import("../../domain/entities/Hashes").HashResult) => {
         const quality = getQualityFromName(item.name.toLowerCase())
-        const torrent = { hash: item.hash, quality } as Torrent
+        const torrent = { hash: item.hash, quality } as import("../../domain/entities/Torrent").Torrent
         const handleClick = async () => {
             const { generateMagnetLink } = await import('@/utils/magnetGenerator')
             const { data } = generateMagnetLink(torrent, item.name)
@@ -88,9 +90,7 @@ export const CommunityTorrentsTable: React.FC<CommunityTorrentTableProps> = ({ i
                                 </Table.Column>
                             </Table.Header>
                             <Table.Body renderEmptyState={() => (
-                                <EmptyState className="flex h-full w-full flex-col items-center justify-center gap-4 text-center">
-                                    <span className="text-sm text-muted">Sin hashes disponibles</span>
-                                </EmptyState>
+                                <NoDownloadsAvailable message={loading ? "Cargando..." : undefined} />
                             )} className={'font-bold'}>
                                 <Table.Collection items={sortedItems}>
                                     {RowItem}
@@ -103,3 +103,5 @@ export const CommunityTorrentsTable: React.FC<CommunityTorrentTableProps> = ({ i
         </Virtualizer>
     )
 }
+
+export default CommunityTorrentsTable

@@ -1,10 +1,11 @@
-import { Button, IconPlus } from "@heroui/react"
-import { VideoPlayer } from "../components/VideoPlayer"
-import { useEffect, useState } from "react"
+import { Button } from "@heroui/react/button"
+import { lazy, useEffect, useState } from "react"
 import { useSearchParams } from "react-router-dom"
 import { useMovieContext } from "../providers/MovieProvider"
-import { MagnetInput } from "../components/MagnetInput"
-import { BackButton } from "@/components/BackButton"
+import { PlusIcon } from "@/components/icons"
+const VideoPlayer = lazy(() => import("../components/VideoPlayer"))
+const MagnetInput = lazy(() => import("../components/MagnetInput"))
+const BackButton = lazy(() => import("@/components/BackButton"))
 
 export const CustomTorrentScreen: React.FC = () => {
     const [searchParams] = useSearchParams()
@@ -21,7 +22,7 @@ export const CustomTorrentScreen: React.FC = () => {
         const {
             extractMagnetInfo
         } = await import('@/utils/magnetGenerator')
-        const result = extractMagnetInfo(magnet)
+        const result = await extractMagnetInfo(magnet)
         setMoviePlayerState(prev => ({
             ...prev,
             magnetLink: magnet
@@ -73,7 +74,7 @@ export const CustomTorrentScreen: React.FC = () => {
                     isDisabled={moviePlayerState.isInvalid}
                     onPress={saveTorrentToCommunity}
                 >
-                    <IconPlus />
+                    <PlusIcon />
                     Añadir a la comunidad
                 </Button>
             </div>
