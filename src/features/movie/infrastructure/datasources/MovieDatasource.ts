@@ -1,7 +1,7 @@
 import { Movie } from "../../domain/entities/Movie";
 import { MovieListResponse } from "../../domain/entities/YTSMovieListResponse";
 import { MovieDatasource } from "../../domain/datasources/MovieDatasource";
-import { ApiResult } from "@/utils/apiResult";
+import { ApiResult } from "@/utils/ApiResult";
 import { Torrent } from "../../domain/entities/Torrent";
 import { HashResult } from "../../domain/entities/Hashes";
 
@@ -11,7 +11,7 @@ export class MovieDatasourceImp extends MovieDatasource {
     limit: number = 24,
   ): Promise<ApiResult<MovieListResponse>> {
     try {
-      const { ApiClient } = await import('@/utils/apiClient')
+      const { ApiClient } = await import('@/utils/ApiClient')
       const response = await ApiClient.get<ApiResult<MovieListResponse>>({
         path: `/list_movies.json?page=${page}&limit=${limit}&sort_by=year&order_by=desc`,
       });
@@ -29,7 +29,7 @@ export class MovieDatasourceImp extends MovieDatasource {
   }
   async getMovieSuggestions(id: number): Promise<ApiResult<MovieListResponse>> {
     try {
-      const { ApiClient } = await import('@/utils/apiClient')
+      const { ApiClient } = await import('@/utils/ApiClient')
       const result = await ApiClient.get<ApiResult<MovieListResponse>>({
         path: `/movie_suggestions.json?movie_id=${id}`
       })
@@ -47,7 +47,7 @@ export class MovieDatasourceImp extends MovieDatasource {
   }
   async getMovieById(id: number): Promise<ApiResult<Movie>> {
     try {
-      const { ApiClient } = await import('@/utils/apiClient')
+      const { ApiClient } = await import('@/utils/ApiClient')
       const result = await ApiClient.get<ApiResult<{ movie: Movie }>>({
         path: `/movie_details.json?movie_id=${id}`,
       });
@@ -73,7 +73,7 @@ export class MovieDatasourceImp extends MovieDatasource {
     limit: number = 24,
   ): Promise<ApiResult<MovieListResponse>> {
     try {
-      const { ApiClient } = await import('@/utils/apiClient')
+      const { ApiClient } = await import('@/utils/ApiClient')
       const result = await ApiClient.get<ApiResult<MovieListResponse>>({
         path: `/list_movies.json?query_term=${encodeURIComponent(query)}&page=${page}&limit=${limit}`,
       });
@@ -96,7 +96,7 @@ export class MovieDatasourceImp extends MovieDatasource {
     limit: number = 24,
   ): Promise<ApiResult<MovieListResponse>> {
     try {
-      const { ApiClient } = await import('@/utils/apiClient')
+      const { ApiClient } = await import('@/utils/ApiClient')
       const result = await ApiClient.get<ApiResult<MovieListResponse>>({
         path: `/list_movies.json?genre=${encodeURIComponent(genre)}&page=${page}&limit=${limit}`,
       });
@@ -119,7 +119,7 @@ export class MovieDatasourceImp extends MovieDatasource {
     limit: number = 24,
   ): Promise<ApiResult<MovieListResponse>> {
     try {
-      const { ApiClient } = await import('@/utils/apiClient')
+      const { ApiClient } = await import('@/utils/ApiClient')
       const response = await ApiClient.get<ApiResult<MovieListResponse>>({
         path: `/list_movies.json?year=${year}&page=${page}&limit=${limit}`,
       });
@@ -142,7 +142,7 @@ export class MovieDatasourceImp extends MovieDatasource {
     limit: number = 24,
   ): Promise<ApiResult<MovieListResponse>> {
     try {
-      const { ApiClient } = await import('@/utils/apiClient')
+      const { ApiClient } = await import('@/utils/ApiClient')
       const response = await ApiClient.get<ApiResult<MovieListResponse>>({
         path: `/list_movies.json?minimum_rating=${minimum_rating}&page=${page}&limit=${limit}`,
       });
@@ -160,7 +160,7 @@ export class MovieDatasourceImp extends MovieDatasource {
   }
   async getMoreTorrents(query: string): Promise<Torrent[]> {
     try {
-      const { ApiClient } = await import('@/utils/apiClient')
+      const { ApiClient } = await import('@/utils/ApiClient')
       if (!Boolean(query)) return []
       const url = `${import.meta.env.VITE_NEST_BACKEND_URL}/tpb_search?title=${encodeURIComponent(query)}`
       const result = await ApiClient.get<Torrent[]>({
@@ -175,7 +175,7 @@ export class MovieDatasourceImp extends MovieDatasource {
   }
   async addCommunityHash(id: string, hash: string): Promise<number> {
     try {
-      const { ApiClient } = await import('@/utils/apiClient')
+      const { ApiClient } = await import('@/utils/ApiClient')
       const url = `${import.meta.env.VITE_NEST_BACKEND_URL}/save_hash`
       const result = await ApiClient.post<number>({
         path: url,
@@ -198,7 +198,7 @@ export class MovieDatasourceImp extends MovieDatasource {
   }
   async getCommunityHashes(): Promise<HashResult[]> {
     try {
-      const { ApiClient } = await import('@/utils/apiClient')
+      const { ApiClient } = await import('@/utils/ApiClient')
       const url = `${import.meta.env.VITE_NEST_BACKEND_URL}/get_hashes`
       const result = await ApiClient.get<HashResult[]>({
         path: url,

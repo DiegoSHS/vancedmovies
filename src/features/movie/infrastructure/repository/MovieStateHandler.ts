@@ -1,4 +1,4 @@
-import { ApiResult } from "@/utils/apiResult";
+import { ApiResult } from "@/utils/ApiResult";
 import { MovieListResponse } from "../../domain/entities/YTSMovieListResponse";
 import { Action, ProviderState } from "@/utils/baseProvider";
 import { Movie } from "../../domain/entities/Movie";

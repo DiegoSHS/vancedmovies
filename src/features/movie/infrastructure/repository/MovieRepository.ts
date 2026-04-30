@@ -3,7 +3,7 @@ import { MovieListResponse } from "../../domain/entities/YTSMovieListResponse";
 import { MovieRepository } from "../../domain/repository/MovieRepository";
 import { MovieDatasource } from "../../domain/datasources/MovieDatasource";
 
-import { ApiResult } from "@/utils/apiResult";
+import { ApiResult } from "@/utils/ApiResult";
 import { Torrent } from "../../domain/entities/Torrent";
 import { HashResult } from "../../domain/entities/Hashes";
 
