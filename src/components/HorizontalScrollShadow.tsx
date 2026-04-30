@@ -12,7 +12,7 @@ export const HorizontalScrollShadow: React.FC<HorizontalScrollProps> = ({ childr
         event.preventDefault()
         const container = containerRef.current;
         if (!container) return
-        const { HorizontalScroll } = await import('@/utils/clipboard')
+        const { HorizontalScroll } = await import('@/utils/scroll')
         const scrollAmount = event.deltaY;
         HorizontalScroll(container, scrollAmount / 4)
     };

@@ -1,4 +1,4 @@
-import { createContext, useContext, ReactNode, useMemo } from "react";
+import { createContext, useContext, ReactNode } from "react";
 import { MovieRepositoryImp } from "../../infrastructure/repository/MovieRepository";
 import { MovieDatasourceImp } from "../../infrastructure/datasources/MovieDatasource";
 import { Movie } from "../../domain/entities/Movie";
@@ -94,7 +94,7 @@ export const MovieProvider: React.FC<MovieProviderProps> = ({ children }) => {
   const resetQuery = () => {
     modifyProviderState({ query: '' });
   };
-  const value: MovieContextType = useMemo(() => ({
+  const value: MovieContextType = {
     state,
     getMovies,
     getMoreMovies,
@@ -110,7 +110,7 @@ export const MovieProvider: React.FC<MovieProviderProps> = ({ children }) => {
     query,
     totalResults,
     status
-  }), [state])
+  }
 
   return (
     <MovieContext.Provider value={value}>{children}</MovieContext.Provider>

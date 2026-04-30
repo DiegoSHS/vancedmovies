@@ -1,4 +1,3 @@
-import { getQualityFromName } from '@/utils/clipboard'
 import { useNavigate } from 'react-router-dom'
 import { HashResult } from '../../domain/entities/Hashes'
 import { Torrent } from '../../domain/entities/Torrent'
@@ -7,6 +6,7 @@ import type { SortDescriptor } from "@heroui/react"
 import { PlayIcon } from '@/components/icons'
 import { useMemo, useState } from 'react'
 import { CopyTorrentButton, OpenTorrentButton } from './MovieActions'
+import { getQualityFromName } from '@/utils/magnetName'
 
 interface CommunityTorrentTableProps {
     items: HashResult[]

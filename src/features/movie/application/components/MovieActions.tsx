@@ -1,7 +1,6 @@
-import { generateMagnetLink } from '@/utils/magnetGenerator'
 import { useMovieContext } from '../providers/MovieProvider'
 import { useTPBMovieContext } from '../providers/TPBMovieProvider'
-import { Button, Link } from '@heroui/react'
+import { Button } from '@heroui/react'
 import { CheckIcon, CopyIcon, DownloadIcon, PlayIcon } from '@/components/icons'
 import { useMagnetCopy } from '@/hooks/useMagnetCopy'
 import { Torrent } from '../../domain/entities/Torrent'
@@ -51,12 +50,16 @@ export const CopyTorrentButton = ({ torrent, title, isIconOnly = false }: Torren
 export const OpenTorrentButton = ({ torrent, title, isIconOnly = false }: TorrentActionButtonProps) => {
     const { state: { selectedItem } } = useMovieContext()
     const { state: { selectedItem: selectedTorrent } } = useTPBMovieContext()
-    const { data } = generateMagnetLink(torrent || selectedTorrent, title || selectedItem?.title || '')
-
+    const handleClick = async () => {
+        const { generateMagnetLink } = await import("@/utils/magnetGenerator")
+        const { data } = generateMagnetLink(torrent || selectedTorrent, title || selectedItem?.title || '')
+        window.open(data, "_blank")
+    }
     return (
-        <Link
-            className={`button button--ghost button--sm gap-2 no-underline ${isIconOnly && "button--icon-only"}`}
-            href={data}
+        <Button
+            variant='ghost'
+            isIconOnly={isIconOnly}
+            onPress={handleClick}
         >
             <DownloadIcon />
             {
@@ -64,7 +67,7 @@ export const OpenTorrentButton = ({ torrent, title, isIconOnly = false }: Torren
                     "Abrir torrent"
                 )
             }
-        </Link>
+        </Button>
     )
 }
 

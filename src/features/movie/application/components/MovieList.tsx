@@ -4,7 +4,7 @@ import { useMovieContext } from "../providers/MovieProvider";
 import { MovieCard } from "./MovieCard";
 import { MovieCardSkeleton } from "./MovieCardSkeleton";
 import { ListLayout, Virtualizer } from "@heroui/react";
-import { Repeater } from "@/utils/clipboard";
+import { Repeater } from "@/components/Repeater";
 
 interface MovieListProps {
   movies: Movie[];

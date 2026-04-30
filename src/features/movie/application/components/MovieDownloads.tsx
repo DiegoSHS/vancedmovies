@@ -2,7 +2,7 @@ import { Card, Chip, EmptyState, Popover, Table, TableLayout, Virtualizer } from
 import { useTPBMovieContext } from "../providers/TPBMovieProvider";
 import { Torrent } from "../../domain/entities/Torrent";
 import { CopyTorrentButton, OpenTorrentButton, PlayTorrentButton } from "./MovieActions";
-import { Repeater } from "@/utils/clipboard";
+import { Repeater } from "@/components/Repeater";
 
 const NoDownloadsAvailable = ({ message = "Sin descargas disponibles" }: { message?: string }) => {
   return (

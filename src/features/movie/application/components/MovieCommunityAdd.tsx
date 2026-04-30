@@ -1,6 +1,5 @@
-import { checkMagnet } from "@/utils/magnetGenerator";
 import { Button, IconPlus, Modal, Surface } from "@heroui/react"
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useMovieContext } from "../providers/MovieProvider";
 import { HashResult } from "../../domain/entities/Hashes";
 import { MagnetInput } from "./MagnetInput";
@@ -13,6 +12,7 @@ interface MovieModalProps {
 
 export const MovieCommunityModal: React.FC<MovieModalProps> = ({ isOpen, onOpenChange, setHashes }) => {
     const [magnet, setMagnet] = useState<string>('')
+    const [isDisabled, setIsDisabled] = useState(false);
     const { addCommunityHash, status } = useMovieContext()
     const handleSubmit = async () => {
         const { extractMagnetInfo } = await import("@/utils/magnetGenerator")
@@ -24,7 +24,14 @@ export const MovieCommunityModal: React.FC<MovieModalProps> = ({ isOpen, onOpenC
             setHashes((prev) => [...prev, { hash, name }])
         }
     }
-    const isDisabled = !checkMagnet(magnet)
+    useEffect(() => {
+        const check = async () => {
+            const { checkMagnet } = await import("@/utils/magnetGenerator")
+            const isDisabled = !checkMagnet(magnet)
+            setIsDisabled(isDisabled)
+        }
+        check()
+    }, []);
     return (
         <Modal.Backdrop
             isOpen={isOpen}
