@@ -17,7 +17,7 @@ export class MovieDatasourceImp extends MovieDatasource {
         path: `/list_movies.json?page=${page}&limit=${limit}&sort_by=year&order_by=desc`,
       });
 
-      if ("error" in response)
+      if (response.error !== null)
         return {
           status: "error",
           status_message: response.error || "Error fetching movies",
@@ -38,7 +38,7 @@ export class MovieDatasourceImp extends MovieDatasource {
         path: `/movie_suggestions.json?movie_id=${id}`,
       });
 
-      if ("error" in result)
+      if (result.error !== null)
         return {
           status: "error",
           status_message: result.error || "Error fetching movies",
@@ -59,7 +59,7 @@ export class MovieDatasourceImp extends MovieDatasource {
         path: `/movie_details.json?movie_id=${id}`,
       });
 
-      if ("error" in result)
+      if (result.error !== null)
         return {
           status: "error",
           status_message: result.error || "Error fetching movie by ID",
@@ -88,7 +88,7 @@ export class MovieDatasourceImp extends MovieDatasource {
         path: `/list_movies.json?query_term=${encodeURIComponent(query)}&page=${page}&limit=${limit}`,
       });
 
-      if ("error" in result)
+      if (result.error !== null)
         return {
           status: "error",
           status_message: result.error || "Error searching movies",
@@ -114,7 +114,7 @@ export class MovieDatasourceImp extends MovieDatasource {
         path: `/list_movies.json?genre=${encodeURIComponent(genre)}&page=${page}&limit=${limit}`,
       });
 
-      if ("error" in result)
+      if (result.error !== null)
         return {
           status: "error",
           status_message: result.error || "Error fetching movies by genre",
@@ -140,7 +140,7 @@ export class MovieDatasourceImp extends MovieDatasource {
         path: `/list_movies.json?year=${year}&page=${page}&limit=${limit}`,
       });
 
-      if ("error" in response)
+      if (response.error !== null)
         return {
           status: "error",
           status_message: response.error || "Error fetching movies by year",
@@ -166,7 +166,7 @@ export class MovieDatasourceImp extends MovieDatasource {
         path: `/list_movies.json?minimum_rating=${minimum_rating}&page=${page}&limit=${limit}`,
       });
 
-      if ("error" in response)
+      if (response.error !== null)
         return {
           status: "error",
           status_message: response.error || "Error fetching movies by rating",
@@ -191,7 +191,7 @@ export class MovieDatasourceImp extends MovieDatasource {
         overrideBaseURL: true,
       });
 
-      if ("error" in result) return [];
+      if (result.error !== null) return [];
 
       return result.data;
     } catch (_) {
@@ -216,8 +216,7 @@ export class MovieDatasourceImp extends MovieDatasource {
         overrideBaseURL: true,
       });
 
-      if ("error" in result) return -1;
-
+      if (result.error !== null) return -1;
       return result.data;
     } catch (_) {
       return -1;
@@ -232,7 +231,7 @@ export class MovieDatasourceImp extends MovieDatasource {
         overrideBaseURL: true,
       });
 
-      if ("error" in result) return [];
+      if (result.error !== null) return [];
 
       return result.data;
     } catch (_) {

@@ -1,12 +1,14 @@
 type ClientResult<T> =
   | {
-      data: T;
-      code: number;
-    }
+    error: null,
+    data: T;
+    code: number;
+  }
   | {
-      error: string;
-      code: number;
-    };
+    error: string;
+    code: number;
+    data: null
+  };
 
 interface FetchHttpClientOptions {
   baseURL?: string;
@@ -25,13 +27,13 @@ interface RequestWithBodyParams extends RequestParams {
   body?: unknown;
 }
 
-interface GetRequestParams extends RequestParams {}
+interface GetRequestParams extends RequestParams { }
 
-interface PostRequestParams extends RequestWithBodyParams {}
+interface PostRequestParams extends RequestWithBodyParams { }
 
-interface PutRequestParams extends RequestWithBodyParams {}
+interface PutRequestParams extends RequestWithBodyParams { }
 
-interface DeleteRequestParams extends RequestParams {}
+interface DeleteRequestParams extends RequestParams { }
 
 interface InternalRequestParams extends RequestWithBodyParams {
   method: string;
@@ -50,7 +52,7 @@ class FetchHttpClient implements IHttpClient {
       timeout: 10000,
       baseURL: "https://yts.mx/api/v2",
     },
-  ) {}
+  ) { }
 
   private resolveUrl(path: string, overrideBaseURL: boolean): string {
     if (overrideBaseURL) return path;
@@ -89,6 +91,7 @@ class FetchHttpClient implements IHttpClient {
         const errorPayload = rawText ? rawText : null;
 
         return {
+          data: null,
           code: response.status,
           error: `HTTP error ${response.status}: ${errorPayload || response.statusText}`,
         };
@@ -99,11 +102,13 @@ class FetchHttpClient implements IHttpClient {
       if (contentType.includes("application/json")) {
         return {
           code: response.status,
+          error: null,
           data: (await response.json()) as T,
         };
       }
 
       return {
+        error: null,
         code: response.status,
         data: (await response.text()) as unknown as T,
       };
@@ -112,6 +117,7 @@ class FetchHttpClient implements IHttpClient {
 
       return {
         code: 500,
+        data: null,
         error:
           error instanceof Error ? error.message : "Unknown error occurred",
       };
