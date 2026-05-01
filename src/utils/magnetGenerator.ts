@@ -1,19 +1,21 @@
 import { Torrent } from "../features/movie/domain/entities/Torrent";
 
 const TRACKERS = [
-  'udp://opentor.org:2710',
+  "udp://opentor.org:2710",
   "https://tracker.zhuqiy.top:443/announce",
   "wss://tracker.openwebtorrent.com",
 ];
 
 export const getMagnetLinkFromURL = (params: URLSearchParams) => {
-  const xt = params.get('xt')
-  const dn = params.get('dn')
-  const xl = params.get('xl')
-  const tr = params.getAll('tr')
-  if (!xt || !dn) return null
-  return `magnet:?xt=${xt}&dn=${encodeURIComponent(dn)}${xl ? "&xl=" + encodeURIComponent(xl) : ""}&tr=${tr.map(t => encodeURIComponent(t)).join('&tr=')}`
-}
+  const xt = params.get("xt");
+  const dn = params.get("dn");
+  const xl = params.get("xl");
+  const tr = params.getAll("tr");
+
+  if (!xt || !dn) return null;
+
+  return `magnet:?xt=${xt}&dn=${encodeURIComponent(dn)}${xl ? "&xl=" + encodeURIComponent(xl) : ""}&tr=${tr.map((t) => encodeURIComponent(t)).join("&tr=")}`;
+};
 
 const hashRegex = /^[a-fA-F0-9]{40}$/;
 
@@ -23,7 +25,11 @@ const hashRegex = /^[a-fA-F0-9]{40}$/;
  * @returns boolean - true si el torrent es válido
  */
 const validateTorrent = (torrent: Torrent): boolean => {
-  if (!torrent.hash || typeof torrent.hash !== 'string' || torrent.hash.trim().length === 0) {
+  if (
+    !torrent.hash ||
+    typeof torrent.hash !== "string" ||
+    torrent.hash.trim().length === 0
+  ) {
     return false;
   }
   if (!hashRegex.test(torrent.hash.trim())) {
@@ -43,7 +49,7 @@ const validateTorrent = (torrent: Torrent): boolean => {
 export const generateMagnetLink = (
   torrent: Torrent,
   movieTitle: string,
-): { error: null | string, data: string } => {
+): { error: null | string; data: string } => {
   if (!torrent) {
     return {
       error: "El torrent no puede estar vacío o ser nulo",
@@ -53,7 +59,8 @@ export const generateMagnetLink = (
 
   if (!validateTorrent(torrent)) {
     return {
-      error: "El torrent debe tener un hash válido (40 caracteres hexadecimales) y una calidad válida",
+      error:
+        "El torrent debe tener un hash válido (40 caracteres hexadecimales) y una calidad válida",
       data: "",
     };
   }
@@ -79,16 +86,18 @@ export const generateMagnetLink = (
  * @returns Objeto con información extraída o null si no es válido
  */
 export const extractMagnetInfo = async (magnetLink: string) => {
-  const { checkMagnet } = await import("@/utils/magnet/regexp")
+  const { checkMagnet } = await import("@/utils/magnet/regexp");
+
   if (!checkMagnet(magnetLink)) return null;
-  const urlParams = new URLSearchParams(magnetLink.split('?')[1]);
-  const xt = urlParams.get('xt');
-  const hash = xt?.replace('urn:btih:', '') || '';
-  const name = urlParams.get('dn') || ''
-  const trackers = urlParams.getAll('tr') || [];
+  const urlParams = new URLSearchParams(magnetLink.split("?")[1]);
+  const xt = urlParams.get("xt");
+  const hash = xt?.replace("urn:btih:", "") || "";
+  const name = urlParams.get("dn") || "";
+  const trackers = urlParams.getAll("tr") || [];
+
   return {
     hash,
     name,
-    trackers
+    trackers,
   };
 };

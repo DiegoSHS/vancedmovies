@@ -24,25 +24,24 @@ export const MoviePagination: React.FC<MoviePaginationProps> = ({
             isDisabled={currentPage <= 1 || isLoading}
             onPress={() => currentPage > 1 && onPageChange(currentPage - 1)}
           >
-            <Pagination.PreviousIcon>
-            </Pagination.PreviousIcon>
+            <Pagination.PreviousIcon />
             Anterior
           </Pagination.Previous>
         </Pagination.Item>
         <Pagination.Item>
           <Pagination.Next
-            onPress={() => currentPage < totalPages && onPageChange(currentPage + 1)}
             isDisabled={currentPage >= totalPages || isLoading}
+            onPress={() =>
+              currentPage < totalPages && onPageChange(currentPage + 1)
+            }
           >
             Siguiente
-            <Pagination.NextIcon>
-            </Pagination.NextIcon>
+            <Pagination.NextIcon />
           </Pagination.Next>
         </Pagination.Item>
       </Pagination.Content>
     </Pagination>
-
   );
 };
 
-export default MoviePagination
+export default MoviePagination;

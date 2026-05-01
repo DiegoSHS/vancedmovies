@@ -1,4 +1,3 @@
-
 export interface Torrent {
   url: string;
   hash: string;

@@ -14,8 +14,8 @@ export const siteConfig = {
     },
     {
       label: "Comunidad",
-      href: "/community"
-    }
+      href: "/community",
+    },
   ],
   navMenuItems: [
     {
@@ -28,8 +28,8 @@ export const siteConfig = {
     },
     {
       label: "Comunidad",
-      href: "/community"
-    }
+      href: "/community",
+    },
   ],
   links: {
     github: "https://github.com/DiegoSHS",

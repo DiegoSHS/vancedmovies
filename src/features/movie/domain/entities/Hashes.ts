@@ -1,4 +1,4 @@
 export interface HashResult {
-    name: string,
-    hash: string
+  name: string;
+  hash: string;
 }

@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Tooltip } from "@heroui/react/tooltip";
 import { Link } from "@heroui/react/link";
 import { Button } from "@heroui/react/button";
+
 import { siteConfig } from "@/config/site";
 import { ThemeSwitch } from "@/components/theme-switch";
 import {
@@ -22,25 +23,32 @@ export const Navbar = () => {
         <div className="flex items-center gap-3">
           <Button
             isIconOnly
-            variant="ghost"
-            className="inline-flex md:hidden"
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
-            aria-label="Toggle menu"
             aria-expanded={isMenuOpen}
+            aria-label="Toggle menu"
+            className="inline-flex md:hidden"
+            variant="ghost"
+            onClick={() => setIsMenuOpen(!isMenuOpen)}
           >
             {isMenuOpen ? (
               <CrossIcon />
             ) : (
-              <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+              <svg
+                className="h-6 w-6"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  d="M4 6h16M4 12h16M4 18h16"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                />
               </svg>
             )}
           </Button>
 
-          <Link
-            className="flex items-center gap-1 no-underline"
-            href="/"
-          >
+          <Link className="flex items-center gap-1 no-underline" href="/">
             <FilmIcon />
             <p className="font-bold">BOLI</p>
           </Link>
@@ -51,9 +59,9 @@ export const Navbar = () => {
           {siteConfig.navItems.map((item) => (
             <li key={item.href}>
               <Link
+                aria-label={item.label}
                 className="no-underline"
                 href={item.href}
-                aria-label={item.label}
               >
                 {item.label}
               </Link>
@@ -64,29 +72,24 @@ export const Navbar = () => {
         {/* Desktop Right Content */}
         <div className="hidden sm:flex items-center gap-4">
           <Tooltip delay={300}>
-            <Link
-              href="/about"
-              aria-label="Acerca de"
-            >
+            <Link aria-label="Acerca de" href="/about">
               <InfoIcon />
             </Link>
-            <Tooltip.Content showArrow>
-              Acerca de BOLIPeliculas
-            </Tooltip.Content>
+            <Tooltip.Content showArrow>Acerca de BOLIPeliculas</Tooltip.Content>
           </Tooltip>
           <Link
-            target="_blank"
-            rel="noopener noreferrer"
-            href={siteConfig.links.twitter}
             aria-label="Perfil de twitter (X)"
+            href={siteConfig.links.twitter}
+            rel="noopener noreferrer"
+            target="_blank"
           >
             <TwitterIcon className="w-5 h-5" />
           </Link>
           <Link
-            target="_blank"
-            rel="noopener noreferrer"
-            href={siteConfig.links.github}
             aria-label="Perfil de Github"
+            href={siteConfig.links.github}
+            rel="noopener noreferrer"
+            target="_blank"
           >
             <GithubIcon className="w-5 h-5" />
           </Link>
@@ -95,10 +98,7 @@ export const Navbar = () => {
 
         {/* Mobile Right Content */}
         <div className="flex sm:hidden items-center gap-2">
-          <Link
-            href="/about"
-            aria-label="Acerca de"
-          >
+          <Link aria-label="Acerca de" href="/about">
             <InfoIcon />
           </Link>
           <ThemeSwitch />

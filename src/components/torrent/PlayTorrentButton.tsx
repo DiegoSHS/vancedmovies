@@ -1,28 +1,30 @@
-import { Button } from "@heroui/react/button"
-import { PlayIcon } from "../icons"
-import { useMovieContext } from "@/features/movie/application/providers/MovieProvider"
+import { Button } from "@heroui/react/button";
 
-const PlayTorrentButton = ({ torrent, isIconOnly }: import(".").TorrentActionButtonProps) => {
-    const { selectTorrent } = useMovieContext()
-    const handleClick = () => {
-        if (!torrent) return
-        selectTorrent(torrent)
-    }
-    return (
-        <Button
-            size="sm"
-            variant="ghost"
-            isIconOnly={isIconOnly}
-            onPress={handleClick}
-        >
-            <PlayIcon />
-            {
-                isIconOnly || (
-                    "Ver"
-                )
-            }
-        </Button>
-    )
-}
+import { PlayIcon } from "../icons";
 
-export default PlayTorrentButton
+import { useTorrentActions } from "@/features/movie/application/providers/MovieProvider";
+
+const PlayTorrentButton = ({
+  torrent,
+  isIconOnly,
+}: import(".").TorrentActionButtonProps) => {
+  const { selectTorrent } = useTorrentActions();
+  const handleClick = () => {
+    if (!torrent) return;
+    selectTorrent(torrent);
+  };
+
+  return (
+    <Button
+      isIconOnly={isIconOnly}
+      size="sm"
+      variant="ghost"
+      onPress={handleClick}
+    >
+      <PlayIcon />
+      {isIconOnly || "Ver"}
+    </Button>
+  );
+};
+
+export default PlayTorrentButton;

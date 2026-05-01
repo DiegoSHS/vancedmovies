@@ -1,10 +1,12 @@
-type ClientResult<T> = {
-  data: T;
-  code: number;
-} | {
-  error: string;
-  code: number;
-}
+type ClientResult<T> =
+  | {
+      data: T;
+      code: number;
+    }
+  | {
+      error: string;
+      code: number;
+    };
 
 interface FetchHttpClientOptions {
   baseURL?: string;
@@ -23,13 +25,13 @@ interface RequestWithBodyParams extends RequestParams {
   body?: unknown;
 }
 
-interface GetRequestParams extends RequestParams { }
+interface GetRequestParams extends RequestParams {}
 
-interface PostRequestParams extends RequestWithBodyParams { }
+interface PostRequestParams extends RequestWithBodyParams {}
 
-interface PutRequestParams extends RequestWithBodyParams { }
+interface PutRequestParams extends RequestWithBodyParams {}
 
-interface DeleteRequestParams extends RequestParams { }
+interface DeleteRequestParams extends RequestParams {}
 
 interface InternalRequestParams extends RequestWithBodyParams {
   method: string;
@@ -43,63 +45,76 @@ interface IHttpClient {
 }
 
 class FetchHttpClient implements IHttpClient {
-
   constructor(
     private readonly options: FetchHttpClientOptions = {
       timeout: 10000,
       baseURL: "https://yts.mx/api/v2",
-    }
-  ) { }
+    },
+  ) {}
 
   private resolveUrl(path: string, overrideBaseURL: boolean): string {
     if (overrideBaseURL) return path;
+
     return `${this.options.baseURL}${path}`;
   }
 
-  private async request<T>(params: InternalRequestParams): Promise<ClientResult<T>> {
+  private async request<T>(
+    params: InternalRequestParams,
+  ): Promise<ClientResult<T>> {
     const controller = new AbortController();
-    const timeoutId = window.setTimeout(() => controller.abort(), this.options.timeout);
+    const timeoutId = window.setTimeout(
+      () => controller.abort(),
+      this.options.timeout,
+    );
+
     try {
-      const response = await fetch(this.resolveUrl(params.path, params.overrideBaseURL ?? false), {
-        method: params.method,
-        headers: {
-          ...this.options.defaultHeaders,
-          ...(params.options?.headers || {}),
+      const response = await fetch(
+        this.resolveUrl(params.path, params.overrideBaseURL ?? false),
+        {
+          method: params.method,
+          headers: {
+            ...this.options.defaultHeaders,
+            ...(params.options?.headers || {}),
+          },
+          signal: controller.signal,
+          body: params.body != null ? JSON.stringify(params.body) : undefined,
+          ...params.options,
         },
-        signal: controller.signal,
-        body: params.body != null ? JSON.stringify(params.body) : undefined,
-        ...params.options,
-      });
+      );
 
       clearTimeout(timeoutId);
 
       if (!response.ok) {
         const rawText = await response.text().catch(() => "");
         const errorPayload = rawText ? rawText : null;
+
         return {
           code: response.status,
           error: `HTTP error ${response.status}: ${errorPayload || response.statusText}`,
-        }
+        };
       }
 
       const contentType = response.headers.get("content-type") || "";
+
       if (contentType.includes("application/json")) {
         return {
           code: response.status,
-          data: (await response.json()) as T
-        }
+          data: (await response.json()) as T,
+        };
       }
 
       return {
         code: response.status,
-        data: (await response.text()) as unknown as T
-      }
+        data: (await response.text()) as unknown as T,
+      };
     } catch (error) {
       clearTimeout(timeoutId);
+
       return {
         code: 500,
-        error: error instanceof Error ? error.message : "Unknown error occurred"
-      }
+        error:
+          error instanceof Error ? error.message : "Unknown error occurred",
+      };
     }
   }
 

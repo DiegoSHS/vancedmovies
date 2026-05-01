@@ -38,7 +38,7 @@ export default defineConfig({
       "os-browserify",
       "process",
       "assert",
-      "hls.js"
+      "hls.js",
     ],
   },
   build: {

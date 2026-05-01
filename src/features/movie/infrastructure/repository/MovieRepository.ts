@@ -2,10 +2,10 @@ import { Movie } from "../../domain/entities/Movie";
 import { MovieListResponse } from "../../domain/entities/YTSMovieListResponse";
 import { MovieRepository } from "../../domain/repository/MovieRepository";
 import { MovieDatasource } from "../../domain/datasources/MovieDatasource";
-
-import { ApiResult } from "@/utils/ApiResult";
 import { Torrent } from "../../domain/entities/Torrent";
 import { HashResult } from "../../domain/entities/Hashes";
+
+import { ApiResult } from "@/utils/ApiResult";
 
 export class MovieRepositoryImp extends MovieRepository {
   constructor(private readonly datasource: MovieDatasource) {
@@ -31,7 +31,7 @@ export class MovieRepositoryImp extends MovieRepository {
     return this.datasource.searchMovies(query, page, limit);
   }
   getMovieSuggestions(id: number): Promise<ApiResult<MovieListResponse>> {
-    return this.datasource.getMovieSuggestions(id)
+    return this.datasource.getMovieSuggestions(id);
   }
   async getMoviesByGenre(
     genre: string,

@@ -1,12 +1,12 @@
 import { Route, Routes } from "react-router-dom";
 import { lazy } from "react";
 
-const Index = lazy(() => import("@/pages/index"))
-const Movies = lazy(() => import("@/pages/movies"))
-const Details = lazy(() => import("@/pages/movie"))
-const About = lazy(() => import("@/pages/about"))
-const Torrent = lazy(() => import("@/pages/torrent"))
-const Community = lazy(() => import("@/pages/community"))
+const Index = lazy(() => import("@/pages/index"));
+const Movies = lazy(() => import("@/pages/movies"));
+const Details = lazy(() => import("@/pages/movie"));
+const About = lazy(() => import("@/pages/about"));
+const Torrent = lazy(() => import("@/pages/torrent"));
+const Community = lazy(() => import("@/pages/community"));
 
 function App() {
   return (

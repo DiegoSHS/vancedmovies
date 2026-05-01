@@ -1,42 +1,45 @@
-import { SunFilledIcon, MoonFilledIcon } from "@/components/icons";
-import { useLocalStorage } from "@/hooks/useLocalStorage";
 import { Button } from "@heroui/react/button";
 
+import { SunFilledIcon, MoonFilledIcon } from "@/components/icons";
+import { useLocalStorage } from "@/hooks/useLocalStorage";
+
 export const ThemeSwitch = () => {
-  const html = document.documentElement
+  const html = document.documentElement;
   const isDarkMode = html.classList.contains("dark");
-  const defaultMode = isDarkMode ? 'dark' : 'light'
-  const { item, setItem } = useLocalStorage('heroui-theme', defaultMode)
-  if (item === 'dark') {
-    html.classList.add('dark')
+  const defaultMode = isDarkMode ? "dark" : "light";
+  const { item, setItem } = useLocalStorage("heroui-theme", defaultMode);
+
+  if (item === "dark") {
+    html.classList.add("dark");
   } else {
-    html.classList.remove('dark')
+    html.classList.remove("dark");
   }
   const swapTheme = () => {
     const html = document.documentElement;
+
     if (item === "dark") {
       html.classList.remove("dark");
-      setItem('light')
+      setItem("light");
     } else {
       html.classList.add("dark");
-      setItem('dark')
+      setItem("dark");
     }
   };
 
   return (
     <Button
-      variant="ghost"
       isIconOnly
-      onPress={swapTheme}
       aria-label="Cambiar tema"
+      variant="ghost"
+      onPress={swapTheme}
     >
-      {item !== 'dark' ? (
-        <MoonFilledIcon size={20} className="text-default-500" />
+      {item !== "dark" ? (
+        <MoonFilledIcon className="text-default-500" size={20} />
       ) : (
-        <SunFilledIcon size={20} className="text-default-500" />
+        <SunFilledIcon className="text-default-500" size={20} />
       )}
     </Button>
   );
 };
 
-export default ThemeSwitch
+export default ThemeSwitch;

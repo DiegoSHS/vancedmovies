@@ -1,16 +1,19 @@
 import { useEffect, useState } from "react";
+
 import { Movie } from "../../domain/entities/Movie";
-import { useMovieContext } from "../providers/MovieProvider";
+import { useMovieState, useMovieActions } from "../providers/MovieProvider";
+
 import { MovieCard } from "./MovieCard";
 import { MovieCardSkeleton } from "./MovieCardSkeleton";
-import { Repeater } from "@/components/Repeater";
 import { NoDownloadsAvailable } from "./MovieDownloads";
+
+import { Repeater } from "@/components/Repeater";
 
 interface MovieListProps {
   movies: Movie[];
   loading?: boolean;
   error: boolean;
-  className?: string
+  className?: string;
   onMovieClick: (movie: Movie) => void;
 }
 
@@ -19,15 +22,14 @@ export const MovieList: React.FC<MovieListProps> = ({
   loading = false,
   error,
   onMovieClick,
-  className = "flex flex-wrap gap-2 justify-center"
+  className = "flex flex-wrap gap-2 justify-center",
 }) => {
   if (loading) {
-    const Item = (item: { id: number }) => <MovieCardSkeleton key={item.id} />
+    const Item = (item: { id: number }) => <MovieCardSkeleton key={item.id} />;
+
     return (
       <div className={className}>
-        <Repeater
-          items={Array.from({ length: 24 }, (_, k) => ({ id: k }))}
-        >
+        <Repeater items={Array.from({ length: 24 }, (_, k) => ({ id: k }))}>
           {Item}
         </Repeater>
       </div>
@@ -47,22 +49,26 @@ export const MovieList: React.FC<MovieListProps> = ({
       </div>
     );
   }
-  if (!movies.length) return <NoDownloadsAvailable message="Sin contenido para mostrar" />
-  const Item = (movie: Movie) => <MovieCard key={movie.id} movie={movie} onClick={onMovieClick} />
+  if (!movies.length)
+    return <NoDownloadsAvailable message="Sin contenido para mostrar" />;
+  const Item = (movie: Movie) => (
+    <MovieCard key={movie.id} movie={movie} onClick={onMovieClick} />
+  );
+
   return (
     <div className={className}>
-      <Repeater items={movies}>
-        {Item}
-      </Repeater>
+      <Repeater items={movies}>{Item}</Repeater>
     </div>
   );
 };
 
 export const MovieListInfiniteScroll = () => {
-  const { state: { items: movies }, getMoreMovies, getMovies } = useMovieContext()
+  const { state } = useMovieState();
+  const { getMoreMovies, getMovies } = useMovieActions();
   const [page, setPage] = useState(0);
   const debounce = (func: (args: any) => void, delay: number) => {
     let timeoutId: ReturnType<typeof setTimeout>;
+
     return function (...args: any) {
       if (timeoutId) {
         clearTimeout(timeoutId);
@@ -75,27 +81,28 @@ export const MovieListInfiniteScroll = () => {
   const handleScroll = debounce(() => {
     const bottom =
       Math.ceil(window.innerHeight + window.scrollY) >=
-      document.documentElement.scrollHeight - 1000
-    console.log(bottom)
+      document.documentElement.scrollHeight - 1000;
+
     if (bottom) {
-      getMoreMovies(page + 1)
-      setPage(page => page + 1)
+      getMoreMovies(page + 1);
+      setPage((page) => page + 1);
     }
-  }, 300)
+  }, 300);
+
   useEffect(() => {
-    getMovies(0)
-    return () => {
+    getMovies(0);
 
-    };
+    return () => {};
   }, []);
-  const Item = (movie: Movie) => <MovieCard key={movie.id} movie={movie} onClick={() => { }} />
-  return (
-    <div onWheel={handleScroll} className="flex flex-wrap gap-2 justify-center">
-      <Repeater items={movies}>
-        {Item}
-      </Repeater>
-    </div>
-  )
-}
+  const Item = (movie: Movie) => (
+    <MovieCard key={movie.id} movie={movie} onClick={() => {}} />
+  );
 
-export default MovieList
+  return (
+    <div className="flex flex-wrap gap-2 justify-center" onWheel={handleScroll}>
+      <Repeater items={state.items}>{Item}</Repeater>
+    </div>
+  );
+};
+
+export default MovieList;

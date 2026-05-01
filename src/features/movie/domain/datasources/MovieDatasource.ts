@@ -2,6 +2,7 @@ import { HashResult } from "../entities/Hashes";
 import { Movie } from "../entities/Movie";
 import { Torrent } from "../entities/Torrent";
 import { MovieListResponse } from "../entities/YTSMovieListResponse";
+
 import { ApiResult } from "@/utils/ApiResult";
 
 export abstract class MovieDatasource {
@@ -15,7 +16,9 @@ export abstract class MovieDatasource {
     page?: number,
     limit?: number,
   ): Promise<ApiResult<MovieListResponse>>;
-  abstract getMovieSuggestions(id: number): Promise<ApiResult<MovieListResponse>>
+  abstract getMovieSuggestions(
+    id: number,
+  ): Promise<ApiResult<MovieListResponse>>;
   abstract getMoviesByGenre(
     genre: string,
     page?: number,
@@ -31,9 +34,7 @@ export abstract class MovieDatasource {
     page?: number,
     limit?: number,
   ): Promise<ApiResult<MovieListResponse>>;
-  abstract getMoreTorrents(
-    title: string,
-  ): Promise<Torrent[]>;
+  abstract getMoreTorrents(title: string): Promise<Torrent[]>;
   abstract addCommunityHash(id: string, hash: string): Promise<number>;
   abstract getCommunityHashes(): Promise<HashResult[]>;
 }

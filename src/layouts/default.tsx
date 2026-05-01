@@ -1,4 +1,5 @@
 import { Link } from "@heroui/react/link";
+
 import { Navbar } from "@/components/navbar";
 
 export default function DefaultLayout({
@@ -14,10 +15,10 @@ export default function DefaultLayout({
       </main>
       <footer className="w-full flex items-center justify-center py-3">
         <Link
-          target="_blank"
-          rel="noopener noreferrer"
           className="flex items-center gap-1 text-current"
           href="https://x.com/SuperHackSystem"
+          rel="noopener noreferrer"
+          target="_blank"
         >
           <span className="text-default-600">Powered by</span>
           <p className="text-primary">VancedSHS</p>

@@ -32,11 +32,9 @@ export abstract class MovieRepository {
     limit?: number,
   ): Promise<ApiResult<MovieListResponse>>;
   abstract getMovieSuggestions(
-    id: number
-  ): Promise<ApiResult<MovieListResponse>>
-  abstract getMoreTorrents(
-    title: string,
-  ): Promise<Torrent[]>;
+    id: number,
+  ): Promise<ApiResult<MovieListResponse>>;
+  abstract getMoreTorrents(title: string): Promise<Torrent[]>;
   abstract addCommunityHash(id: string, hash: string): Promise<number>;
-  abstract getCommunityHashes(): Promise<HashResult[]>
+  abstract getCommunityHashes(): Promise<HashResult[]>;
 }
