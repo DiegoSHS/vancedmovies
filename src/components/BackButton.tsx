@@ -1,7 +1,5 @@
-import { Button } from "@heroui/react/button";
-import { useNavigate } from "react-router-dom";
-
 import { ArrowLeftIcon } from "./icons";
+import { Link } from "@heroui/react/link";
 
 interface BackButtonProps {
   message?: string;
@@ -10,13 +8,11 @@ interface BackButtonProps {
 export const BackButton: React.FC<BackButtonProps> = ({
   message = "Volver",
 }) => {
-  const navigate = useNavigate();
-
   return (
-    <Button variant="tertiary" onClick={() => navigate(-1)}>
+    <Link href="/page/1" className="button button--tertiary gap-2">
       <ArrowLeftIcon />
       {message}
-    </Button>
+    </Link>
   );
 };
 
