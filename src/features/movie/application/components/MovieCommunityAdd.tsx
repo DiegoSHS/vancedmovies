@@ -48,7 +48,7 @@ export const MovieCommunityModal: React.FC<MovieModalProps> = ({
     };
 
     check();
-  }, []);
+  }, [magnet]);
 
   return (
     <Modal.Backdrop isOpen={isOpen} onOpenChange={onOpenChange}>
