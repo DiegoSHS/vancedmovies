@@ -82,6 +82,7 @@ export const MovieDetailScreen: React.FC = () => {
       <BackButton />
       <MovieDetailsCard movie={movie} />
       <VideoPlayer
+        poster={movie?.background_image_original}
         magnetLink={torrentState.selectedItem?.hash}
         movieTitle={movie?.title || "Disfruta tu película"}
       />

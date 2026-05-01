@@ -26,13 +26,14 @@ export const MovieSearch: React.FC = ({ }) => {
         navigate("/page/1");
     };
     return (
-        <div className="flex gap-2">
+        <div className="flex gap-2 w-full sm:w-2/3 md:w-1/2">
             <Input
                 aria-label="Buscar películas"
                 disabled={loading}
                 placeholder="Buscar películas"
                 type="search"
                 variant="secondary"
+                fullWidth
                 value={query}
                 onChange={(e) => updateQuery(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && handleSearch()}

@@ -7,12 +7,14 @@ const BackendStreamPlayer = lazy(
 interface HybridVideoPlayerProps {
   magnetLink?: string;
   movieTitle: string;
+  poster?: string
   onClose?: () => void;
 }
 
 const VideoPlayer: React.FC<HybridVideoPlayerProps> = ({
   magnetLink,
   movieTitle,
+  poster
 }) => {
   return (
     <Card className="w-full rounded-xl">
@@ -21,7 +23,7 @@ const VideoPlayer: React.FC<HybridVideoPlayerProps> = ({
           <h3 className="text-lg font-semibold capitalize">{movieTitle}</h3>
         </div>
       </Card.Header>
-      <BackendStreamPlayer magnetLink={magnetLink} />
+      <BackendStreamPlayer poster={poster} magnetLink={magnetLink} />
     </Card>
   );
 };

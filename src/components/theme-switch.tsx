@@ -32,6 +32,7 @@ export const ThemeSwitch = ({ isIconOnly = true }: { isIconOnly?: boolean }) => 
       aria-label="Cambiar tema"
       variant="ghost"
       onPress={swapTheme}
+      className={isIconOnly ? "" : "w-full justify-evenly"}
     >
       {item !== "dark" ? (
         <MoonFilledIcon className="text-default-500" size={20} />

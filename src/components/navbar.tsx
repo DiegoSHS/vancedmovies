@@ -22,12 +22,12 @@ export const Navbar = () => {
     <nav className="sticky top-0 z-40 w-full border-b border-separator bg-surface">
       <header className="flex justify-between h-16 px-6 max-w-7xl mx-auto gap-2">
         {/* Logo & Brand */}
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 w-1/4 justify-start">
           <Button
             isIconOnly
             aria-expanded={isMenuOpen}
             aria-label="Toggle menu"
-            className="inline-flex md:hidden"
+            className="hidden"
             variant="ghost"
             onClick={() => setIsMenuOpen(!isMenuOpen)}
           >
@@ -50,15 +50,14 @@ export const Navbar = () => {
             )}
           </Button>
 
-          <Link className="hidden md:flex items-center gap-1 no-underline" href="/">
+          <Link className="flex items-center gap-1 no-underline" href="/">
             <FilmIcon />
-            <p className="font-bold">BOLI</p>
+            <p className="hidden sm:flex">BOLI</p>
           </Link>
-          <MovieSearch />
         </div>
 
         {/* Desktop Navigation */}
-        <ul className="hidden md:flex items-center gap-4">
+        <ul className="flex items-center gap-4 w-full justify-center">
           {siteConfig.navItems.map((item) => (
             <li key={item.href}>
               <Link
@@ -73,7 +72,7 @@ export const Navbar = () => {
         </ul>
 
         {/* Desktop Right Content */}
-        <div className="hidden md:flex items-center gap-4">
+        <div className="hidden md:flex items-center gap-4 w-1/4 justify-end">
           <AboutTooltip isIconOnly />
           <Link
             aria-label="Perfil de twitter (X)"
@@ -95,13 +94,13 @@ export const Navbar = () => {
         </div>
 
         {/* Mobile Right Content */}
-        <div className="flex md:hidden items-center gap-2">
+        <div className="flex md:hidden items-center gap-2 w-1/4 justify-end">
           <Dropdown>
-            <Button isIconOnly aria-label="Menu" variant="tertiary">
+            <Button isIconOnly aria-label="Menu" variant="ghost">
               <EllipsisIcon />
             </Button>
             <Dropdown.Popover>
-              <Dropdown.Menu onAction={(key) => console.log(`Selected: ${key}`)}>
+              <Dropdown.Menu>
                 <Dropdown.Item className="p-0 m-0">
                   <AboutTooltip />
                 </Dropdown.Item>
@@ -111,7 +110,7 @@ export const Navbar = () => {
                     href={siteConfig.links.twitter}
                     rel="noopener noreferrer"
                     target="_blank"
-                    className="button button--ghost gap-2"
+                    className="button button--ghost gap-2 w-full justify-evenly"
                   >
                     <TwitterIcon className="w-5 h-5" />
                     Twitter
@@ -123,7 +122,7 @@ export const Navbar = () => {
                     href={siteConfig.links.github}
                     rel="noopener noreferrer"
                     target="_blank"
-                    className="button button--ghost gap-2"
+                    className="button button--ghost gap-2 w-full justify-evenly"
                   >
                     <GithubIcon className="w-5 h-5" />
                     Github
@@ -136,8 +135,11 @@ export const Navbar = () => {
             </Dropdown.Popover>
           </Dropdown>
         </div>
-      </header>
 
+      </header>
+      <header className="flex justify-between px-6 pb-2 max-w-7xl mx-auto gap-2">
+        <MovieSearch />
+      </header>
       {/* Mobile Menu */}
       {isMenuOpen && (
         <div className="border-t border-separator md:hidden">
