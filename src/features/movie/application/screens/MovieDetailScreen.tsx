@@ -26,18 +26,18 @@ export const MovieDetailScreen: React.FC = () => {
       setItem("table");
     }
   };
-  const { state, status } = useMovieState();
+  const { state: { selectedItem: movie, items: movies }, status } = useMovieState();
   const { torrentState } = useTorrentState();
   const { getMovieById, getMovieSuggestions } = useMovieActions();
-  const { getMoreTorrents, addTorrents } = useTorrentActions();
+  const { getMoreTorrents, addTorrents, cleanTorrent } = useTorrentActions();
 
   const fetchMovieData = async () => {
-    if (state.selectedItem) {
-      const initialMagnets = await addTorrents(state.selectedItem.torrents);
+    if (movie) {
+      const initialMagnets = await addTorrents(movie.torrents);
 
       await Promise.all([
-        getMoreTorrents(state.selectedItem.title, initialMagnets),
-        getMovieSuggestions(state.selectedItem.id),
+        getMoreTorrents(movie.title, initialMagnets),
+        getMovieSuggestions(movie.id),
       ]);
 
       return;
@@ -56,6 +56,9 @@ export const MovieDetailScreen: React.FC = () => {
 
   const effect = () => {
     fetchMovieData();
+    return () => {
+      cleanTorrent()
+    }
   };
 
   useEffect(effect, [id]);
@@ -77,10 +80,10 @@ export const MovieDetailScreen: React.FC = () => {
   return (
     <div className="container mx-auto px-4 py-8 flex flex-col gap-2 items-center">
       <BackButton />
-      <MovieDetailsCard movie={state.selectedItem} />
+      <MovieDetailsCard movie={movie} />
       <VideoPlayer
         magnetLink={torrentState.selectedItem?.hash}
-        movieTitle={state.selectedItem?.title || "Disfruta tu película"}
+        movieTitle={movie?.title || "Disfruta tu película"}
       />
       <ViewModeSwitch
         isDisabled={shouldBeViewModeTable}
@@ -88,7 +91,7 @@ export const MovieDetailScreen: React.FC = () => {
         swapViewMode={swapViewMode}
       />
       <MovieDownloads mode={shouldBeViewModeTable ? "table" : viewMode} />
-      <MovieSuggestions items={state.items} />
+      <MovieSuggestions items={movies} />
     </div>
   );
 };

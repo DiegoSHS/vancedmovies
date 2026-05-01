@@ -21,11 +21,12 @@ export const MovieSuggestions: React.FC<MovieSuggestionsProps> = ({
 }) => {
   const { status } = useMovieState();
   const { selectMovie } = useMovieActions();
-  const { addTorrents } = useTorrentActions();
+  const { addTorrents, cleanTorrent } = useTorrentActions();
   const navigate = useNavigate();
   const handleMovieClick = (
     movie: import("../../domain/entities/Movie").Movie,
   ) => {
+    cleanTorrent()
     selectMovie(movie);
     addTorrents(movie.torrents);
     navigate(`/movie/${movie.id}`);

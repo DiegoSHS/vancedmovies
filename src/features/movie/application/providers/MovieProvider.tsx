@@ -41,6 +41,7 @@ interface TorrentActionsContextType {
   addTorrents: (torrents: Torrent[], initial?: Torrent[]) => Promise<Torrent[]>;
   selectTorrent: (magnet: Torrent) => Promise<void>;
   autoSelectTorrent: (magnets?: Torrent[]) => Promise<void>;
+  cleanTorrent: () => void
 }
 
 // Contextos separados
@@ -195,6 +196,9 @@ export const MovieProvider: React.FC<{ children: React.ReactNode }> = ({
 
     toast.info("Torrent seleccionado");
   };
+  const cleanTorrent = () => {
+    torrentDispatch({ type: "SELECT", payload: undefined })
+  }
   const autoSelectTorrent = async (magnets: Torrent[] = torrentState.items) => {
     const { getBestQualityMagnets } = await import("@/utils/magnet/filter");
     const bestMagnets = getBestQualityMagnets(magnets);
@@ -202,9 +206,8 @@ export const MovieProvider: React.FC<{ children: React.ReactNode }> = ({
     if (!bestMagnets.length) return;
     selectTorrent(bestMagnets[0]);
   };
-  const addTorrents = async (torrents: Torrent[], initial?: Torrent[]) => {
-    const sourceItems = initial ?? torrentState.items;
-    const merged = [...torrents, ...sourceItems];
+  const addTorrents = async (torrents: Torrent[], initial: Torrent[] = []) => {
+    const merged = [...torrents, ...initial];
 
     if (!merged.length) return [];
     const { filterUniqueTorrents } = await import("@/utils/torrent");
@@ -219,7 +222,7 @@ export const MovieProvider: React.FC<{ children: React.ReactNode }> = ({
     const data = await handler.base(movieRepository.getMoreTorrents(title));
     const magnets = await addTorrents(data, initial);
     const dualMagnet = magnets.find((item) =>
-      item.type.toUpperCase().includes("DUAL"),
+      item.type ? item.type.toUpperCase().includes("DUAL") : false
     );
 
     if (dualMagnet) {
@@ -291,8 +294,15 @@ export const MovieProvider: React.FC<{ children: React.ReactNode }> = ({
       addTorrents,
       selectTorrent,
       autoSelectTorrent,
+      cleanTorrent
     }),
-    [getMoreTorrents, addTorrents, selectTorrent, autoSelectTorrent],
+    [
+      getMoreTorrents,
+      addTorrents,
+      selectTorrent,
+      autoSelectTorrent,
+      cleanTorrent
+    ],
   );
 
   return (

@@ -15,7 +15,7 @@ export const PaginatedMoviesScreen: React.FC = () => {
   const { state, totalResults, status, query } = useMovieState();
   const { getMovies, searchMovies, selectMovie } =
     useMovieActions();
-  const { addTorrents } = useTorrentActions();
+  const { addTorrents, cleanTorrent } = useTorrentActions();
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
 
@@ -39,6 +39,7 @@ export const PaginatedMoviesScreen: React.FC = () => {
   const handleMovieClick = (
     movie: import("../../domain/entities/Movie").Movie,
   ) => {
+    cleanTorrent()
     selectMovie(movie);
     addTorrents(movie.torrents);
     navigate(`/movie/${movie.id}`);
