@@ -1,8 +1,6 @@
-import { useState, useEffect, lazy } from "react";
+import { useEffect, lazy } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { Button } from "@heroui/react/button";
 import { Chip } from "@heroui/react/chip";
-import { Input } from "@heroui/react/input";
 
 import {
   useMovieState,
@@ -10,13 +8,12 @@ import {
   useTorrentActions,
 } from "../providers/MovieProvider";
 
-import { CrossIcon, SearchIcon } from "@/components/icons";
 const MoviePagination = lazy(() => import("../components/MoviePagination"));
 const MovieList = lazy(() => import("../components/MovieList"));
 
 export const PaginatedMoviesScreen: React.FC = () => {
   const { state, totalResults, status, query } = useMovieState();
-  const { getMovies, searchMovies, updateQuery, resetQuery, selectMovie } =
+  const { getMovies, searchMovies, selectMovie } =
     useMovieActions();
   const { addTorrents } = useTorrentActions();
   const navigate = useNavigate();
@@ -24,18 +21,13 @@ export const PaginatedMoviesScreen: React.FC = () => {
 
   const pageFromUrl = id ? parseInt(id, 10) : 1;
   const validPage = !isNaN(pageFromUrl) && pageFromUrl > 0;
-  const [currentPage, setCurrentPage] = useState<number>(
-    validPage ? pageFromUrl : 1,
-  );
-
+  const currentPage = validPage ? pageFromUrl : 1
   const totalPages = Math.ceil(totalResults / 24);
 
   useEffect(() => {
-    setCurrentPage(validPage ? pageFromUrl : 1);
     const loadInitialMovies = async () => {
       if (query) {
         searchMovies(currentPage);
-
         return;
       }
       getMovies(currentPage);
@@ -43,27 +35,6 @@ export const PaginatedMoviesScreen: React.FC = () => {
 
     loadInitialMovies();
   }, [id]);
-
-  const handleSearch = async () => {
-    if (!query.trim()) {
-      getMovies(1);
-      setCurrentPage(1);
-      navigate("/page/1");
-
-      return;
-    }
-
-    searchMovies(1);
-    setCurrentPage(1);
-    navigate("/page/1");
-  };
-
-  const handleClearSearch = () => {
-    getMovies(1);
-    resetQuery();
-    setCurrentPage(1);
-    navigate("/page/1");
-  };
 
   const handleMovieClick = (
     movie: import("../../domain/entities/Movie").Movie,
@@ -74,7 +45,6 @@ export const PaginatedMoviesScreen: React.FC = () => {
   };
 
   const handlePageChange = (page: number) => {
-    setCurrentPage(page);
     navigate(`/page/${page}`);
   };
   const error = status === "error";
@@ -85,41 +55,11 @@ export const PaginatedMoviesScreen: React.FC = () => {
       <h1 className="text-4xl text-center font-bold text-gray-900 dark:text-white mb-6">
         BOLIPeliculas
       </h1>
-      <div className="flex gap-2">
-        <Input
-          aria-label="Buscar películas"
-          disabled={loading}
-          placeholder="Buscar películas"
-          type="search"
-          value={query}
-          onChange={(e) => updateQuery(e.target.value)}
-          onKeyDown={(e) => e.key === "Enter" && handleSearch()}
-        />
-        <Button
-          isIconOnly
-          aria-label="Buscar"
-          className="px-3 py-1"
-          isDisabled={!query.trim()}
-          variant="ghost"
-          onPress={handleSearch}
-        >
-          <SearchIcon />
-        </Button>
-        <Button
-          isIconOnly
-          aria-label="Limpiar búsqueda"
-          isDisabled={!query.trim()}
-          variant="ghost"
-          onPress={handleClearSearch}
-        >
-          <CrossIcon />
-        </Button>
-      </div>
 
       <div className="flex gap-2 items-center justify-center">
         <Chip.Root>
           <Chip.Label>
-            Mostrando {state.items.length} de {totalResults} películas
+            Mostrando {state.items.length || 0} de {totalResults} películas
           </Chip.Label>
         </Chip.Root>
       </div>

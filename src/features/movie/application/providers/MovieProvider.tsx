@@ -158,14 +158,11 @@ export const MovieProvider: React.FC<{ children: React.ReactNode }> = ({
   const searchMovies = async (page: number) => {
     if (query.trim() === "") return [];
     const data = await handler.many(movieRepository.searchMovies(query, page));
-
     if (!data.length) {
       const { toast } = await import("@heroui/react");
-
-      toast.info(
+      toast.warning(
         "A veces las peliculas tienen títulos muy raros, intenta con otro nombre",
       );
-
       return [];
     }
 
