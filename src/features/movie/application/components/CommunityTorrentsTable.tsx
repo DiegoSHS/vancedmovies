@@ -7,13 +7,13 @@ import { lazy, useMemo, useState } from "react";
 import { NoDownloadsAvailable } from "./MovieDownloads";
 
 import { PlayIcon } from "@/components/icons";
+import getQualityFromName from "@/utils/magnetName";
 const CopyTorrentButton = lazy(
   () => import("@/components/torrent/CopyTorrentButton"),
 );
 const OpenTorrentButton = lazy(
   () => import("@/components/torrent/OpenTorrentButton"),
 );
-const getQualityFromName = lazy(() => import("@/utils/magnetName"));
 
 interface CommunityTorrentTableProps {
   items: import("../../domain/entities/Hashes").HashResult[];
