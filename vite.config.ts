@@ -8,6 +8,7 @@ export default defineConfig({
     global: "globalThis",
   },
   resolve: {
+    tsconfigPaths: true,
     alias: {
       events: "events",
       path: "path-browserify",
