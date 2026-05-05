@@ -15,7 +15,7 @@ interface HashStateContextType {
 }
 
 interface HashActionsContextType {
-  addCommunityHash: (id: string, hash: string) => void;
+  addCommunityHash: (id: string, hash: string) => Promise<number>;
   getCommunityHashes: () => Promise<HashResult[]>;
 }
 
@@ -74,18 +74,15 @@ export const HashProvider: React.FC<{ children: React.ReactNode }> = ({
 
   const addCommunityHash = useCallback(
     async (id: string, hash: string) => {
-      const { toast } = await import("@heroui/react");
-      toast.promise(hashRepository.addCommunityHash(id, hash), {
-        error: "Error al añadir el torrent",
-        loading: "Añadiendo el torrent",
-        success(data) {
-          return data > 0
-            ? "Torrent añadido"
-            : data === -1
-              ? "Error al añadir el torrent"
-              : "El torrent ya existe";
-        },
-      })
+      const { toast } = await import("@heroui/react")
+      const data = await hashRepository.addCommunityHash(id, hash)
+      const message = data > 0
+        ? "Torrent añadido"
+        : data === -1
+          ? "Error al añadir el torrent"
+          : "El torrent ya existe";
+      toast(message)
+      return data
     },
     [hashRepository],
   );
