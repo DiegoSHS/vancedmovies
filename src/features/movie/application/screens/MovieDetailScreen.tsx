@@ -26,7 +26,10 @@ export const MovieDetailScreen: React.FC = () => {
       setItem("table");
     }
   };
-  const { state: { selectedItem: movie, items: movies }, status } = useMovieState();
+  const {
+    state: { selectedItem: movie, items: movies },
+    status,
+  } = useMovieState();
   const { torrentState } = useTorrentState();
   const { getMovieById, getMovieSuggestions } = useMovieActions();
   const { getMoreTorrents, addTorrents, cleanTorrent } = useTorrentActions();
@@ -56,9 +59,10 @@ export const MovieDetailScreen: React.FC = () => {
 
   const effect = () => {
     fetchMovieData();
+
     return () => {
-      cleanTorrent()
-    }
+      cleanTorrent();
+    };
   };
 
   useEffect(effect, [id]);
@@ -82,9 +86,9 @@ export const MovieDetailScreen: React.FC = () => {
       <BackButton />
       <MovieDetailsCard movie={movie} />
       <VideoPlayer
-        poster={movie?.background_image_original}
         magnetLink={torrentState.selectedItem?.hash}
         movieTitle={movie?.title || "Disfruta tu película"}
+        poster={movie?.background_image_original}
       />
       <ViewModeSwitch
         isDisabled={shouldBeViewModeTable}

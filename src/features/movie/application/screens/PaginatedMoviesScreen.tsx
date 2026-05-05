@@ -13,21 +13,21 @@ const MovieList = lazy(() => import("../components/MovieList"));
 
 export const PaginatedMoviesScreen: React.FC = () => {
   const { state, totalResults, status, query } = useMovieState();
-  const { getMovies, searchMovies, selectMovie } =
-    useMovieActions();
+  const { getMovies, searchMovies, selectMovie } = useMovieActions();
   const { addTorrents, cleanTorrent } = useTorrentActions();
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
 
   const pageFromUrl = id ? parseInt(id, 10) : 1;
   const validPage = !isNaN(pageFromUrl) && pageFromUrl > 0;
-  const currentPage = validPage ? pageFromUrl : 1
+  const currentPage = validPage ? pageFromUrl : 1;
   const totalPages = Math.ceil(totalResults / 24);
 
   useEffect(() => {
     const loadInitialMovies = async () => {
       if (query) {
         searchMovies(currentPage);
+
         return;
       }
       getMovies(currentPage);
@@ -39,7 +39,7 @@ export const PaginatedMoviesScreen: React.FC = () => {
   const handleMovieClick = (
     movie: import("../../domain/entities/Movie").Movie,
   ) => {
-    cleanTorrent()
+    cleanTorrent();
     selectMovie(movie);
     addTorrents(movie.torrents);
     navigate(`/movie/${movie.id}`);

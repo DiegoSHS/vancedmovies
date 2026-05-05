@@ -2,7 +2,6 @@ import { Movie } from "../../domain/entities/Movie";
 import { MovieListResponse } from "../../domain/entities/YTSMovieListResponse";
 import { MovieDatasource } from "../../domain/datasources/MovieDatasource";
 import { Torrent } from "../../domain/entities/Torrent";
-import { HashResult } from "../../domain/entities/Hashes";
 
 import { ApiResult } from "@/utils/ApiResult";
 
@@ -187,46 +186,6 @@ export class MovieDatasourceImp extends MovieDatasource {
       if (!Boolean(query)) return [];
       const url = `${import.meta.env.VITE_NEST_BACKEND_URL}/tpb_search?title=${encodeURIComponent(query)}`;
       const result = await ApiClient.get<Torrent[]>({
-        path: url,
-        overrideBaseURL: true,
-      });
-
-      if (result.error !== null) return [];
-
-      return result.data;
-    } catch (_) {
-      return [];
-    }
-  }
-  async addCommunityHash(id: string, hash: string): Promise<number> {
-    try {
-      const { ApiClient } = await import("@/utils/ApiClient");
-      const url = `${import.meta.env.VITE_NEST_BACKEND_URL}/save_hash`;
-      const result = await ApiClient.post<number>({
-        path: url,
-        body: {
-          name: id,
-          hash,
-        },
-        options: {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        },
-        overrideBaseURL: true,
-      });
-
-      if (result.error !== null) return -1;
-      return result.data;
-    } catch (_) {
-      return -1;
-    }
-  }
-  async getCommunityHashes(): Promise<HashResult[]> {
-    try {
-      const { ApiClient } = await import("@/utils/ApiClient");
-      const url = `${import.meta.env.VITE_NEST_BACKEND_URL}/get_hashes`;
-      const result = await ApiClient.get<HashResult[]>({
         path: url,
         overrideBaseURL: true,
       });

@@ -1,14 +1,14 @@
 type ClientResult<T> =
   | {
-    error: null,
-    data: T;
-    code: number;
-  }
+      error: null;
+      data: T;
+      code: number;
+    }
   | {
-    error: string;
-    code: number;
-    data: null
-  };
+      error: string;
+      code: number;
+      data: null;
+    };
 
 interface FetchHttpClientOptions {
   baseURL?: string;
@@ -27,13 +27,13 @@ interface RequestWithBodyParams extends RequestParams {
   body?: unknown;
 }
 
-interface GetRequestParams extends RequestParams { }
+interface GetRequestParams extends RequestParams {}
 
-interface PostRequestParams extends RequestWithBodyParams { }
+interface PostRequestParams extends RequestWithBodyParams {}
 
-interface PutRequestParams extends RequestWithBodyParams { }
+interface PutRequestParams extends RequestWithBodyParams {}
 
-interface DeleteRequestParams extends RequestParams { }
+interface DeleteRequestParams extends RequestParams {}
 
 interface InternalRequestParams extends RequestWithBodyParams {
   method: string;
@@ -52,7 +52,7 @@ class FetchHttpClient implements IHttpClient {
       timeout: 10000,
       baseURL: "https://yts.mx/api/v2",
     },
-  ) { }
+  ) {}
 
   private resolveUrl(path: string, overrideBaseURL: boolean): string {
     if (overrideBaseURL) return path;

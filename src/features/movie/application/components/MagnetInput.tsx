@@ -3,12 +3,13 @@ import { FieldError } from "@heroui/react/field-error";
 import { TextField } from "@heroui/react/textfield";
 import { Input } from "@heroui/react/input";
 import { Label } from "@heroui/react/label";
+
 import checkMagnet from "@/utils/magnet/regexp";
 
 interface MagnetInputProps {
   onChange:
-  | React.Dispatch<React.SetStateAction<string>>
-  | ((magnet: string) => {});
+    | React.Dispatch<React.SetStateAction<string>>
+    | ((magnet: string) => {});
   magnet: string;
 }
 

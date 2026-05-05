@@ -8,7 +8,7 @@ export class MovieStateHandler {
   constructor(
     private readonly update: (prev: Partial<ProviderState>) => void,
     private readonly dispatch: React.Dispatch<Action<Movie>>,
-  ) { }
+  ) {}
   private async updateLoadState<T = ApiResult<MovieListResponse | Movie>>(
     promise: Promise<T>,
   ) {
@@ -43,11 +43,14 @@ export class MovieStateHandler {
   async many(promise: Promise<ApiResult<MovieListResponse>>) {
     const { status, data } = await this.updateLoadState(promise);
     const err = this.checkError(status);
+
     if (err || !data) return [];
     const totalResults = data.movies ? data.movie_count : 0;
-    const payload = data.movies || []
+    const payload = data.movies || [];
+
     this.dispatch({ type: "SET", payload });
     this.update({ totalResults });
-    return payload
+
+    return payload;
   }
 }

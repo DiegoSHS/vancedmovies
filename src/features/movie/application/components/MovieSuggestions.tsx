@@ -26,7 +26,7 @@ export const MovieSuggestions: React.FC<MovieSuggestionsProps> = ({
   const handleMovieClick = (
     movie: import("../../domain/entities/Movie").Movie,
   ) => {
-    cleanTorrent()
+    cleanTorrent();
     selectMovie(movie);
     addTorrents(movie.torrents);
     navigate(`/movie/${movie.id}`);

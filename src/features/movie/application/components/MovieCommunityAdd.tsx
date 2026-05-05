@@ -3,7 +3,8 @@ import { Modal } from "@heroui/react/modal";
 import { Button } from "@heroui/react/button";
 import { lazy, useEffect, useState } from "react";
 
-import { useMovieState, useMovieActions } from "../providers/MovieProvider";
+import { useMovieState } from "../providers/MovieProvider";
+import { useHashActions } from "../../../hash/application/providers/HashProvider";
 
 import { PlusIcon } from "@/components/icons";
 const MagnetInput = lazy(() => import("./MagnetInput"));
@@ -24,7 +25,7 @@ export const MovieCommunityModal: React.FC<MovieModalProps> = ({
   const [magnet, setMagnet] = useState<string>("");
   const [isDisabled, setIsDisabled] = useState(false);
   const { status } = useMovieState();
-  const { addCommunityHash } = useMovieActions();
+  const { addCommunityHash } = useHashActions();
   const handleSubmit = async () => {
     const { extractMagnetInfo } = await import("@/utils/magnetGenerator");
     const info = await extractMagnetInfo(magnet);

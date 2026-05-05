@@ -3,7 +3,6 @@ import { MovieListResponse } from "../../domain/entities/YTSMovieListResponse";
 import { MovieRepository } from "../../domain/repository/MovieRepository";
 import { MovieDatasource } from "../../domain/datasources/MovieDatasource";
 import { Torrent } from "../../domain/entities/Torrent";
-import { HashResult } from "../../domain/entities/Hashes";
 
 import { ApiResult } from "@/utils/ApiResult";
 
@@ -58,11 +57,5 @@ export class MovieRepositoryImp extends MovieRepository {
   }
   async getMoreTorrents(title: string): Promise<Torrent[]> {
     return this.datasource.getMoreTorrents(title);
-  }
-  addCommunityHash(id: string, hash: string): Promise<number> {
-    return this.datasource.addCommunityHash(id, hash);
-  }
-  getCommunityHashes(): Promise<HashResult[]> {
-    return this.datasource.getCommunityHashes();
   }
 }

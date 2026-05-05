@@ -1,6 +1,9 @@
 import { useState } from "react";
 import { Link } from "@heroui/react/link";
 import { Button } from "@heroui/react/button";
+import { Dropdown } from "@heroui/react/dropdown";
+
+import { AboutTooltip } from "./AboutTooltip";
 
 import { siteConfig } from "@/config/site";
 import { ThemeSwitch } from "@/components/theme-switch";
@@ -12,8 +15,6 @@ import {
   EllipsisIcon,
 } from "@/components/icons";
 import MovieSearch from "@/features/movie/application/components/MovieSearch";
-import { Dropdown } from "@heroui/react/dropdown";
-import { AboutTooltip } from "./AboutTooltip";
 
 export const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -107,10 +108,10 @@ export const Navbar = () => {
                 <Dropdown.Item className="p-0 m-0">
                   <Link
                     aria-label="Perfil de twitter (X)"
+                    className="button button--ghost gap-2 w-full justify-evenly"
                     href={siteConfig.links.twitter}
                     rel="noopener noreferrer"
                     target="_blank"
-                    className="button button--ghost gap-2 w-full justify-evenly"
                   >
                     <TwitterIcon className="w-5 h-5" />
                     Twitter
@@ -119,10 +120,10 @@ export const Navbar = () => {
                 <Dropdown.Item className="p-0 m-0">
                   <Link
                     aria-label="Perfil de Github"
+                    className="button button--ghost gap-2 w-full justify-evenly"
                     href={siteConfig.links.github}
                     rel="noopener noreferrer"
                     target="_blank"
-                    className="button button--ghost gap-2 w-full justify-evenly"
                   >
                     <GithubIcon className="w-5 h-5" />
                     Github
@@ -135,7 +136,6 @@ export const Navbar = () => {
             </Dropdown.Popover>
           </Dropdown>
         </div>
-
       </header>
       <header className="flex justify-between px-6 pb-2 max-w-7xl mx-auto gap-2">
         <MovieSearch />

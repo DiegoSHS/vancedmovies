@@ -1,9 +1,8 @@
-import { createContext, useContext, useMemo } from "react";
+import { createContext, useContext, useMemo, useCallback } from "react";
 
 import { MovieRepositoryImp } from "../../infrastructure/repository/MovieRepository";
 import { MovieDatasourceImp } from "../../infrastructure/datasources/MovieDatasource";
 import { Movie } from "../../domain/entities/Movie";
-import { HashResult } from "../../domain/entities/Hashes";
 import { MovieStateHandler } from "../../infrastructure/repository/MovieStateHandler";
 import { Torrent } from "../../domain/entities/Torrent";
 
@@ -31,8 +30,6 @@ interface MovieActionsContextType {
   updateQuery: (newQuery: string) => void;
   resetQuery: () => void;
   selectMovie: (movie: Movie) => void;
-  addCommunityHash: (id: string, hash: string) => Promise<number>;
-  getCommunityHashes: () => Promise<HashResult[]>;
   getMovieSuggestions: (id: number) => Promise<Movie[]>;
 }
 
@@ -41,7 +38,7 @@ interface TorrentActionsContextType {
   addTorrents: (torrents: Torrent[], initial?: Torrent[]) => Promise<Torrent[]>;
   selectTorrent: (magnet: Torrent) => Promise<void>;
   autoSelectTorrent: (magnets?: Torrent[]) => Promise<void>;
-  cleanTorrent: () => void
+  cleanTorrent: () => void;
 }
 
 // Contextos separados
@@ -144,104 +141,142 @@ export const MovieProvider: React.FC<{ children: React.ReactNode }> = ({
     useBaseReducer<Torrent>();
   const movieDatasource = new MovieDatasourceImp();
   const movieRepository = new MovieRepositoryImp(movieDatasource);
-  const handler = new MovieStateHandler(modifyProviderState, dispatch);
-  const getMovies = async (page: number) => {
-    return handler.many(movieRepository.getMovies(page));
-  };
-  const getMoreMovies = async (page: number) => {
-    const data = await handler.many(movieRepository.getMovies(page));
+  // Memoiza handler para evitar recrearlo en cada render
+  const handler = useMemo(
+    () => new MovieStateHandler(modifyProviderState, dispatch),
+    [modifyProviderState, dispatch],
+  );
 
-    return [...state.items, ...data];
-  };
-  const getMovieById = async (id: number) => {
-    return handler.unique(movieRepository.getMovieById(id));
-  };
-  const searchMovies = async (page: number) => {
-    if (query.trim() === "") return [];
-    const data = await handler.many(movieRepository.searchMovies(query, page));
-    if (!data.length) {
-      const { toast } = await import("@heroui/react");
-      toast.warning(
-        "A veces las peliculas tienen títulos muy raros, intenta con otro nombre",
+  // Memoiza las funciones con useCallback
+  const getMovies = useCallback(
+    async (page: number) => {
+      return handler.many(movieRepository.getMovies(page));
+    },
+    [handler, movieRepository],
+  );
+
+  const getMoreMovies = useCallback(
+    async (page: number) => {
+      const data = await handler.many(movieRepository.getMovies(page));
+
+      return [...state.items, ...data];
+    },
+    [handler, movieRepository, state.items],
+  );
+
+  const getMovieById = useCallback(
+    async (id: number) => {
+      return handler.unique(movieRepository.getMovieById(id));
+    },
+    [handler, movieRepository],
+  );
+
+  const searchMovies = useCallback(
+    async (page: number) => {
+      if (query.trim() === "") return [];
+      const data = await handler.many(
+        movieRepository.searchMovies(query, page),
       );
-      return [];
-    }
 
-    return data;
-  };
-  const getMovieSuggestions = async (id: number) => {
-    return handler.many(movieRepository.getMovieSuggestions(id));
-  };
+      if (!data.length) {
+        const { toast } = await import("@heroui/react");
 
-  const addCommunityHash = async (id: string, hash: string) => {
-    const { toast } = await import("@heroui/react");
-    const result = await movieRepository.addCommunityHash(id, hash);
-    const message =
-      result > 0
-        ? "Torrent añadido"
-        : result === -1
-          ? "Error al añadir el torrent"
-          : "El torrent ya existe";
+        toast.warning(
+          "A veces las peliculas tienen títulos muy raros, intenta con otro nombre",
+        );
 
-    toast(message);
+        return [];
+      }
 
-    return result;
-  };
-  const getCommunityHashes = async () => {
-    return handler.base(movieRepository.getCommunityHashes());
-  };
-  const selectTorrent = async (magnet: Torrent) => {
-    torrentDispatch({ type: "SELECT", payload: magnet });
-    const { toast } = await import("@heroui/react");
+      return data;
+    },
+    [handler, movieRepository, query],
+  );
 
-    toast.info("Torrent seleccionado");
-  };
-  const cleanTorrent = () => {
-    torrentDispatch({ type: "SELECT", payload: undefined })
-  }
-  const autoSelectTorrent = async (magnets: Torrent[] = torrentState.items) => {
-    const { getBestQualityMagnets } = await import("@/utils/magnet/filter");
-    const bestMagnets = getBestQualityMagnets(magnets);
+  const getMovieSuggestions = useCallback(
+    async (id: number) => {
+      return handler.many(movieRepository.getMovieSuggestions(id));
+    },
+    [handler, movieRepository],
+  );
 
-    if (!bestMagnets.length) return;
-    selectTorrent(bestMagnets[0]);
-  };
-  const addTorrents = async (torrents: Torrent[], initial: Torrent[] = []) => {
-    const merged = [...torrents, ...initial];
+  const selectTorrent = useCallback(
+    async (magnet: Torrent) => {
+      torrentDispatch({ type: "SELECT", payload: magnet });
+      const { toast } = await import("@heroui/react");
 
-    if (!merged.length) return [];
-    const { filterUniqueTorrents } = await import("@/utils/torrent");
-    const filtered = filterUniqueTorrents(merged);
-    const sorted = filtered.sort((p, n) => n.seeds - p.seeds);
+      toast.info("Torrent seleccionado");
+    },
+    [torrentDispatch],
+  );
 
-    torrentDispatch({ type: "SET", payload: sorted });
+  const cleanTorrent = useCallback(() => {
+    torrentDispatch({ type: "SELECT", payload: undefined });
+  }, [torrentDispatch]);
 
-    return sorted;
-  };
-  const getMoreTorrents = async (title: string, initial?: Torrent[]) => {
-    const data = await handler.base(movieRepository.getMoreTorrents(title));
-    const magnets = await addTorrents(data, initial);
-    const dualMagnet = magnets.find((item) =>
-      item.type ? item.type.toUpperCase().includes("DUAL") : false
-    );
+  const autoSelectTorrent = useCallback(
+    async (magnets: Torrent[] = torrentState.items) => {
+      const { getBestQualityMagnets } = await import("@/utils/magnet/filter");
+      const bestMagnets = getBestQualityMagnets(magnets);
 
-    if (dualMagnet) {
-      await selectTorrent(dualMagnet);
-    } else {
-      await autoSelectTorrent(magnets);
-    }
+      if (!bestMagnets.length) return;
+      selectTorrent(bestMagnets[0]);
+    },
+    [torrentState.items, selectTorrent],
+  );
 
-    return magnets;
-  };
-  const selectMovie = (movie: Movie) => {
-    dispatch({ type: "SELECT", payload: movie });
-  };
-  const updateQuery = (newQuery: string) => {
-    modifyProviderState({ query: newQuery });
-  };
-  const resetQuery = () => {
+  const addTorrents = useCallback(
+    async (torrents: Torrent[], initial: Torrent[] = []) => {
+      const merged = [...torrents, ...initial];
+
+      if (!merged.length) return [];
+      const { filterUniqueTorrents } = await import("@/utils/torrent");
+      const filtered = filterUniqueTorrents(merged);
+      const sorted = filtered.sort((p, n) => n.seeds - p.seeds);
+
+      torrentDispatch({ type: "SET", payload: sorted });
+
+      return sorted;
+    },
+    [torrentDispatch],
+  );
+
+  const getMoreTorrents = useCallback(
+    async (title: string, initial?: Torrent[]) => {
+      const data = await handler.base(movieRepository.getMoreTorrents(title));
+      const magnets = await addTorrents(data, initial);
+      const dualMagnet = magnets.find((item) =>
+        item.type ? item.type.toUpperCase().includes("DUAL") : false,
+      );
+
+      if (dualMagnet) {
+        await selectTorrent(dualMagnet);
+      } else {
+        await autoSelectTorrent(magnets);
+      }
+
+      return magnets;
+    },
+    [handler, movieRepository, addTorrents, selectTorrent, autoSelectTorrent],
+  );
+
+  const selectMovie = useCallback(
+    (movie: Movie) => {
+      dispatch({ type: "SELECT", payload: movie });
+    },
+    [dispatch],
+  );
+
+  const updateQuery = useCallback(
+    (newQuery: string) => {
+      modifyProviderState({ query: newQuery });
+    },
+    [modifyProviderState],
+  );
+
+  const resetQuery = useCallback(() => {
     modifyProviderState({ query: "" });
-  };
+  }, [modifyProviderState]);
 
   // Valores memoizados para los contextos separados
   const movieStateValue = useMemo(
@@ -270,8 +305,6 @@ export const MovieProvider: React.FC<{ children: React.ReactNode }> = ({
       updateQuery,
       resetQuery,
       selectMovie,
-      addCommunityHash,
-      getCommunityHashes,
       getMovieSuggestions,
     }),
     [
@@ -282,8 +315,6 @@ export const MovieProvider: React.FC<{ children: React.ReactNode }> = ({
       updateQuery,
       resetQuery,
       selectMovie,
-      addCommunityHash,
-      getCommunityHashes,
       getMovieSuggestions,
     ],
   );
@@ -294,14 +325,14 @@ export const MovieProvider: React.FC<{ children: React.ReactNode }> = ({
       addTorrents,
       selectTorrent,
       autoSelectTorrent,
-      cleanTorrent
+      cleanTorrent,
     }),
     [
       getMoreTorrents,
       addTorrents,
       selectTorrent,
       autoSelectTorrent,
-      cleanTorrent
+      cleanTorrent,
     ],
   );
 

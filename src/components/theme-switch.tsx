@@ -3,7 +3,11 @@ import { Button } from "@heroui/react/button";
 import { SunFilledIcon, MoonFilledIcon } from "@/components/icons";
 import { useLocalStorage } from "@/hooks/useLocalStorage";
 
-export const ThemeSwitch = ({ isIconOnly = true }: { isIconOnly?: boolean }) => {
+export const ThemeSwitch = ({
+  isIconOnly = true,
+}: {
+  isIconOnly?: boolean;
+}) => {
   const html = document.documentElement;
   const isDarkMode = html.classList.contains("dark");
   const defaultMode = isDarkMode ? "dark" : "light";
@@ -28,18 +32,18 @@ export const ThemeSwitch = ({ isIconOnly = true }: { isIconOnly?: boolean }) => 
 
   return (
     <Button
-      isIconOnly={isIconOnly}
       aria-label="Cambiar tema"
+      className={isIconOnly ? "" : "w-full justify-evenly"}
+      isIconOnly={isIconOnly}
       variant="ghost"
       onPress={swapTheme}
-      className={isIconOnly ? "" : "w-full justify-evenly"}
     >
       {item !== "dark" ? (
         <MoonFilledIcon className="text-default-500" size={20} />
       ) : (
         <SunFilledIcon className="text-default-500" size={20} />
       )}
-      {isIconOnly || ("Tema")}
+      {isIconOnly || "Tema"}
     </Button>
   );
 };

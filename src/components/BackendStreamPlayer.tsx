@@ -13,8 +13,10 @@ const BackendStreamPlayer: React.FC<BackendStreamPlayerProps> = ({
 
   const handleError = async () => {
     const { toast } = await import("@heroui/react/toast");
+
     toast.danger("Ups, no se pudo cargar el video");
   };
+
   return (
     <video
       autoPlay

@@ -1,4 +1,3 @@
-import { HashResult } from "../entities/Hashes";
 import { Movie } from "../entities/Movie";
 import { Torrent } from "../entities/Torrent";
 import { MovieListResponse } from "../entities/YTSMovieListResponse";
@@ -35,6 +34,4 @@ export abstract class MovieRepository {
     id: number,
   ): Promise<ApiResult<MovieListResponse>>;
   abstract getMoreTorrents(title: string): Promise<Torrent[]>;
-  abstract addCommunityHash(id: string, hash: string): Promise<number>;
-  abstract getCommunityHashes(): Promise<HashResult[]>;
 }

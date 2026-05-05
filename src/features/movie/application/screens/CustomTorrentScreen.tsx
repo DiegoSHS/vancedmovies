@@ -2,7 +2,7 @@ import { Button } from "@heroui/react/button";
 import { lazy, useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 
-import { useMovieActions } from "../providers/MovieProvider";
+import { useHashActions } from "../../../hash/application/providers/HashProvider";
 
 import { PlusIcon } from "@/components/icons";
 const VideoPlayer = lazy(() => import("../components/VideoPlayer"));
@@ -17,7 +17,7 @@ export const CustomTorrentScreen: React.FC = () => {
     movieTitle: "Disfruta de tu pelicula",
     hash: "",
   });
-  const { addCommunityHash } = useMovieActions();
+  const { addCommunityHash } = useHashActions();
   const setMagnetLink = async (magnet: string) => {
     const { extractMagnetInfo } = await import("@/utils/magnetGenerator");
     const result = await extractMagnetInfo(magnet);
