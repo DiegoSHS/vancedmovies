@@ -5,8 +5,8 @@ import { Chip } from "@heroui/react/chip";
 import {
   useMovieState,
   useMovieActions,
-  useTorrentActions,
 } from "../providers/MovieProvider";
+import { useTorrentActions } from "@/features/torrent/application/providers/TorrentProvider";
 
 const MoviePagination = lazy(() => import("../components/MoviePagination"));
 const MovieList = lazy(() => import("../components/MovieList"));

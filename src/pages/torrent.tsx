@@ -1,4 +1,4 @@
-import { CustomTorrentScreen } from "@/features/movie/application/screens/CustomTorrentScreen";
+import { CustomTorrentScreen } from "@/features/hash/application/screens/CustomTorrentScreen";
 
 export default function Torrent() {
   return <CustomTorrentScreen />;

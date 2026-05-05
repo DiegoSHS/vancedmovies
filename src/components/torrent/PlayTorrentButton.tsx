@@ -2,7 +2,7 @@ import { Button } from "@heroui/react/button";
 
 import { PlayIcon } from "../icons";
 
-import { useTorrentActions } from "@/features/movie/application/providers/MovieProvider";
+import { useTorrentActions } from "@/features/torrent/application/providers/TorrentProvider";
 
 const PlayTorrentButton = ({
   torrent,

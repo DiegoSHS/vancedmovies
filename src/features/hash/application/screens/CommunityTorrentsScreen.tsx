@@ -1,12 +1,12 @@
 import { Button } from "@heroui/react/button";
 import { lazy, useEffect, useState } from "react";
 
-import { useMovieState } from "../providers/MovieProvider";
-import { useHashActions } from "../../../hash/application/providers/HashProvider";
+import { useMovieState } from "../../../movie/application/providers/MovieProvider";
+import { useHashActions } from "../providers/HashProvider";
 
 import { PlusIcon } from "@/components/icons";
 const MovieCommunityModal = lazy(
-  () => import("../components/MovieCommunityAdd"),
+  () => import("../../../movie/application/components/MovieCommunityAdd"),
 );
 const BackButton = lazy(() => import("@/components/BackButton"));
 const CommunityTorrentsTable = lazy(
@@ -17,7 +17,7 @@ export const CommunityTorrentsScreen = () => {
   const { status } = useMovieState();
   const { getCommunityHashes } = useHashActions();
   const [torrentHashes, setTorrentHashes] = useState<
-    import("../../domain/entities/Hashes").HashResult[]
+    import("../../../movie/domain/entities/Hashes").HashResult[]
   >([]);
   const [open, setOpen] = useState(false);
 

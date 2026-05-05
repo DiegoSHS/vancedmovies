@@ -3,10 +3,12 @@ import { useParams } from "react-router-dom";
 
 import {
   useMovieState,
-  useTorrentState,
   useMovieActions,
-  useTorrentActions,
 } from "../providers/MovieProvider";
+import {
+  useTorrentState,
+  useTorrentActions,
+} from "@/features/torrent/application/providers/TorrentProvider";
 
 import { useLocalStorage } from "@/hooks/useLocalStorage";
 import { BackButton } from "@/components/BackButton";

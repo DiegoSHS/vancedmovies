@@ -2,11 +2,11 @@ import { Button } from "@heroui/react/button";
 import { lazy, useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 
-import { useHashActions } from "../../../hash/application/providers/HashProvider";
+import { useHashActions } from "../providers/HashProvider";
 
 import { PlusIcon } from "@/components/icons";
-const VideoPlayer = lazy(() => import("../components/VideoPlayer"));
-const MagnetInput = lazy(() => import("../components/MagnetInput"));
+const VideoPlayer = lazy(() => import("../../../movie/application/components/VideoPlayer"));
+const MagnetInput = lazy(() => import("../../../movie/application/components/MagnetInput"));
 const BackButton = lazy(() => import("@/components/BackButton"));
 
 export const CustomTorrentScreen: React.FC = () => {

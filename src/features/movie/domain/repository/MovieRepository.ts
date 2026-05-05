@@ -1,5 +1,4 @@
 import { Movie } from "../entities/Movie";
-import { Torrent } from "../entities/Torrent";
 import { MovieListResponse } from "../entities/YTSMovieListResponse";
 
 import { ApiResult } from "@/utils/ApiResult";
@@ -33,5 +32,4 @@ export abstract class MovieRepository {
   abstract getMovieSuggestions(
     id: number,
   ): Promise<ApiResult<MovieListResponse>>;
-  abstract getMoreTorrents(title: string): Promise<Torrent[]>;
 }

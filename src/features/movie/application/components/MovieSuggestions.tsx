@@ -3,8 +3,8 @@ import { useNavigate } from "react-router-dom";
 import {
   useMovieState,
   useMovieActions,
-  useTorrentActions,
 } from "../providers/MovieProvider";
+import { useTorrentActions } from "@/features/torrent/application/providers/TorrentProvider";
 
 import { MovieList } from "./MovieList";
 

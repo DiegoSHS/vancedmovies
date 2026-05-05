@@ -4,7 +4,7 @@ import { Table } from "@heroui/react/table";
 import { TableLayout, Virtualizer, type SortDescriptor } from "@heroui/react";
 import { lazy, useMemo, useState } from "react";
 
-import { NoDownloadsAvailable } from "./MovieDownloads";
+import { NoDownloadsAvailable } from "../../../movie/application/components/MovieDownloads";
 
 import { PlayIcon } from "@/components/icons";
 import getQualityFromName from "@/utils/magnetName";
@@ -16,7 +16,7 @@ const OpenTorrentButton = lazy(
 );
 
 interface CommunityTorrentTableProps {
-  items: import("../../domain/entities/Hashes").HashResult[];
+  items: import("../../../movie/domain/entities/Hashes").HashResult[];
   loading: boolean;
 }
 
@@ -40,12 +40,12 @@ export const CommunityTorrentsTable: React.FC<CommunityTorrentTableProps> = ({
       return cmp;
     });
   }, [sortDescriptor, items]);
-  const RowItem = (item: import("../../domain/entities/Hashes").HashResult) => {
+  const RowItem = (item: import("../../../movie/domain/entities/Hashes").HashResult) => {
     const quality = getQualityFromName(item.name.toLowerCase());
     const torrent = {
       hash: item.hash,
       quality,
-    } as import("../../domain/entities/Torrent").Torrent;
+    } as import("../../../movie/domain/entities/Torrent").Torrent;
     const handleClick = async () => {
       const { generateMagnetLink } = await import("@/utils/magnetGenerator");
       const { data } = generateMagnetLink(torrent, item.name);
