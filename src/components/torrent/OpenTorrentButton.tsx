@@ -2,9 +2,7 @@ import { Button } from "@heroui/react/button";
 
 import { DownloadIcon } from "../icons";
 
-import {
-  useMovieState,
-} from "@/features/movie/application/providers/MovieProvider";
+import { useMovieState } from "@/features/movie/application/providers/MovieProvider";
 import { useTorrentState } from "@/features/torrent/application/providers/TorrentProvider";
 
 const OpenTorrentButton = ({

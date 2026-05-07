@@ -41,7 +41,7 @@ export const MovieCard: React.FC<MovieCardProps> = ({ movie, onClick }) => {
           {movie.year}
         </p>
       </Card.Header>
-      <picture aria-label="Carátula">
+      <picture>
         <source media="(min-width: 650px)" srcSet={movie.large_cover_image} />
         <source media="(min-width: 430px)" srcSet={movie.medium_cover_image} />
         <img

@@ -74,21 +74,24 @@ export const HashProvider: React.FC<{ children: React.ReactNode }> = ({
 
   const addCommunityHash = useCallback(
     async (id: string, hash: string) => {
-      const { toast } = await import("@heroui/react")
-      const data = await hashRepository.addCommunityHash(id, hash)
-      const message = data > 0
-        ? "Torrent añadido"
-        : data === -1
-          ? "Error al añadir el torrent"
-          : "El torrent ya existe";
-      toast(message)
-      return data
+      const { toast } = await import("@heroui/react");
+      const data = await hashRepository.addCommunityHash(id, hash);
+      const message =
+        data > 0
+          ? "Torrent añadido"
+          : data === -1
+            ? "Error al añadir el torrent"
+            : "El torrent ya existe";
+
+      toast(message);
+
+      return data;
     },
     [hashRepository],
   );
 
   const getCommunityHashes = useCallback(async () => {
-    const data = await hashRepository.getCommunityHashes()
+    const data = await hashRepository.getCommunityHashes();
 
     setHashes(data);
 

@@ -40,7 +40,9 @@ export const CommunityTorrentsTable: React.FC<CommunityTorrentTableProps> = ({
       return cmp;
     });
   }, [sortDescriptor, items]);
-  const RowItem = (item: import("../../../movie/domain/entities/Hashes").HashResult) => {
+  const RowItem = (
+    item: import("../../../movie/domain/entities/Hashes").HashResult,
+  ) => {
     const quality = getQualityFromName(item.name.toLowerCase());
     const torrent = {
       hash: item.hash,

@@ -1,13 +1,10 @@
 import { useNavigate } from "react-router-dom";
 
-import {
-  useMovieState,
-  useMovieActions,
-} from "../providers/MovieProvider";
-import { useTorrentActions } from "@/features/torrent/application/providers/TorrentProvider";
+import { useMovieState, useMovieActions } from "../providers/MovieProvider";
 
 import { MovieList } from "./MovieList";
 
+import { useTorrentActions } from "@/features/torrent/application/providers/TorrentProvider";
 import { HorizontalScrollShadow } from "@/components/HorizontalScrollShadow";
 
 interface MovieSuggestionsProps {

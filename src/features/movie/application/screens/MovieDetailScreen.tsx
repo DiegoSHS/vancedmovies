@@ -1,15 +1,12 @@
 import { lazy, useEffect } from "react";
 import { useParams } from "react-router-dom";
 
-import {
-  useMovieState,
-  useMovieActions,
-} from "../providers/MovieProvider";
+import { useMovieState, useMovieActions } from "../providers/MovieProvider";
+
 import {
   useTorrentState,
   useTorrentActions,
 } from "@/features/torrent/application/providers/TorrentProvider";
-
 import { useLocalStorage } from "@/hooks/useLocalStorage";
 import { BackButton } from "@/components/BackButton";
 const ViewModeSwitch = lazy(() => import("@/components/ViewModeSwitch"));

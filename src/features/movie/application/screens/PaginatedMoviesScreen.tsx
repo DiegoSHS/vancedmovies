@@ -2,10 +2,8 @@ import { useEffect, lazy } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Chip } from "@heroui/react/chip";
 
-import {
-  useMovieState,
-  useMovieActions,
-} from "../providers/MovieProvider";
+import { useMovieState, useMovieActions } from "../providers/MovieProvider";
+
 import { useTorrentActions } from "@/features/torrent/application/providers/TorrentProvider";
 
 const MoviePagination = lazy(() => import("../components/MoviePagination"));

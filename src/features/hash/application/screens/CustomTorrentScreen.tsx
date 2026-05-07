@@ -1,19 +1,24 @@
 import { Button } from "@heroui/react/button";
-import { lazy, useEffect, useState } from "react";
+import { lazy, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 
 import { useHashActions } from "../providers/HashProvider";
 
 import { PlusIcon } from "@/components/icons";
-const VideoPlayer = lazy(() => import("../../../movie/application/components/VideoPlayer"));
-const MagnetInput = lazy(() => import("../../../movie/application/components/MagnetInput"));
+import { getMagnetLinkFromURL } from "@/utils/magnetGenerator";
+const VideoPlayer = lazy(
+  () => import("../../../movie/application/components/VideoPlayer"),
+);
+const MagnetInput = lazy(
+  () => import("../../../movie/application/components/MagnetInput"),
+);
 const BackButton = lazy(() => import("@/components/BackButton"));
 
 export const CustomTorrentScreen: React.FC = () => {
   const [searchParams] = useSearchParams();
   const [moviePlayerState, setMoviePlayerState] = useState({
     isInvalid: true,
-    magnetLink: "",
+    magnetLink: getMagnetLinkFromURL(searchParams) || "",
     movieTitle: "Disfruta de tu pelicula",
     hash: "",
   });
@@ -45,22 +50,11 @@ export const CustomTorrentScreen: React.FC = () => {
       hash: result.hash,
     }));
   };
-  const useMagnetFromUrl = async () => {
-    const { getMagnetLinkFromURL } = await import("@/utils/magnetGenerator");
-    const magnetLink = getMagnetLinkFromURL(searchParams);
-
-    if (!magnetLink) return;
-    await setMagnetLink(magnetLink);
-  };
   const saveTorrentToCommunity = () => {
     const { movieTitle, hash } = moviePlayerState;
 
     addCommunityHash(movieTitle, hash);
   };
-
-  useEffect(() => {
-    useMagnetFromUrl();
-  }, [searchParams]);
 
   return (
     <div className="flex flex-col gap-2">

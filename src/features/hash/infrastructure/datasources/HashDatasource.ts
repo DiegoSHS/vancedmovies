@@ -23,7 +23,9 @@ export class HashDatasourceImp extends HashDatasource {
       if (result.error !== null) return -1;
 
       return result.data;
-    } catch (_) {
+    } catch (e) {
+      console.log("Error añadiendo el hash", e);
+
       return -1;
     }
   }
@@ -39,7 +41,9 @@ export class HashDatasourceImp extends HashDatasource {
       if (result.error !== null) return [];
 
       return result.data;
-    } catch (_) {
+    } catch (e) {
+      console.log("Error consiguiendo los hash", e);
+
       return [];
     }
   }

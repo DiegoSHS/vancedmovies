@@ -7,7 +7,6 @@ import { TableLayout, Virtualizer } from "@heroui/react";
 import { lazy } from "react";
 
 import { useTorrentState } from "@/features/torrent/application/providers/TorrentProvider";
-
 import { Repeater } from "@/components/Repeater";
 const CopyTorrentButton = lazy(
   () => import("@/components/torrent/CopyTorrentButton"),
