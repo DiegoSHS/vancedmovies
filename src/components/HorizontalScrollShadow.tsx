@@ -28,9 +28,7 @@ export const HorizontalScrollShadow: React.FC<HorizontalScrollProps> = ({
   return (
     <ScrollShadow
       ref={containerRef}
-      hideScrollBar
       className="w-full flex overflow-auto"
-      orientation="horizontal"
     >
       {children}
     </ScrollShadow>

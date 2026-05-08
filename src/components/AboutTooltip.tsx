@@ -4,7 +4,7 @@ import { Link } from "@heroui/react/link";
 import { InfoIcon } from "./icons";
 
 interface AboutTooltipProps {
-  isIconOnly: boolean;
+  isIconOnly?: boolean;
 }
 
 const InnerLink = ({ isIconOnly }: AboutTooltipProps) => {

@@ -25,11 +25,9 @@ export const Navbar = () => {
         {/* Logo & Brand */}
         <div className="flex items-center gap-3 w-1/4 justify-start">
           <Button
-            isIconOnly
             aria-expanded={isMenuOpen}
             aria-label="Toggle menu"
             className="hidden"
-            variant="ghost"
             onClick={() => setIsMenuOpen(!isMenuOpen)}
           >
             {isMenuOpen ? (
@@ -97,9 +95,9 @@ export const Navbar = () => {
         {/* Mobile Right Content */}
         <div className="flex md:hidden items-center gap-2 w-1/4 justify-end">
           <Dropdown>
-            <Button isIconOnly aria-label="Menu" variant="ghost">
+            <Dropdown.Trigger className={"flex button button--tertiary button--icon-only"}>
               <EllipsisIcon />
-            </Button>
+            </Dropdown.Trigger>
             <Dropdown.Popover>
               <Dropdown.Menu>
                 <Dropdown.Item className="p-0 m-0">
