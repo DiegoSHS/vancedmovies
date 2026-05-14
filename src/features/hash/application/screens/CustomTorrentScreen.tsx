@@ -27,16 +27,12 @@ export const CustomTorrentScreen: React.FC = () => {
     const { extractMagnetInfo } = await import("@/utils/magnetGenerator");
     const result = await extractMagnetInfo(magnet);
 
-    setMoviePlayerState((prev) => ({
-      ...prev,
-      magnetLink: magnet,
-    }));
     if (!result) {
       setMoviePlayerState((prev) => ({
         ...prev,
+        magnetLink: magnet,
         isInvalid: true,
       }));
-
       return;
     }
     const { toast } = await import("@heroui/react");
@@ -78,7 +74,7 @@ export const CustomTorrentScreen: React.FC = () => {
       </div>
       <VideoPlayer
         magnetLink={
-          moviePlayerState.isInvalid ? "" : moviePlayerState.magnetLink
+          moviePlayerState.magnetLink
         }
         movieTitle={moviePlayerState.movieTitle.replace(/\./g, " ")}
       />

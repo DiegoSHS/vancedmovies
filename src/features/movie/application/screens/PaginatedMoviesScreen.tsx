@@ -50,7 +50,7 @@ export const PaginatedMoviesScreen: React.FC = () => {
   const loading = status === "loading";
 
   return (
-    <div className="container mx-auto px-4 py-8 flex flex-col gap-2 rounded-xl">
+    <div className="mx-auto px-4 py-8 flex flex-col gap-2 rounded-xl">
       <h1 className="text-4xl text-center font-bold text-gray-900 dark:text-white mb-6">
         BOLIPeliculas
       </h1>
