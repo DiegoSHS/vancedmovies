@@ -53,7 +53,7 @@ export const CustomTorrentScreen: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col gap-2">
+    <div className="container mx-auto flex flex-col gap-2">
       <div className="text-2xl text-center font-bold">
         Reproductor para magnets
       </div>

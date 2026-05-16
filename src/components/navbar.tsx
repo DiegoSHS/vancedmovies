@@ -49,7 +49,11 @@ export const Navbar = () => {
             )}
           </Button>
 
-          <Link className="flex items-center gap-1 no-underline" href="/">
+          <Link
+            className="flex items-center gap-1 no-underline"
+            href="/"
+            aria-label="Bienvenida"
+          >
             <FilmIcon />
             <p className="hidden sm:flex">BOLI</p>
           </Link>
@@ -95,7 +99,11 @@ export const Navbar = () => {
         {/* Mobile Right Content */}
         <div className="flex md:hidden items-center gap-2 w-1/4 justify-end">
           <Dropdown>
-            <Dropdown.Trigger className={"flex button button--tertiary button--icon-only"}>
+            <Dropdown.Trigger
+              name="Opciones"
+              className={"flex button button--ghost button--icon-only"}
+              aria-label="Opciones"
+            >
               <EllipsisIcon />
             </Dropdown.Trigger>
             <Dropdown.Popover>

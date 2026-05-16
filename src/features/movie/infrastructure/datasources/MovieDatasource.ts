@@ -9,122 +9,32 @@ export class MovieDatasourceImp extends MovieDatasource {
     page: number = 1,
     limit: number = 24,
   ): Promise<ApiResult<MovieListResponse>> {
-    try {
-      const { ApiClient } = await import("@/utils/ApiClient");
-      const response = await ApiClient.get<ApiResult<MovieListResponse>>({
-        path: `/list_movies.json?page=${page}&limit=${limit}&sort_by=year&order_by=desc`,
-      });
-
-      if (response.error !== null)
-        return {
-          status: "error",
-          status_message: response.error || "Error fetching movies",
-        };
-
-      return response.data;
-    } catch (error: any) {
-      return {
-        status: "error",
-        status_message: error.message || "Error fetching movies",
-      };
-    }
+    const { GetMovies } = await import("./transactions")
+    return GetMovies(page, limit)
   }
   async getMovieSuggestions(id: number): Promise<ApiResult<MovieListResponse>> {
-    try {
-      const { ApiClient } = await import("@/utils/ApiClient");
-      const result = await ApiClient.get<ApiResult<MovieListResponse>>({
-        path: `/movie_suggestions.json?movie_id=${id}`,
-      });
-
-      if (result.error !== null)
-        return {
-          status: "error",
-          status_message: result.error || "Error fetching movies",
-        };
-
-      return result.data;
-    } catch (error: any) {
-      return {
-        status: "error",
-        status_message: error.message || "Error fetching movies",
-      };
-    }
+    const { GetMovieSuggestions } = await import("./transactions")
+    return GetMovieSuggestions(id)
   }
   async getMovieById(id: number): Promise<ApiResult<Movie>> {
-    try {
-      const { ApiClient } = await import("@/utils/ApiClient");
-      const result = await ApiClient.get<ApiResult<{ movie: Movie }>>({
-        path: `/movie_details.json?movie_id=${id}`,
-      });
-
-      if (result.error !== null)
-        return {
-          status: "error",
-          status_message: result.error || "Error fetching movie by ID",
-        };
-
-      return {
-        ...result.data,
-        data: result.data.data?.movie,
-      };
-    } catch (error: any) {
-      return {
-        status: "error",
-        status_message: error.message || "Error fetching movie by ID",
-      };
-    }
+    const { GetMovieById } = await import("./transactions")
+    return GetMovieById(id)
   }
-
   async searchMovies(
     query: string,
     page: number = 1,
     limit: number = 24,
   ): Promise<ApiResult<MovieListResponse>> {
-    try {
-      const { ApiClient } = await import("@/utils/ApiClient");
-      const result = await ApiClient.get<ApiResult<MovieListResponse>>({
-        path: `/list_movies.json?query_term=${encodeURIComponent(query)}&page=${page}&limit=${limit}`,
-      });
-
-      if (result.error !== null)
-        return {
-          status: "error",
-          status_message: result.error || "Error searching movies",
-        };
-
-      return result.data;
-    } catch (error: any) {
-      return {
-        status: "error",
-        status_message: error.message || "Error searching movies",
-      };
-    }
+    const { SearchMovies } = await import("./transactions")
+    return SearchMovies(query, page, limit)
   }
-
   async getMoviesByGenre(
     genre: string,
     page: number = 1,
     limit: number = 24,
   ): Promise<ApiResult<MovieListResponse>> {
-    try {
-      const { ApiClient } = await import("@/utils/ApiClient");
-      const result = await ApiClient.get<ApiResult<MovieListResponse>>({
-        path: `/list_movies.json?genre=${encodeURIComponent(genre)}&page=${page}&limit=${limit}`,
-      });
-
-      if (result.error !== null)
-        return {
-          status: "error",
-          status_message: result.error || "Error fetching movies by genre",
-        };
-
-      return result.data;
-    } catch (error: any) {
-      return {
-        status: "error",
-        status_message: error.message || "Error fetching movies by genre",
-      };
-    }
+    const { GetMoviesByGenre } = await import("./transactions")
+    return GetMoviesByGenre(genre, page, limit)
   }
 
   async getMoviesByYear(
@@ -132,25 +42,8 @@ export class MovieDatasourceImp extends MovieDatasource {
     page: number = 1,
     limit: number = 24,
   ): Promise<ApiResult<MovieListResponse>> {
-    try {
-      const { ApiClient } = await import("@/utils/ApiClient");
-      const response = await ApiClient.get<ApiResult<MovieListResponse>>({
-        path: `/list_movies.json?year=${year}&page=${page}&limit=${limit}`,
-      });
-
-      if (response.error !== null)
-        return {
-          status: "error",
-          status_message: response.error || "Error fetching movies by year",
-        };
-
-      return response.data;
-    } catch (error: any) {
-      return {
-        status: "error",
-        status_message: error.message || "Error fetching movies by year",
-      };
-    }
+    const { GetMoviesByYear } = await import("./transactions")
+    return GetMoviesByYear(year, page, limit)
   }
 
   async getMoviesByRating(
@@ -158,24 +51,7 @@ export class MovieDatasourceImp extends MovieDatasource {
     page: number = 1,
     limit: number = 24,
   ): Promise<ApiResult<MovieListResponse>> {
-    try {
-      const { ApiClient } = await import("@/utils/ApiClient");
-      const response = await ApiClient.get<ApiResult<MovieListResponse>>({
-        path: `/list_movies.json?minimum_rating=${minimum_rating}&page=${page}&limit=${limit}`,
-      });
-
-      if (response.error !== null)
-        return {
-          status: "error",
-          status_message: response.error || "Error fetching movies by rating",
-        };
-
-      return response.data;
-    } catch (error: any) {
-      return {
-        status: "error",
-        status_message: error.message || "Error fetching movies by rating",
-      };
-    }
+    const { GetMoviesByRating } = await import("./transactions")
+    return GetMoviesByRating(minimum_rating, page, limit)
   }
 }

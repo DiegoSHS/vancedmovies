@@ -81,8 +81,13 @@ export const MovieDetailScreen: React.FC = () => {
   const shouldBeViewModeTable = torrentState.items.length > 10;
 
   return (
-    <div className="container mx-auto px-4 py-8 flex flex-col gap-2 items-center">
-      <BackButton />
+    <div className="container mx-auto flex flex-col gap-2 items-center">
+      <div className="text-2xl text-center font-bold">
+        Ver pelicula
+      </div>
+      <div className="self-start">
+        <BackButton />
+      </div>
       <MovieDetailsCard movie={movie} />
       <VideoPlayer
         magnetLink={torrentState.selectedItem?.hash}
