@@ -26,7 +26,7 @@ export const MovieCard: React.FC<MovieCardProps> = ({ movie, onClick }) => {
 
   return (
     <Card
-      className="relative overflow-hidden w-xs shadow-md cursor-pointer p-0"
+      className="relative overflow-hidden w-xs shadow-md cursor-pointer aspect-[9/16] p-0"
       onClick={() => onClick(movie)}
     >
       <div style={overlayStyle} />

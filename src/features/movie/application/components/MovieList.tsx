@@ -92,10 +92,10 @@ export const MovieListInfiniteScroll = () => {
   useEffect(() => {
     getMovies(0);
 
-    return () => {};
+    return () => { };
   }, []);
   const Item = (movie: Movie) => (
-    <MovieCard key={movie.id} movie={movie} onClick={() => {}} />
+    <MovieCard key={movie.id} movie={movie} onClick={() => { }} />
   );
 
   return (
